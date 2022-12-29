@@ -1,4 +1,4 @@
-package example.logtracer.trace;
+package practice.logtracer.trace;
 
 import lombok.Getter;
 

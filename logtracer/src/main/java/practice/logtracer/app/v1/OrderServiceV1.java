@@ -1,4 +1,4 @@
-package example.logtracer.app.v1;
+package practice.logtracer.app.v1;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
