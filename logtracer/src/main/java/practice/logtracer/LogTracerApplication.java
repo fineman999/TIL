@@ -1,13 +1,13 @@
-package example.logtracer;
+package practice.logtracer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class LogtracerApplication {
+public class LogTracerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(LogtracerApplication.class, args);
+		SpringApplication.run(LogTracerApplication.class, args);
 	}
 
 }
