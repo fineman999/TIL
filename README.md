@@ -8,12 +8,12 @@
 
 [섹션 4. 스프링 컨테이너와 스프링 빈](https://github.com/fineman999/TIL/issues/3)
 
-[섹션 5. 싱글톤 컨테이너 Spring](https://github.com/fineman999/TIL/issues/4)
+[섹션 5. 싱글톤 컨테이너](https://github.com/fineman999/TIL/issues/4)
 
-[섹션 6. 컴포넌트 스캔 Spring](https://github.com/fineman999/TIL/issues/5)
+[섹션 6. 컴포넌트 스캔](https://github.com/fineman999/TIL/issues/5)
 
-[섹션 7. 의존관계 자동 주입 Spring](https://github.com/fineman999/TIL/issues/6)
+[섹션 7. 의존관계 자동 주입](https://github.com/fineman999/TIL/issues/6)
 
-[섹션 8. 빈 생명주기 콜백 Spring](https://github.com/fineman999/TIL/issues/7)
+[섹션 8. 빈 생명주기 콜백](https://github.com/fineman999/TIL/issues/7)
 
-[섹션 9. 빈 스코프 Spring](https://github.com/fineman999/TIL/issues/8)
+[섹션 9. 빈 스코프](https://github.com/fineman999/TIL/issues/8)
