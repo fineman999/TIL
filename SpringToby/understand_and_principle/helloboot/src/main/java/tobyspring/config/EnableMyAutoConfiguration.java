@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Import(MyAutoConfigImportSelector.class)
-public @interface EnableMyAutoConfiguration {
+public @interface   EnableMyAutoConfiguration {
 }
