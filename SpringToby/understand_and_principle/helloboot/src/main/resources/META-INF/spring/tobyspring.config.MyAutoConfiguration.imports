@@ -1,4 +1,5 @@
 tobyspring.config.autoconfig.TomcatWebServerConfig
+tobyspring.config.autoconfig.DataSourceConfig
 tobyspring.config.autoconfig.UndertowWebServerConfig
 tobyspring.config.autoconfig.DispatcherServletConfig
 tobyspring.config.autoconfig.PropertyPlaceHolderConfig

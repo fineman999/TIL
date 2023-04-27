@@ -1,3 +1,0 @@
-server:
-  contextPath: "/app"
-  port: 9090
