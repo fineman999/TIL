@@ -1,2 +1,3 @@
-contextPath: "/app"
-port: 9090
+server:
+  contextPath: "/app"
+  port: 9090

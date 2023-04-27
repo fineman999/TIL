@@ -2,4 +2,4 @@ tobyspring.config.autoconfig.TomcatWebServerConfig
 tobyspring.config.autoconfig.UndertowWebServerConfig
 tobyspring.config.autoconfig.DispatcherServletConfig
 tobyspring.config.autoconfig.PropertyPlaceHolderConfig
-tobyspring.config.autoconfig.ServerPropertiesConfig
+tobyspring.config.autoconfig.PropertyPostProcessorConfig
