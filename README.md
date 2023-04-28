@@ -38,3 +38,5 @@
 [섹션 9. Spring JDBC 자동 구성 개발](https://github.com/fineman999/TIL/issues/16)
 
 [**섹션 10. 스프링 부트 자세히 살펴보기**](https://github.com/fineman999/TIL/issues/17)
+
+[**이슈**](https://unexpected-gong-cd8.notion.site/f3423edfe39b4c95ad14d3c64b9eb02e)
