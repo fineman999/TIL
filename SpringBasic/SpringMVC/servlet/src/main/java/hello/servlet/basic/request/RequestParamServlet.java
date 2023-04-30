@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 
 @WebServlet(name = "requestParamServlet", urlPatterns = "/request-param")
@@ -30,9 +29,10 @@ public class RequestParamServlet extends HttpServlet {
         System.out.println();
 
         System.out.println("[이름이 같은 복수 파라미터 조회]");
-        Arrays.stream(request.getParameterValues("username")).iterator()
-                .forEachRemaining(name -> System.out.println("name = " + name));
-
+        String[] usernames = request.getParameterValues("username");
+        for (String user: usernames) {
+            System.out.println("username = " + user);
+        }
         response.getWriter().write("OK");
     }
 }
