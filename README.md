@@ -18,6 +18,20 @@
 
 [섹션 9. 빈 스코프](https://github.com/fineman999/TIL/issues/8)
 
+### [스프링 MVC 1편 - 백엔드 웹 개발 핵심 기술](https://github.com/fineman999/TIL/tree/main/SpringBasic)
+
+[섹션 2. 서블릿](https://github.com/fineman999/TIL/issues/18)
+
+[섹션 3. 서블릿, JSP, MVC 패턴](https://github.com/fineman999/TIL/issues/19)
+
+[섹션 4. MVC 프레임워크 만들기](https://github.com/fineman999/TIL/issues/20)
+
+[섹션 5. 스프링 MVC - 구조 이해](https://github.com/fineman999/TIL/issues/21)
+
+[섹션 6. 스프링 MVC - 기본 기능](https://github.com/fineman999/TIL/issues/22)
+
+[섹션 7. 스프링 MVC - 웹 페이지 만들기](https://github.com/fineman999/TIL/issues/23)
+
 ## 토비 - 스프링
 ### [토비의 스프링 부트 - 이해와 원리](https://www.inflearn.com/course/%ED%86%A0%EB%B9%84-%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8-%EC%9D%B4%ED%95%B4%EC%99%80%EC%9B%90%EB%A6%AC)
 
