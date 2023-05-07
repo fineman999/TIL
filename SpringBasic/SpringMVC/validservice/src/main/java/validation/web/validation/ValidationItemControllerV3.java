@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import validation.domain.item.Item;
 import validation.domain.item.ItemRepository;
+import validation.domain.item.SaveCheck;
+import validation.domain.item.UpdateCheck;
 
 import java.util.List;
 
@@ -40,8 +42,9 @@ public class ValidationItemControllerV3 {
         model.addAttribute("item", new Item());
         return "validation/v3/addForm";
     }
+
     @PostMapping("/add")
-    public String addItem(@Validated @ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String addItemV2(@Validated(SaveCheck.class) @ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
 
         if (item.getPrice() != null && item.getQuantity() != null) {
             int resultPrice = item.getPrice() * item.getQuantity();
@@ -71,7 +74,7 @@ public class ValidationItemControllerV3 {
     }
 
     @PostMapping("/{itemId}/edit")
-    public String edit(@PathVariable Long itemId, @Validated @ModelAttribute Item item, BindingResult bindingResult) {
+    public String edit(@PathVariable Long itemId, @Validated(UpdateCheck.class) @ModelAttribute Item item, BindingResult bindingResult) {
 
         // 전체 예외
         if (item.getPrice() != null && item.getQuantity() != null) {
