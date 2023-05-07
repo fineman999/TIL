@@ -1,6 +1,5 @@
 package validation.domain.item;
 
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -9,6 +8,7 @@ import org.hibernate.validator.constraints.Range;
 @Data
 public class Item {
 
+    @NotNull
     private Long id;
     @NotBlank
     private String itemName;
@@ -16,7 +16,7 @@ public class Item {
     @Range(min = 1000, max = 1000000)
     private Integer price;
     @NotNull
-    @Max(9999)
+//    @Max(9999) // 수정 요구사항 추가
     private Integer quantity;
 
     public Item() {
