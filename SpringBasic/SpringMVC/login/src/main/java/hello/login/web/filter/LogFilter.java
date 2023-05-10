@@ -25,7 +25,7 @@ public class LogFilter implements Filter {
         try {
             log.info("REQUEST [{}][{}]",uuid, requestURI);
             // 다음 체인 없으면 서블릿 호출
-            chain.doFilter(request, response);
+            chain.doFilter(httpRequest, response);
         }catch (Exception e) {
             throw e;
         }finally {
