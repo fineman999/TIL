@@ -32,8 +32,19 @@ public class HomeController {
         model.addAttribute("member", loginMember);
         return "login/loginHome";
     }
-    @GetMapping("/")
+//    @GetMapping("/")
     public String homeLoginSpring(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
+                                  Model model) {
+
+        if (loginMember == null) {
+            return "home";
+        }
+
+        model.addAttribute("member", loginMember);
+        return "login/loginHome";
+    }
+    @GetMapping("/")
+    public String homeLoginArgumentResolver(@Login Member loginMember,
                                   Model model) {
 
         if (loginMember == null) {
