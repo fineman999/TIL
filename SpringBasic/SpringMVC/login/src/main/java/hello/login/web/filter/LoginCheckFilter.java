@@ -11,7 +11,7 @@ import org.springframework.util.PatternMatchUtils;
 import java.io.IOException;
 
 @Slf4j
-public class LoginCheckFilter implements Filter {
+public class    LoginCheckFilter implements Filter {
 
     private static final String[] whiteList = {"/", "/members/add", "/login", "/logout", "/css/*"};
 
