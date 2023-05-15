@@ -34,6 +34,30 @@
 
 [**이슈**](https://unexpected-gong-cd8.notion.site/540d8ca43bb44b498350ba9cd389c8bb)
 
+### [스프링 MVC 2편 - 백엔드 웹 개발 활용 기술](https://github.com/fineman999/TIL/tree/main/SpringBasic)
+
+[섹션 1. 타임리프 - 기본 기능](https://github.com/fineman999/TIL/issues/24)
+
+[섹션 2. 타임리프 - 스프링 통합과 폼](https://github.com/fineman999/TIL/issues/25)
+
+[섹션 3. 메시지, 국제화](https://github.com/fineman999/TIL/issues/26)
+
+[섹션 4. 검증1 - Validation](https://github.com/fineman999/TIL/issues/27)
+
+[섹션 5. 검증2 - Bean Validation](https://github.com/fineman999/TIL/issues/28)
+
+[섹션 6. 로그인 처리1 - 쿠키, 세션](https://github.com/fineman999/TIL/issues/29)
+
+[섹션 7. 로그인 처리2 - 필터, 인터셉터](https://github.com/fineman999/TIL/issues/30)
+
+[섹션 8. 예외 처리와 오류 페이지](https://github.com/fineman999/TIL/issues/31)
+
+[섹션 9. API 예외 처리](https://github.com/fineman999/TIL/issues/32)
+
+[섹션 10. 스프링 타입 컨버터](https://github.com/fineman999/TIL/issues/33)
+
+[섹션 11. 파일 업로드](https://github.com/fineman999/TIL/issues/34)
+
 ## 토비 - 스프링
 ### [토비의 스프링 부트 - 이해와 원리](https://www.inflearn.com/course/%ED%86%A0%EB%B9%84-%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8-%EC%9D%B4%ED%95%B4%EC%99%80%EC%9B%90%EB%A6%AC)
 
