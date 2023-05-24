@@ -17,3 +17,29 @@ contract ArtStudent is Student {
         return schoolNumbers;
     }
 }
+
+contract Student {
+    string[] internal courses;
+
+    function showCources() public virtual returns(string[] memory) {
+        delete courses;
+        courses.push("English");
+        courses.push("Music");
+        return courses;
+    }
+}
+
+contract ArtStudent is Student {
+
+    function showCources() public override returns(string[] memory) {
+        super.showCources();
+        courses.push("Art");
+        return courses;
+    }
+
+    function showLen() public view returns (uint) {
+        return courses.length;
+    }
+
+
+}
