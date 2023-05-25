@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 @Slf4j
 @SpringBootTest
 class MemberServiceTest {
@@ -29,6 +31,24 @@ class MemberServiceTest {
         // then: 모든 데이터가 정상 저장한다.
         Assertions.assertTrue(memberRepository.find(username).isPresent());
         Assertions.assertTrue(logRepository.find(username).isPresent());
+    }
+
+    /**
+     * memberService @Transactional: OFF
+     * memberRepository @Transactional: On
+     * logRepository @Transactional: On Exception
+     */
+    @Test
+    void outerTxOff_fail() {
+        // given
+        String username = "로그예외_outerTxOff_fail";
+        // when
+        assertThatThrownBy(() -> memberService.joinV1(username))
+                .isInstanceOf(RuntimeException.class);
+
+        // then: 모든 데이터가 정상 저장한다.
+        Assertions.assertTrue(memberRepository.find(username).isPresent());
+        Assertions.assertTrue(logRepository.find(username).isEmpty());
     }
 
 }
