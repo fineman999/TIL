@@ -81,6 +81,34 @@
 
 ---
 
+### [스프링 DB 2편 - 데이터 접근 활용 기술](https://github.com/fineman999/TIL/tree/main/SpringBasic/SpringDB)
+
+[섹션 1. 데이터 접근 기술 - 시작](https://github.com/fineman999/TIL/issues/41)
+
+[섹션 2. 데이터 접근 기술 - 스프링 JdbcTemplate](https://github.com/fineman999/TIL/issues/42)
+
+[섹션 3. 데이터 접근 기술 - 테스트](https://github.com/fineman999/TIL/issues/43)
+
+[섹션 4. 데이터 접근 기술 - MyBatis](https://github.com/fineman999/TIL/issues/44)
+
+[섹션 5. 데이터 접근 기술 - JPA](https://github.com/fineman999/TIL/issues/45)
+
+[섹션 6. 데이터 접근 기술 - 스프링 데이터 JPA](https://github.com/fineman999/TIL/issues/47)
+
+[섹션 7. 데이터 접근 기술 - Querydsl](https://github.com/fineman999/TIL/issues/48)
+
+[섹션 8. 데이터 접근 기술 - 활용 방안](https://github.com/fineman999/TIL/issues/49)
+
+[섹션 9. 스프링 트랜잭션 이해](https://github.com/fineman999/TIL/issues/50)
+
+[섹션 10. 스프링 트랜잭션 전파1 - 기본](https://github.com/fineman999/TIL/issues/51)
+
+[섹션 11. 스프링 트랜잭션 전파2 - 활용](https://github.com/fineman999/TIL/issues/52)
+
+[**이슈**](https://unexpected-gong-cd8.notion.site/c4dc2a778a7c40d98128371be132917f)
+
+---
+
 ## 토비 - 스프링
 ### [토비의 스프링 부트 - 이해와 원리](https://www.inflearn.com/course/%ED%86%A0%EB%B9%84-%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8-%EC%9D%B4%ED%95%B4%EC%99%80%EC%9B%90%EB%A6%AC)
 
