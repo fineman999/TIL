@@ -6,10 +6,9 @@ import hello.advanced.trace.logtrace.LogTrace;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class LogTraceConfig {
 
-    // 싱글톤으로 주입하자!
     @Bean
     public LogTrace logTrace() {
         return new FieldLogTrace();
