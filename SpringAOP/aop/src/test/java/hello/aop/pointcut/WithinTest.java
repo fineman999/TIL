@@ -1,4 +1,4 @@
-package hello.aop;
+package hello.aop.pointcut;
 
 import hello.aop.member.MemberServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
