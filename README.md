@@ -109,6 +109,38 @@
 
 ---
 
+### [스프링 핵심 원리 - 고급편](https://github.com/fineman999/TIL/tree/main/SpringAOP)
+
+[섹션 1. 예제 만들기](https://github.com/fineman999/TIL/issues/53)
+
+[섹션 2. 쓰레드 로컬 - ThreadLocal](https://github.com/fineman999/TIL/issues/54)
+
+[섹션 3. 템플릿 메서드 패턴과 콜백 패턴](https://github.com/fineman999/TIL/issues/55)
+
+[섹션 4. 프록시 패턴과 데코레이터 패턴](https://github.com/fineman999/TIL/issues/56)
+
+[섹션 5. 동적 프록시 기술](https://github.com/fineman999/TIL/issues/57)
+
+[섹션 6. 스프링이 지원하는 프록시](https://github.com/fineman999/TIL/issues/58)
+
+[섹션 7. 빈 후처리기](https://github.com/fineman999/TIL/issues/59)
+
+[섹션 8. @Aspect AOP](https://github.com/fineman999/TIL/issues/60)
+
+[섹션 9. 스프링 AOP 개념](https://github.com/fineman999/TIL/issues/61)
+
+[섹션 10. 스프링 AOP 구현](https://github.com/fineman999/TIL/issues/62)
+
+[섹션 11. 스프링 AOP - 포인트컷](https://github.com/fineman999/TIL/issues/63)
+
+[섹션 12. 스프링 AOP - 실전 예제](https://github.com/fineman999/TIL/issues/64)
+
+[섹션 13. 스프링 AOP - 실무 주의사항](https://github.com/fineman999/TIL/issues/65)
+
+[**이슈**](https://www.notion.so/e0b231fc04ae485ea6b3832f221e2f5a?pvs=21)
+
+---
+
 ## 토비 - 스프링
 ### [토비의 스프링 부트 - 이해와 원리](https://www.inflearn.com/course/%ED%86%A0%EB%B9%84-%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8-%EC%9D%B4%ED%95%B4%EC%99%80%EC%9B%90%EB%A6%AC)
 
