@@ -1,4 +1,4 @@
-package hello.controller;
+package hello.container;
 
 import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.ServletContext;
