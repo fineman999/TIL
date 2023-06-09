@@ -68,6 +68,17 @@ class DemoUtilsTest {
         assertThat(theList).isEqualTo(demoUtils.getAcademyInList());
     }
 
+    @Test
+    @DisplayName("Throws and Does Not Throw")
+    void testThrowsAndDoesNotThrow() {
+        assertThatThrownBy(() -> demoUtils.throwException(-1))
+                .isInstanceOf(Exception.class);
+        assertThatCode(()-> demoUtils.throwException(1))
+                .doesNotThrowAnyException();
+    }
+
+
+
 
 /*
     @AfterEach
