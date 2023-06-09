@@ -3,6 +3,7 @@ package hello.junit;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 
+import java.time.Duration;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -77,6 +78,13 @@ class DemoUtilsTest {
                 .doesNotThrowAnyException();
     }
 
+    @Test
+    @DisplayName("Timeout")
+    void testTimeout() {
+        // 3초보다 checkTimeout가 작게 실행시 성공
+        Assertions.assertTimeoutPreemptively(Duration.ofSeconds(3),
+                () -> demoUtils.checkTimeout());
+    }
 
 
 
