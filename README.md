@@ -38,7 +38,6 @@
 
 ---
 
-
 ### [스프링 MVC 2편 - 백엔드 웹 개발 활용 기술](https://github.com/fineman999/TIL/tree/main/SpringBasic)
 
 [섹션 1. 타임리프 - 기본 기능](https://github.com/fineman999/TIL/issues/24)
@@ -138,6 +137,32 @@
 [섹션 13. 스프링 AOP - 실무 주의사항](https://github.com/fineman999/TIL/issues/65)
 
 [**이슈**](https://www.notion.so/e0b231fc04ae485ea6b3832f221e2f5a?pvs=21)
+
+---
+
+### [스프링 부트 - 핵심 원리와 활용](https://github.com/fineman999/TIL/tree/main/SpringBoot)
+
+[섹션 1. 스프링 부트 소개](https://github.com/fineman999/TIL/issues/66)
+
+[섹션 2. 웹 서버와 서블릿 컨테이너](https://github.com/fineman999/TIL/issues/67)
+
+[섹션 3. 스프링 부트와 내장 톰캣](https://github.com/fineman999/TIL/issues/68)
+
+[섹션 4. 스프링 부트 스타터와 라이브러리 관리](https://github.com/fineman999/TIL/issues/69)
+
+[섹션 5. 자동 구성(Auto Configuration)](https://github.com/fineman999/TIL/issues/70)
+
+[섹션 6. 외부설정과 프로필1](https://github.com/fineman999/TIL/issues/71)
+
+[섹션 7. 외부설정과 프로필2](https://github.com/fineman999/TIL/issues/72)
+
+[섹션 8. 액츄에이터](https://github.com/fineman999/TIL/issues/73)
+
+[섹션 9. 마이크로미터, 프로메테우스, 그라파나](https://github.com/fineman999/TIL/issues/74)
+
+[섹션 10. 모니터링 메트릭 활용](https://github.com/fineman999/TIL/issues/75)
+
+[이슈](https://www.notion.so/01fc216023634efe874d6fde13bae601?pvs=21)
 
 ---
 
