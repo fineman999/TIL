@@ -3,6 +3,8 @@ package hello.junit;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.*;
 
 @Slf4j
@@ -51,6 +53,22 @@ class DemoUtilsTest {
         assertThat(demoUtils.isGreater(gradeOne, gradeTwo)).isTrue();
         assertThat(demoUtils.isGreater(gradeTwo, gradeOne)).isFalse();
     }
+
+    @Test
+    @DisplayName("Array Equals")
+    void testArrayEquals() {
+        String[] stringArray = {"A", "B", "C"};
+        assertThat(stringArray).isEqualTo(demoUtils.getFirstThreeLettersOfAlphabet());
+    }
+
+    @Test
+    @DisplayName("Iterable Equals")
+    void testIterableEquals() {
+        List<String> theList = List.of("luv", "2", "code");
+        assertThat(theList).isEqualTo(demoUtils.getAcademyInList());
+    }
+
+
 /*
     @AfterEach
     void tearDownAfterEach() {
