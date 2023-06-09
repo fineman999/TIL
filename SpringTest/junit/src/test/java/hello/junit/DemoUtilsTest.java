@@ -6,7 +6,6 @@ import org.junit.jupiter.api.*;
 import static org.assertj.core.api.Assertions.*;
 
 @Slf4j
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class DemoUtilsTest {
 
     DemoUtils demoUtils;
@@ -34,6 +33,23 @@ class DemoUtilsTest {
         assertThat(demoUtils.checkNull(str1)).isNull();
         assertThat(demoUtils.checkNull(str2)).isNotNull();
 
+    }
+
+    @Test
+    @DisplayName("Same and Not Same")
+    void testSameAndNotSame() {
+        String str = "luv2code";
+        assertThat(demoUtils.getAcademy()).isSameAs(demoUtils.getAcademyDuplicate());
+        assertThat(demoUtils.getAcademy()).isNotSameAs(str);
+    }
+
+    @Test
+    @DisplayName("True and False")
+    void testTrueFalse() {
+        int gradeOne = 10;
+        int gradeTwo = 5;
+        assertThat(demoUtils.isGreater(gradeOne, gradeTwo)).isTrue();
+        assertThat(demoUtils.isGreater(gradeTwo, gradeOne)).isFalse();
     }
 /*
     @AfterEach
