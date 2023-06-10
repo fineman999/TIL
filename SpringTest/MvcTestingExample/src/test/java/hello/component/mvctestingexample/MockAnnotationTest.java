@@ -5,13 +5,9 @@ import hello.component.mvctestingexample.models.CollegeStudent;
 import hello.component.mvctestingexample.models.StudentGrades;
 import hello.component.mvctestingexample.service.ApplicationService;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -72,4 +68,14 @@ public class MockAnnotationTest {
         verify(applicationDao, times(1))
                 .findGradePointAverage(studentOne.getStudentGrades().getMathGradeResults());
     }
+
+    @DisplayName("Not Null")
+    @Test
+    void testAssertNotNull() {
+        when(applicationDao.checkNull(studentGrades.getMathGradeResults()))
+                .thenReturn(true);
+        assertThat(applicationService.checkNull(studentOne.getStudentGrades().getMathGradeResults()))
+                .isNotNull();
+    }
+
 }
