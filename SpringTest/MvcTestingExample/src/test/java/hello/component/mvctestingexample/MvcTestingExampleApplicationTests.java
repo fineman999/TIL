@@ -67,4 +67,25 @@ class MvcTestingExampleApplicationTests {
                 .isNotEqualTo(0);
     }
 
+    @DisplayName("Is grade greater")
+    @Test
+    void isGradeGreaterStudentGrades() {
+        assertThat(studentGrades.isGradeGreater(90, 75)).isTrue();
+    }
+
+    @DisplayName("Is grade greater false")
+    @Test
+    void isGradeGreaterStudentGradesAssertFalse() {
+        assertThat(studentGrades.isGradeGreater(90, 200)).isFalse();
+    }
+
+    @DisplayName("Check Null for student grades")
+    @Test
+    void checkNullStudentGrades() {
+        assertThat(studentGrades.checkNull(student.getStudentGrades().getMathGradeResults()))
+                .isNotNull();
+    }
+
+
+
 }
