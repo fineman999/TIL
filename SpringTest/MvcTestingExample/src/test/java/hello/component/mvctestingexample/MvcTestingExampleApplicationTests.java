@@ -4,6 +4,7 @@ import hello.component.mvctestingexample.models.CollegeStudent;
 import hello.component.mvctestingexample.models.StudentGrades;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import static org.assertj.core.api.Assertions.*;
 
 @Slf4j
 @SpringBootTest
@@ -49,9 +52,19 @@ class MvcTestingExampleApplicationTests {
 
     }
 
-
+    @DisplayName("Add grade results for student grades")
     @Test
-    void contextLoads() {
+    void addGradeResultsForStudentGrades() {
+        assertThat(studentGrades.addGradeResultsForSingleClass(student.getStudentGrades().getMathGradeResults()))
+                    .isEqualTo(353.25);
+    }
+
+
+    @DisplayName("Add grade results for student grades not equal")
+    @Test
+    void addGradeResultsForStudentGradesAssertNotEquals() {
+        assertThat(studentGrades.addGradeResultsForSingleClass(student.getStudentGrades().getMathGradeResults()))
+                .isNotEqualTo(0);
     }
 
 }
