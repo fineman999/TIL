@@ -19,6 +19,13 @@ class DemoUtilsTest {
         demoUtils = new DemoUtils();
     }
 
+    @Test
+    @DisplayName("Equals and Not Equals")
+    void testMultiply() {
+
+        assertThat(demoUtils.multiply(4, 3)).isEqualTo(12);
+    }
+
 
     @Test
     @DisplayName("Equals and Not Equals")
