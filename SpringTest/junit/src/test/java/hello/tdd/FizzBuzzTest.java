@@ -56,6 +56,23 @@ class FizzBuzzTest {
         assertThat(expected).isEqualTo(FizzBuzz.compute(value));
     }
 
+    @DisplayName("Testing with Medium data file")
+    @ParameterizedTest(name = "value={0}, expected={1}")
+    @CsvFileSource(resources = "/medium-test-data.csv")
+    @Order(5)
+    void testMediumDataFile(int value, String expected) {
+        assertThat(expected).isEqualTo(FizzBuzz.compute(value));
+    }
+
+    @DisplayName("Testing with Large data file")
+    @ParameterizedTest(name = "value={0}, expected={1}")
+    @CsvFileSource(resources = "/large-test-data.csv")
+    @Order(5)
+    void testLargeDataFile(int value, String expected) {
+        assertThat(expected).isEqualTo(FizzBuzz.compute(value));
+    }
+
+
 
 
 }
