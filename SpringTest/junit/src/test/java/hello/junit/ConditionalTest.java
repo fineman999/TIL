@@ -48,4 +48,18 @@ public class ConditionalTest {
         // execute method and perform asserts
     }
 
+    @Test
+    @EnabledIfEnvironmentVariable(named = "TEST_ENV", matches = "true")
+    void testForOnlyForDevEnvironment() {
+        // execute method and perform asserts
+    }
+
+    @Test
+    @EnabledIfEnvironmentVariable(named = "TEST_ENV", matches = "PROD")
+    void testForOnlyForProdEnvironment() {
+        // execute method and perform asserts
+    }
+
+
+
 }
