@@ -5,6 +5,7 @@ import hello.component.mvctestingexample.models.CollegeStudent;
 import hello.component.mvctestingexample.models.StudentGrades;
 import hello.component.mvctestingexample.service.ApplicationService;
 import lombok.extern.slf4j.Slf4j;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -76,6 +77,38 @@ public class MockAnnotationTest {
                 .thenReturn(true);
         assertThat(applicationService.checkNull(studentOne.getStudentGrades().getMathGradeResults()))
                 .isNotNull();
+    }
+
+    @DisplayName("Throw runtime error")
+    @Test
+    void throwRuntimeError() {
+        CollegeStudent nullStudent = (CollegeStudent) context.getBean("collegeStudent");
+        doThrow(new RuntimeException()).when(applicationDao).checkNull(nullStudent);
+        assertThatThrownBy(() -> applicationService.checkNull(nullStudent))
+                .isInstanceOf(RuntimeException.class);
+
+        verify(applicationDao, times(1))
+                .checkNull(nullStudent);
+    }
+
+    @DisplayName("Multiple Stubbing")
+    @Test
+    void stubbingConsecutiveCalls() {
+        CollegeStudent nullStudent = (CollegeStudent) context.getBean("collegeStudent");
+        when(applicationDao.checkNull(nullStudent))
+                .thenThrow(new RuntimeException())
+                .thenReturn("Do not throw exception second time");
+
+        assertThatThrownBy(() -> applicationService.checkNull(nullStudent))
+                .isInstanceOf(RuntimeException.class);
+
+        assertThat(applicationService.checkNull(nullStudent))
+                .isEqualTo("Do not throw exception second time");
+
+        verify(applicationDao, times(2))
+                .checkNull(nullStudent);
+
+
     }
 
 }
