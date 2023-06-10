@@ -9,6 +9,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 
 @Slf4j
+@TestMethodOrder(MethodOrderer.Random.class)
 class DemoUtilsTest {
 
     DemoUtils demoUtils;
