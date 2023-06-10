@@ -1,7 +1,9 @@
 package hello.tdd;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Fail.fail;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -15,6 +17,19 @@ class FizzBuzzTest {
     @Test
     @Order(1)
     void testForDivisibleByTree() {
-        fail("fail");
+        String expected = "Fizz";
+
+        assertThat(expected).isEqualTo(FizzBuzz.compute(3));
     }
+
+    @DisplayName("Divisible by Five")
+    @Test
+    @Order(1)
+    void testForDivisibleByFive() {
+        String expected = "Buzz";
+
+        assertThat(expected).isEqualTo(FizzBuzz.compute(5));
+    }
+
+
 }
