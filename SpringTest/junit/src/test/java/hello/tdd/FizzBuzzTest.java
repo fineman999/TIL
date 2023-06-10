@@ -1,6 +1,9 @@
 package hello.tdd;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
+
 import static org.assertj.core.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -44,5 +47,15 @@ class FizzBuzzTest {
 
         assertThat(expected).isEqualTo(FizzBuzz.compute(1));
     }
+
+    @DisplayName("Testing with Small data file")
+    @ParameterizedTest(name = "value={0}, expected={1}")
+    @CsvFileSource(resources = "/small-test-data.csv")
+    @Order(4)
+    void testSmallDataFile(int value, String expected) {
+        assertThat(expected).isEqualTo(FizzBuzz.compute(value));
+    }
+
+
 
 }
