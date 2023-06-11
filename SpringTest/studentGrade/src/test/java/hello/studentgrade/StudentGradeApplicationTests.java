@@ -9,7 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -49,6 +51,18 @@ class StudentGradeApplicationTests {
 
         assertThat(studentService.checkIfStudentIsNull(0)).isFalse();
     }
+
+    @Sql("/insertData.sql")
+    @Test
+    void getGradebookService() {
+        Iterable<CollegeStudent> iterableCollegeStudents = studentService.getGradebook();
+        ArrayList<CollegeStudent> collegeStudents = new ArrayList<>();
+
+        iterableCollegeStudents.iterator().forEachRemaining((collegeStudent -> collegeStudents.add(collegeStudent)));
+
+        assertThat(collegeStudents.size()).isEqualTo(5);
+    }
+
     @AfterEach
     void setupAfterTransaction() {
         template.execute("DELETE FROM student");
