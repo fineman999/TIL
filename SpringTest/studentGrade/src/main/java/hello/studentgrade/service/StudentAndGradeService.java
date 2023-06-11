@@ -75,6 +75,7 @@ public class StudentAndGradeService {
             }
 
             if (gradeType.equals("science")) {
+//                scienceGrade.setId(0);
                 scienceGrade.setGrade(grade);
                 scienceGrade.setStudentId(studentId);
                 scienceGradesDao.save(scienceGrade);
@@ -82,6 +83,7 @@ public class StudentAndGradeService {
             }
 
             if (gradeType.equals("history")) {
+//                historyGrade.setId(0);
                 historyGrade.setGrade(grade);
                 historyGrade.setStudentId(studentId);
                 historyGradesDao.save(historyGrade);

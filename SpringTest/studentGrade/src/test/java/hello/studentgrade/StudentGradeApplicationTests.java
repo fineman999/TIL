@@ -48,6 +48,16 @@ class StudentGradeApplicationTests {
         String sql = "insert into student(id, firstname, lastname, email_address) " +
                 "values (?, ?, ?, ?)";
         template.update(sql, rootId, "Eric", "Roby", "test@naver.com");
+
+        String mathGradeSql = "insert into math_grade(id, student_id, grade) values (?, ?, ?)";
+        template.update(mathGradeSql, 0, rootId, 100.00);
+
+        String scienceGradeSql = "insert into science_grade(id, student_id, grade) values (?, ?, ?)";
+        template.update(scienceGradeSql, 0, rootId, 100.00);
+
+        String historyGradeSql = "insert into history_grade(id, student_id, grade) values (?, ?, ?)";
+        template.update(historyGradeSql, 0, rootId, 100.00);
+
     }
 
     @Test
@@ -107,6 +117,9 @@ class StudentGradeApplicationTests {
     @AfterEach
     void setupAfterTransaction() {
         template.execute("DELETE FROM student");
+        template.execute("DELETE FROM math_grade");
+        template.execute("DELETE FROM science_grade");
+        template.execute("DELETE FROM history_grade");
     }
 
     @Test
