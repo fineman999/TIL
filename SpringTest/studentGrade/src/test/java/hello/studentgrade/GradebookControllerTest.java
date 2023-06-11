@@ -201,6 +201,20 @@ public class GradebookControllerTest {
 
     }
 
+    @Test
+    void createAValidGradeHttpRequestStudentDoesNotExistEmptyResponse() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(post("/grades")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("grade", "85.00")
+                        .param("gradeType", "history")
+                        .param("studentId", "-1"))
+                .andExpect(status().isOk()).andReturn();
+
+        ModelAndView modelAndView = mvcResult.getModelAndView();
+
+        ModelAndViewAssert.assertViewName(modelAndView, "error");
+    }
+
     @AfterEach
     void setupAfterTransaction() {
         template.execute(studentOne.getSqlDeleteStudent());
