@@ -17,7 +17,6 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -28,7 +27,7 @@ class StudentGradeApplicationTests {
     private static int rootId = 9;
     private static String rootFirstName = "Eric";
     private static String rootLastName = "Roby";
-    private static String rootEmail = "test@naver.com";
+    private static String rootEmail = "test10@naver.com";
     @Autowired
     private JdbcTemplate template;
 
@@ -56,7 +55,7 @@ class StudentGradeApplicationTests {
     private String sqlAddScienceGrade;
 
     @Value("${sql.script.create.history.grade}")
-    private String sqlAddHitoryGrade;
+    private String sqlAddHistoryGrade;
 
     @Value("${sql.script.delete.student}")
     private String sqlDeleteStudent;
@@ -78,29 +77,20 @@ class StudentGradeApplicationTests {
 
     @BeforeEach
     void setupDatabase() {
-        String sql = "insert into student(id, firstname, lastname, email_address) " +
-                "values (?, ?, ?, ?)";
-        template.update(sql, rootId, rootFirstName, rootLastName, rootEmail);
-
-        String mathGradeSql = "insert into math_grade(id, student_id, grade) values (?, ?, ?)";
-        template.update(mathGradeSql, 0, rootId, 100.00);
-
-        String scienceGradeSql = "insert into science_grade(id, student_id, grade) values (?, ?, ?)";
-        template.update(scienceGradeSql, 0, rootId, 100.00);
-
-        String historyGradeSql = "insert into history_grade(id, student_id, grade) values (?, ?, ?)";
-        template.update(historyGradeSql, 0, rootId, 100.00);
-
+        template.update(sqlAddStudent);
+        template.update(sqlAddMathGrade);
+        template.update(sqlAddScienceGrade);
+        template.update(sqlAddHistoryGrade);
     }
 
     @Test
     void createStudentService() {
-        studentService.createStudent("Chad", "Darby", "test10@naver.com");
+        studentService.createStudent("Chad", "Darby", "test9@naver.com");
 
-        CollegeStudent student = studentDao.findByEmailAddress("test10@naver.com");
+        CollegeStudent student = studentDao.findByEmailAddress("test9@naver.com");
 
         assertThat(student.getEmailAddress())
-                .isEqualTo("test10@naver.com");
+                .isEqualTo("test9@naver.com");
     }
 
     @Test
@@ -188,10 +178,11 @@ class StudentGradeApplicationTests {
 
     @AfterEach
     void setupAfterTransaction() {
-        template.execute("DELETE FROM student");
-        template.execute("DELETE FROM math_grade");
-        template.execute("DELETE FROM science_grade");
-        template.execute("DELETE FROM history_grade");
+        template.execute(sqlDeleteStudent);
+        template.execute(sqlDeleteMathGrade);
+        template.execute(sqlDeleteHitoryGrade);
+        template.execute(sqlDeleteScienceGrade);
+
     }
 
     @Test
