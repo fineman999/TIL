@@ -149,6 +149,12 @@ class StudentGradeApplicationTests {
         assertThat(gradebookCollegeStudent.getStudentGrades().getHistoryGradeResults().size() == 1).isTrue();
     }
 
+    @Test
+    void studentInformationServiceReturnNull() {
+        GradebookCollegeStudent gradebookCollegeStudent = studentService.studentInformation(-1);
+        assertThat(gradebookCollegeStudent).isNull();
+    }
+
     @AfterEach
     void setupAfterTransaction() {
         template.execute("DELETE FROM student");
