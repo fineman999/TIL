@@ -2,7 +2,6 @@ package hello.studentgrade.controller;
 
 import hello.studentgrade.models.CollegeStudent;
 import hello.studentgrade.models.Gradebook;
-import hello.studentgrade.models.GradebookCollegeStudent;
 import hello.studentgrade.service.StudentAndGradeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -54,31 +53,8 @@ public class GradebookController {
 			return "error";
 		}
 
-		GradebookCollegeStudent studentEntity = studentService.studentInformation(id);
-		m.addAttribute("student", studentEntity);
-		if (studentEntity.getStudentGrades().getMathGradeResults().size() > 0) {
-			m.addAttribute("mathAverage", studentEntity.getStudentGrades().findGradePointAverage(
-					studentEntity.getStudentGrades().getMathGradeResults()
-			));
-		} else {
-			m.addAttribute("mathAverage", "N/A");
-		}
+		studentService.configureStudentInformationModel(id, m);
 
-		if (studentEntity.getStudentGrades().getHistoryGradeResults().size() > 0) {
-			m.addAttribute("historyAverage", studentEntity.getStudentGrades().findGradePointAverage(
-					studentEntity.getStudentGrades().getHistoryGradeResults()
-			));
-		} else {
-			m.addAttribute("historyAverage", "N/A");
-		}
-
-		if (studentEntity.getStudentGrades().getScienceGradeResults().size() > 0) {
-			m.addAttribute("scienceAverage", studentEntity.getStudentGrades().findGradePointAverage(
-					studentEntity.getStudentGrades().getScienceGradeResults()
-			));
-		} else {
-			m.addAttribute("scienceAverage", "N/A");
-		}
 		return "studentInformation";
 	}
 
@@ -96,31 +72,8 @@ public class GradebookController {
 			return "error";
 		}
 
-		GradebookCollegeStudent studentEntity = studentService.studentInformation(studentId);
-		m.addAttribute("student", studentEntity);
-		if (studentEntity.getStudentGrades().getMathGradeResults().size() > 0) {
-			m.addAttribute("mathAverage", studentEntity.getStudentGrades().findGradePointAverage(
-					studentEntity.getStudentGrades().getMathGradeResults()
-			));
-		} else {
-			m.addAttribute("mathAverage", "N/A");
-		}
+		studentService.configureStudentInformationModel(studentId, m);
 
-		if (studentEntity.getStudentGrades().getHistoryGradeResults().size() > 0) {
-			m.addAttribute("historyAverage", studentEntity.getStudentGrades().findGradePointAverage(
-					studentEntity.getStudentGrades().getHistoryGradeResults()
-			));
-		} else {
-			m.addAttribute("historyAverage", "N/A");
-		}
-
-		if (studentEntity.getStudentGrades().getScienceGradeResults().size() > 0) {
-			m.addAttribute("scienceAverage", studentEntity.getStudentGrades().findGradePointAverage(
-					studentEntity.getStudentGrades().getScienceGradeResults()
-			));
-		} else {
-			m.addAttribute("scienceAverage", "N/A");
-		}
 		return "studentInformation";
 	}
 

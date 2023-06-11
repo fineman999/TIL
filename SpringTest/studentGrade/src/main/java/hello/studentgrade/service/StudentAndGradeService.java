@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -153,5 +154,35 @@ public class StudentAndGradeService {
                 student.get().getFirstname(), student.get().getLastname(), student.get().getEmailAddress(),
                 studentGrades);
         return gradebookCollegeStudent;
+    }
+
+    public void configureStudentInformationModel(int id, Model m) {
+
+        GradebookCollegeStudent studentEntity = studentInformation(id);
+
+        m.addAttribute("student", studentEntity);
+        if (studentEntity.getStudentGrades().getMathGradeResults().size() > 0) {
+            m.addAttribute("mathAverage", studentEntity.getStudentGrades().findGradePointAverage(
+                    studentEntity.getStudentGrades().getMathGradeResults()
+            ));
+        } else {
+            m.addAttribute("mathAverage", "N/A");
+        }
+
+        if (studentEntity.getStudentGrades().getHistoryGradeResults().size() > 0) {
+            m.addAttribute("historyAverage", studentEntity.getStudentGrades().findGradePointAverage(
+                    studentEntity.getStudentGrades().getHistoryGradeResults()
+            ));
+        } else {
+            m.addAttribute("historyAverage", "N/A");
+        }
+
+        if (studentEntity.getStudentGrades().getScienceGradeResults().size() > 0) {
+            m.addAttribute("scienceAverage", studentEntity.getStudentGrades().findGradePointAverage(
+                    studentEntity.getStudentGrades().getScienceGradeResults()
+            ));
+        } else {
+            m.addAttribute("scienceAverage", "N/A");
+        }
     }
 }
