@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
@@ -50,6 +52,19 @@ class StudentGradeApplicationTests {
     @AfterEach
     void setupAfterTransaction() {
         template.execute("DELETE FROM student");
+    }
+
+    @Test
+    void deleteStudentService() {
+        Optional<CollegeStudent> deletedCollegeStudent = studentDao.findById(1);
+
+        assertThat(deletedCollegeStudent.isPresent()).isTrue();
+
+        studentService.deleteStudent(1);
+
+        deletedCollegeStudent = studentDao.findById(1);
+
+        assertThat(deletedCollegeStudent.isPresent()).isFalse();
     }
 }
 
