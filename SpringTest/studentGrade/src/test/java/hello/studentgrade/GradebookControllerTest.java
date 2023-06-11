@@ -5,31 +5,39 @@ import hello.studentgrade.models.GradebookCollegeStudent;
 import hello.studentgrade.service.StudentAndGradeService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.web.ModelAndViewAssert;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
 @AutoConfigureMockMvc
 @SpringBootTest
 public class GradebookControllerTest {
+
+    private static MockHttpServletRequest request;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -39,6 +47,14 @@ public class GradebookControllerTest {
 
     @Mock
     private StudentAndGradeService studentAndGradeServiceMock;
+
+    @BeforeAll
+    static void setup() {
+         request = new MockHttpServletRequest();
+         request.setParameter("firstname", "Chad");
+         request.setParameter("lastname", "Darby");
+         request.setParameter("emailAddress", "test3@naver.com");
+    }
 
     @BeforeEach
     void beforeEach() {
@@ -74,9 +90,25 @@ public class GradebookControllerTest {
         ModelAndViewAssert.assertViewName(mav, "index");
     }
 
+    @Test
+    void createStudentHttpRequest() throws Exception{
+
+        MvcResult mvcResult = this.mockMvc.perform(post("/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("firstname", request.getParameterValues("firstname"))
+                        .param("lastname", request.getParameterValues("lastname"))
+                        .param("emailAddress", request.getParameterValues("emailAddress")))
+                .andExpect(status().isOk()).andReturn();
+        ModelAndView mav = mvcResult.getModelAndView();
+
+        ModelAndViewAssert.assertViewName(mav, "index");
+    }
+
     @AfterEach
     void setupAfterTransaction() {
         jdbcTemplate.execute("DELETE FROM student");
     }
+
+
 
 }
