@@ -40,7 +40,10 @@ public class GradebookControllerTest {
     private static MockHttpServletRequest request;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private JdbcTemplate template;
+
+    @Autowired
+    private StudentOne studentOne;
 
     @Autowired
     private MockMvc mockMvc;
@@ -60,11 +63,13 @@ public class GradebookControllerTest {
     }
 
     @BeforeEach
-    void beforeEach() {
-        String sql = "insert into student(id, firstname, lastname, email_address) " +
-                "values (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, 4, "Eric", "Roby", "test@naver.com");
+    void setupDatabase() {
+        template.update(studentOne.getSqlAddStudent());
+        template.update(studentOne.getSqlAddMathGrade());
+        template.update(studentOne.getSqlAddHistoryGrade());
+        template.update(studentOne.getSqlAddScienceGrade());
     }
+
 
     @Test
     void getStudentsHttpRequest() throws Exception {
@@ -124,16 +129,16 @@ public class GradebookControllerTest {
     @Test
     void deleteStudentHttpRequest() throws Exception {
         // 실제 값이 있는지 확인
-        assertThat(studentDao.findById(4).isPresent()).isTrue();
+        assertThat(studentDao.findById(9).isPresent()).isTrue();
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete("/students/{id}", 4))
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete("/students/{id}", 9))
                 .andExpect(status().isOk()).andReturn();
 
         ModelAndView mav = mvcResult.getModelAndView();
 
         ModelAndViewAssert.assertViewName(mav, "index");
         // 삭제 후 없는지 확인
-        assertThat(studentDao.findById(4).isPresent()).isFalse();
+        assertThat(studentDao.findById(9).isPresent()).isFalse();
 
     }
 
@@ -146,11 +151,36 @@ public class GradebookControllerTest {
         ModelAndViewAssert.assertViewName(mav, "error");
     }
 
-    @AfterEach
-    void setupAfterTransaction() {
-        jdbcTemplate.execute("DELETE FROM student");
+    @Test
+    void studentInformationHttpRequest() throws Exception{
+        assertThat(studentDao.findById(9).isPresent()).isTrue();
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/studentInformation/{id}", 9))
+                .andExpect(status().isOk()).andReturn();
+
+        ModelAndView mav = mvcResult.getModelAndView();
+
+        ModelAndViewAssert.assertViewName(mav, "studentInformation");
     }
 
+    @Test
+    void studentInformationHttpStudentDoesNotExistRequest() throws Exception {
+        assertThat(studentDao.findById(-1).isPresent()).isFalse();
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/studentInformation/{id}", -1))
+                .andExpect(status().isOk()).andReturn();
+
+        ModelAndView mav = mvcResult.getModelAndView();
+
+        ModelAndViewAssert.assertViewName(mav, "error");
+    }
+
+    @AfterEach
+    void setupAfterTransaction() {
+        template.execute(studentOne.getSqlDeleteStudent());
+        template.execute(studentOne.getSqlDeleteScienceGrade());
+        template.execute(studentOne.getSqlDeleteHistoryGrade());
+        template.execute(studentOne.getSqlDeleteMathGrade());
+    }
 
 
 }

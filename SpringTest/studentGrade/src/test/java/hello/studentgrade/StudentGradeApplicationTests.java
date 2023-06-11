@@ -10,7 +10,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
@@ -45,42 +44,15 @@ class StudentGradeApplicationTests {
     @Autowired
     private HistoryGradesDao historyGradeDao;
 
-    @Value("${sql.script.create.student}")
-    private String sqlAddStudent;
-
-    @Value("${sql.script.create.math.grade}")
-    private String sqlAddMathGrade;
-
-    @Value("${sql.script.create.science.grade}")
-    private String sqlAddScienceGrade;
-
-    @Value("${sql.script.create.history.grade}")
-    private String sqlAddHistoryGrade;
-
-    @Value("${sql.script.delete.student}")
-    private String sqlDeleteStudent;
-
-    @Value("${sql.script.delete.math.grade}")
-    private String sqlDeleteMathGrade;
-
-    @Value("${sql.script.delete.science.grade}")
-    private String sqlDeleteScienceGrade;
-
-    @Value("${sql.script.delete.history.grade}")
-    private String sqlDeleteHitoryGrade;
-
-
-
-
-
-
+    @Autowired
+    private StudentOne studentOne;
 
     @BeforeEach
     void setupDatabase() {
-        template.update(sqlAddStudent);
-        template.update(sqlAddMathGrade);
-        template.update(sqlAddScienceGrade);
-        template.update(sqlAddHistoryGrade);
+        template.update(studentOne.getSqlAddStudent());
+        template.update(studentOne.getSqlAddMathGrade());
+        template.update(studentOne.getSqlAddHistoryGrade());
+        template.update(studentOne.getSqlAddScienceGrade());
     }
 
     @Test
@@ -114,9 +86,9 @@ class StudentGradeApplicationTests {
     @Test
     void createGradeService() {
         // Create and Grade
-        assertThat(studentService.createGrade(80.50, rootId, "math"));
-        assertThat(studentService.createGrade(80.50, rootId, "science"));
-        assertThat(studentService.createGrade(80.50, rootId, "history"));
+        assertThat(studentService.createGrade(80.50, rootId, "math")).isTrue();
+        assertThat(studentService.createGrade(80.50, rootId, "science")).isTrue();
+        assertThat(studentService.createGrade(80.50, rootId, "history")).isTrue();
 
         // Get all grades with studentId
         Iterable<MathGrade> mathGrades = mathGradeDao.findGradeByStudentId(rootId);
@@ -178,10 +150,10 @@ class StudentGradeApplicationTests {
 
     @AfterEach
     void setupAfterTransaction() {
-        template.execute(sqlDeleteStudent);
-        template.execute(sqlDeleteMathGrade);
-        template.execute(sqlDeleteHitoryGrade);
-        template.execute(sqlDeleteScienceGrade);
+        template.execute(studentOne.getSqlDeleteStudent());
+        template.execute(studentOne.getSqlDeleteScienceGrade());
+        template.execute(studentOne.getSqlDeleteHistoryGrade());
+        template.execute(studentOne.getSqlDeleteMathGrade());
 
     }
 
