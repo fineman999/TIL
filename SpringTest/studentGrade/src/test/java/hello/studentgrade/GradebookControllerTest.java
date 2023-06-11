@@ -2,6 +2,8 @@ package hello.studentgrade;
 
 import hello.studentgrade.models.CollegeStudent;
 import hello.studentgrade.models.GradebookCollegeStudent;
+import hello.studentgrade.models.MathGrade;
+import hello.studentgrade.repository.MathGradesDao;
 import hello.studentgrade.repository.StudentDao;
 import hello.studentgrade.service.StudentAndGradeService;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -56,6 +59,10 @@ public class GradebookControllerTest {
 
     @Autowired
     private StudentAndGradeService studentAndGradeService;
+
+    @Autowired
+    private MathGradesDao mathGradeDao;
+
     @BeforeAll
     static void setup() {
          request = new MockHttpServletRequest();
@@ -227,6 +234,25 @@ public class GradebookControllerTest {
         ModelAndView modelAndView = mvcResult.getModelAndView();
 
         ModelAndViewAssert.assertViewName(modelAndView, "error");
+    }
+
+    @Test
+    void deleteAValidGradeHttpRequest() throws Exception {
+        Optional<MathGrade> mathGrade = mathGradeDao.findById(9);
+        assertThat(mathGrade.isPresent()).isTrue();
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                .get("/grades/{id}/{gradeType}", 9, "math"))
+                .andExpect(status().isOk()).andReturn();
+
+        ModelAndView modelAndView = mvcResult.getModelAndView();
+
+        ModelAndViewAssert.assertViewName(modelAndView, "studentInformation");
+
+        mathGrade = mathGradeDao.findById(9);
+
+        assertThat(mathGrade.isPresent()).isFalse();
+
     }
 
     @AfterEach
