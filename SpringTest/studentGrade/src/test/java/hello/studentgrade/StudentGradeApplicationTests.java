@@ -18,6 +18,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -101,9 +103,9 @@ class StudentGradeApplicationTests {
         Iterable<HistoryGrade> historyGrades = historyGradeDao.findGradeByStudentId(rootId);
 
         // Verify there is grades
-        assertThat(mathGrades.iterator().hasNext()).as("Student has math grades").isTrue();
-        assertThat(scienceGrades.iterator().hasNext()).as("Student has science grades").isTrue();
-        assertThat(historyGrades.iterator().hasNext()).as("Student has history grades").isTrue();
+        assertThat(((Collection<MathGrade>) mathGrades).size() == 2).isTrue();
+        assertThat(((Collection<ScienceGrade>) scienceGrades).size() == 2).as("Student has science grades").isTrue();
+        assertThat(((Collection<HistoryGrade>) historyGrades).size() == 2).as("Student has history grades").isTrue();
     }
 
     @Test
