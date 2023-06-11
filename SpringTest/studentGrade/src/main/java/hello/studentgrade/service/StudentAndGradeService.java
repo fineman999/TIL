@@ -2,7 +2,9 @@ package hello.studentgrade.service;
 
 import hello.studentgrade.models.CollegeStudent;
 import hello.studentgrade.models.MathGrade;
+import hello.studentgrade.models.ScienceGrade;
 import hello.studentgrade.repository.MathGradesDao;
+import hello.studentgrade.repository.ScienceGradesDao;
 import hello.studentgrade.repository.StudentDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,7 +23,11 @@ public class StudentAndGradeService {
     @Qualifier("mathGrades")
     private final MathGrade mathGrade;
 
+    @Qualifier("scienceGrades")
+    private final ScienceGrade scienceGrade;
+
     private final MathGradesDao mathGradesDao;
+    private final ScienceGradesDao scienceGradesDao;
     public void createStudent(String firstname, String lastname, String emailAddress) {
         CollegeStudent student = new CollegeStudent(firstname, lastname, emailAddress);
 //        student.setId(0);
@@ -59,6 +65,15 @@ public class StudentAndGradeService {
                 mathGradesDao.save(mathGrade);
                 return true;
             }
+
+            if (gradeType.equals("science")) {
+                scienceGrade.setGrade(grade);
+                scienceGrade.setStudentId(studentId);
+                scienceGradesDao.save(scienceGrade);
+                return true;
+            }
+
+
         }
         return false;
     }

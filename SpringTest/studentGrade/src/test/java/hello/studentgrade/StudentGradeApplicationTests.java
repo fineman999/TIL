@@ -2,7 +2,9 @@ package hello.studentgrade;
 
 import hello.studentgrade.models.CollegeStudent;
 import hello.studentgrade.models.MathGrade;
+import hello.studentgrade.models.ScienceGrade;
 import hello.studentgrade.repository.MathGradesDao;
+import hello.studentgrade.repository.ScienceGradesDao;
 import hello.studentgrade.repository.StudentDao;
 import hello.studentgrade.service.StudentAndGradeService;
 import org.junit.jupiter.api.AfterEach;
@@ -33,6 +35,8 @@ class StudentGradeApplicationTests {
 
     @Autowired
     private MathGradesDao mathGradeDao;
+    @Autowired
+    private ScienceGradesDao scienceGradeDao;
 
     @BeforeEach
     void setupDatabase() {
@@ -73,12 +77,15 @@ class StudentGradeApplicationTests {
     void createGradeService() {
         // Create and Grade
         assertThat(studentService.createGrade(80.50, rootId, "math"));
+        assertThat(studentService.createGrade(80.50, rootId, "science"));
 
         // Get all grades with studentId
         Iterable<MathGrade> mathGrades = mathGradeDao.findGradeByStudentId(rootId);
+        Iterable<ScienceGrade> scienceGrades = scienceGradeDao.findGradeByStudentId(rootId);
 
         // Verify there is grades
         assertThat(mathGrades.iterator().hasNext()).as("Student has math grades").isTrue();
+        assertThat(scienceGrades.iterator().hasNext()).as("Student has science grades").isTrue();
     }
 
     @AfterEach
