@@ -18,12 +18,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.web.ModelAndViewAssert;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.awt.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -120,6 +119,22 @@ public class GradebookControllerTest {
         CollegeStudent verifyStudent = studentDao.findByEmailAddress("test3@naver.com");
 
         assertThat(verifyStudent).as("Student should be found").isNotNull();
+    }
+
+    @Test
+    void deleteStudentHttpRequest() throws Exception {
+        // 실제 값이 있는지 확인
+        assertThat(studentDao.findById(4).isPresent()).isTrue();
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete("/students/{id}", 4))
+                .andExpect(status().isOk()).andReturn();
+
+        ModelAndView mav = mvcResult.getModelAndView();
+
+        ModelAndViewAssert.assertViewName(mav, "index");
+        // 삭제 후 없는지 확인
+        assertThat(studentDao.findById(4).isPresent()).isFalse();
+
     }
 
     @AfterEach
