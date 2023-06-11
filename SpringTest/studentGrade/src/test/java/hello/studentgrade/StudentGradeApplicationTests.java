@@ -120,6 +120,10 @@ class StudentGradeApplicationTests {
     void deleteGradeService() {
         assertThat(studentService.deleteGrade(0, "math"))
                 .as("Returns student id after delete").isEqualTo(rootId);
+        assertThat(studentService.deleteGrade(0, "science"))
+                .as("Returns student id after delete").isEqualTo(rootId);
+        assertThat(studentService.deleteGrade(0, "history"))
+                .as("Returns student id after delete").isEqualTo(rootId);
     }
 
     @AfterEach
