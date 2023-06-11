@@ -97,6 +97,16 @@ public class GradebookControllerTest {
     @Test
     void createStudentHttpRequest() throws Exception{
 
+        GradebookCollegeStudent studentOne = new GradebookCollegeStudent("Eric", "Roby", "test1@naver.com");
+
+        List<CollegeStudent> collegeStudentList = new ArrayList<>(Arrays.asList(studentOne));
+
+        when(studentAndGradeServiceMock.getGradebook()).thenReturn(collegeStudentList);
+
+        assertThat(collegeStudentList).containsExactlyInAnyOrderElementsOf(studentAndGradeServiceMock.getGradebook());
+
+
+
         MvcResult mvcResult = this.mockMvc.perform(post("/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("firstname", request.getParameterValues("firstname"))

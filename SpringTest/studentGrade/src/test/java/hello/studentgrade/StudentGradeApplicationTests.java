@@ -32,22 +32,22 @@ class StudentGradeApplicationTests {
     void setupDatabase() {
         String sql = "insert into student(id, firstname, lastname, email_address) " +
                 "values (?, ?, ?, ?)";
-        template.update(sql, 1, "Eric", "Roby", "test@naver.com");
+        template.update(sql, 9, "Eric", "Roby", "test@naver.com");
     }
 
     @Test
     void createStudentService() {
-        studentService.createStudent("Chad", "Darby", "test@naver.com");
+        studentService.createStudent("Chad", "Darby", "test10@naver.com");
 
-        CollegeStudent student = studentDao.findByEmailAddress("test@naver.com");
+        CollegeStudent student = studentDao.findByEmailAddress("test10@naver.com");
 
         assertThat(student.getEmailAddress())
-                .isEqualTo("test@naver.com");
+                .isEqualTo("test10@naver.com");
     }
 
     @Test
     void isStudentNullCheck() {
-        assertThat(studentService.checkIfStudentIsNull(1)).isTrue();
+        assertThat(studentService.checkIfStudentIsNull(9)).isTrue();
 
         assertThat(studentService.checkIfStudentIsNull(0)).isFalse();
     }
@@ -70,13 +70,13 @@ class StudentGradeApplicationTests {
 
     @Test
     void deleteStudentService() {
-        Optional<CollegeStudent> deletedCollegeStudent = studentDao.findById(1);
+        Optional<CollegeStudent> deletedCollegeStudent = studentDao.findById(9);
 
         assertThat(deletedCollegeStudent.isPresent()).isTrue();
 
-        studentService.deleteStudent(1);
+        studentService.deleteStudent(9);
 
-        deletedCollegeStudent = studentDao.findById(1);
+        deletedCollegeStudent = studentDao.findById(9);
 
         assertThat(deletedCollegeStudent.isPresent()).isFalse();
     }
