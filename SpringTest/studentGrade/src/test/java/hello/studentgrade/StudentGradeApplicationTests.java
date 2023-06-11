@@ -116,6 +116,12 @@ class StudentGradeApplicationTests {
         assertThat(studentService.createGrade(80.50, rootId, "literature")).isFalse();
     }
 
+    @Test
+    void deleteGradeService() {
+        assertThat(studentService.deleteGrade(0, "math"))
+                .as("Returns student id after delete").isEqualTo(rootId);
+    }
+
     @AfterEach
     void setupAfterTransaction() {
         template.execute("DELETE FROM student");
