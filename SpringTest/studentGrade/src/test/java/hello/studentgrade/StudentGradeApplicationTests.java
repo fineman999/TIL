@@ -96,6 +96,14 @@ class StudentGradeApplicationTests {
         assertThat(historyGrades.iterator().hasNext()).as("Student has history grades").isTrue();
     }
 
+    @Test
+    void createGradeServiceReturnFalse() {
+        assertThat(studentService.createGrade(105, rootId, "math")).isFalse();
+        assertThat(studentService.createGrade(-5, rootId, "math")).isFalse();
+        assertThat(studentService.createGrade(80.50, 100, "math")).isFalse();
+        assertThat(studentService.createGrade(80.50, rootId, "literature")).isFalse();
+    }
+
     @AfterEach
     void setupAfterTransaction() {
         template.execute("DELETE FROM student");
