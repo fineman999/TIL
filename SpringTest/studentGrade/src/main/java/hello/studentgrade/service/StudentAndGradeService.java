@@ -107,6 +107,7 @@ public class StudentAndGradeService {
                 return studentId;
             }
             studentId = grade.get().getStudentId();
+            System.out.println("id = " + id);
             mathGradesDao.deleteById(id);
         }
         if (gradeType.equals("science")) {
@@ -115,7 +116,7 @@ public class StudentAndGradeService {
                 return studentId;
             }
             studentId = grade.get().getStudentId();
-            mathGradesDao.deleteById(id);
+            scienceGradesDao.deleteById(id);
         }
         if (gradeType.equals("history")) {
             Optional<HistoryGrade> grade = historyGradesDao.findById(id);
@@ -123,7 +124,7 @@ public class StudentAndGradeService {
                 return studentId;
             }
             studentId = grade.get().getStudentId();
-            mathGradesDao.deleteById(id);
+            historyGradesDao.deleteById(id);
         }
         return studentId;
     }
