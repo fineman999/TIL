@@ -126,6 +126,15 @@ class StudentGradeApplicationTests {
                 .as("Returns student id after delete").isEqualTo(rootId);
     }
 
+    @Test
+    void deleteGradeServiceReturnStudentIdOfZero() {
+        assertThat(studentService.deleteGrade(-1, "science"))
+                .as("No student should have -1 id").isEqualTo(0);
+        assertThat(studentService.deleteGrade(0, "literature"))
+                .as("No student should have literature class").isEqualTo(0);
+
+    }
+
     @AfterEach
     void setupAfterTransaction() {
         template.execute("DELETE FROM student");
