@@ -1,9 +1,6 @@
 package hello.studentgrade.service;
 
-import hello.studentgrade.models.CollegeStudent;
-import hello.studentgrade.models.HistoryGrade;
-import hello.studentgrade.models.MathGrade;
-import hello.studentgrade.models.ScienceGrade;
+import hello.studentgrade.models.*;
 import hello.studentgrade.repository.HistoryGradesDao;
 import hello.studentgrade.repository.MathGradesDao;
 import hello.studentgrade.repository.ScienceGradesDao;
@@ -124,5 +121,9 @@ public class StudentAndGradeService {
             mathGradesDao.deleteById(id);
         }
         return studentId;
+    }
+
+    public GradebookCollegeStudent studentInformation(int id) {
+        return null;
     }
 }

@@ -1,9 +1,6 @@
 package hello.studentgrade;
 
-import hello.studentgrade.models.CollegeStudent;
-import hello.studentgrade.models.HistoryGrade;
-import hello.studentgrade.models.MathGrade;
-import hello.studentgrade.models.ScienceGrade;
+import hello.studentgrade.models.*;
 import hello.studentgrade.repository.HistoryGradesDao;
 import hello.studentgrade.repository.MathGradesDao;
 import hello.studentgrade.repository.ScienceGradesDao;
@@ -28,6 +25,9 @@ import static org.assertj.core.api.Assertions.*;
 class StudentGradeApplicationTests {
 
     private static int rootId = 9;
+    private static String rootFirstName = "Eric";
+    private static String rootLastName = "Roby";
+    private static String rootEmail = "test@naver.com";
     @Autowired
     private JdbcTemplate template;
 
@@ -49,7 +49,7 @@ class StudentGradeApplicationTests {
     void setupDatabase() {
         String sql = "insert into student(id, firstname, lastname, email_address) " +
                 "values (?, ?, ?, ?)";
-        template.update(sql, rootId, "Eric", "Roby", "test@naver.com");
+        template.update(sql, rootId, rootFirstName, rootLastName, rootEmail);
 
         String mathGradeSql = "insert into math_grade(id, student_id, grade) values (?, ?, ?)";
         template.update(mathGradeSql, 0, rootId, 100.00);
@@ -133,6 +133,20 @@ class StudentGradeApplicationTests {
         assertThat(studentService.deleteGrade(0, "literature"))
                 .as("No student should have literature class").isEqualTo(0);
 
+    }
+
+    @Test
+    void studentInformation() {
+        GradebookCollegeStudent gradebookCollegeStudent = studentService.studentInformation(rootId);
+
+        assertThat(gradebookCollegeStudent).isNotNull();
+        assertThat(gradebookCollegeStudent.getId()).isEqualTo(1);
+        assertThat(gradebookCollegeStudent.getFirstname()).isEqualTo(rootFirstName);
+        assertThat(gradebookCollegeStudent.getLastname()).isEqualTo(rootLastName);
+        assertThat(gradebookCollegeStudent.getEmailAddress()).isEqualTo(rootEmail);
+        assertThat(gradebookCollegeStudent.getStudentGrades().getMathGradeResults().size() == 1).isTrue();
+        assertThat(gradebookCollegeStudent.getStudentGrades().getScienceGradeResults().size() == 1).isTrue();
+        assertThat(gradebookCollegeStudent.getStudentGrades().getHistoryGradeResults().size() == 1).isTrue();
     }
 
     @AfterEach
