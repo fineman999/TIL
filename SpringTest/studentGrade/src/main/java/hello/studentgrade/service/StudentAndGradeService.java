@@ -1,8 +1,10 @@
 package hello.studentgrade.service;
 
 import hello.studentgrade.models.CollegeStudent;
+import hello.studentgrade.models.HistoryGrade;
 import hello.studentgrade.models.MathGrade;
 import hello.studentgrade.models.ScienceGrade;
+import hello.studentgrade.repository.HistoryGradesDao;
 import hello.studentgrade.repository.MathGradesDao;
 import hello.studentgrade.repository.ScienceGradesDao;
 import hello.studentgrade.repository.StudentDao;
@@ -26,8 +28,14 @@ public class StudentAndGradeService {
     @Qualifier("scienceGrades")
     private final ScienceGrade scienceGrade;
 
+    @Qualifier("historyGrades")
+    private final HistoryGrade historyGrade;
+
     private final MathGradesDao mathGradesDao;
     private final ScienceGradesDao scienceGradesDao;
+
+    private final HistoryGradesDao historyGradesDao;
+
     public void createStudent(String firstname, String lastname, String emailAddress) {
         CollegeStudent student = new CollegeStudent(firstname, lastname, emailAddress);
 //        student.setId(0);
@@ -72,6 +80,15 @@ public class StudentAndGradeService {
                 scienceGradesDao.save(scienceGrade);
                 return true;
             }
+
+            if (gradeType.equals("history")) {
+                historyGrade.setGrade(grade);
+                historyGrade.setStudentId(studentId);
+                historyGradesDao.save(historyGrade);
+                return true;
+            }
+
+
 
 
         }

@@ -1,8 +1,10 @@
 package hello.studentgrade;
 
 import hello.studentgrade.models.CollegeStudent;
+import hello.studentgrade.models.HistoryGrade;
 import hello.studentgrade.models.MathGrade;
 import hello.studentgrade.models.ScienceGrade;
+import hello.studentgrade.repository.HistoryGradesDao;
 import hello.studentgrade.repository.MathGradesDao;
 import hello.studentgrade.repository.ScienceGradesDao;
 import hello.studentgrade.repository.StudentDao;
@@ -37,6 +39,9 @@ class StudentGradeApplicationTests {
     private MathGradesDao mathGradeDao;
     @Autowired
     private ScienceGradesDao scienceGradeDao;
+
+    @Autowired
+    private HistoryGradesDao historyGradeDao;
 
     @BeforeEach
     void setupDatabase() {
@@ -78,14 +83,17 @@ class StudentGradeApplicationTests {
         // Create and Grade
         assertThat(studentService.createGrade(80.50, rootId, "math"));
         assertThat(studentService.createGrade(80.50, rootId, "science"));
+        assertThat(studentService.createGrade(80.50, rootId, "history"));
 
         // Get all grades with studentId
         Iterable<MathGrade> mathGrades = mathGradeDao.findGradeByStudentId(rootId);
         Iterable<ScienceGrade> scienceGrades = scienceGradeDao.findGradeByStudentId(rootId);
+        Iterable<HistoryGrade> historyGrades = historyGradeDao.findGradeByStudentId(rootId);
 
         // Verify there is grades
         assertThat(mathGrades.iterator().hasNext()).as("Student has math grades").isTrue();
         assertThat(scienceGrades.iterator().hasNext()).as("Student has science grades").isTrue();
+        assertThat(historyGrades.iterator().hasNext()).as("Student has history grades").isTrue();
     }
 
     @AfterEach
