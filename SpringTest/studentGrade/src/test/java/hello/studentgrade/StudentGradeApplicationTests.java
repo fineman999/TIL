@@ -140,7 +140,7 @@ class StudentGradeApplicationTests {
         GradebookCollegeStudent gradebookCollegeStudent = studentService.studentInformation(rootId);
 
         assertThat(gradebookCollegeStudent).isNotNull();
-        assertThat(gradebookCollegeStudent.getId()).isEqualTo(1);
+        assertThat(gradebookCollegeStudent.getId()).isEqualTo(rootId);
         assertThat(gradebookCollegeStudent.getFirstname()).isEqualTo(rootFirstName);
         assertThat(gradebookCollegeStudent.getLastname()).isEqualTo(rootLastName);
         assertThat(gradebookCollegeStudent.getEmailAddress()).isEqualTo(rootEmail);
