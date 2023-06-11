@@ -78,7 +78,7 @@ class StudentGradeApplicationTests {
         Iterable<MathGrade> mathGrades = mathGradeDao.findGradeByStudentId(rootId);
 
         // Verify there is grades
-        assertThat(mathGrades.iterator().hasNext()).isTrue();
+        assertThat(mathGrades.iterator().hasNext()).as("Student has math grades").isTrue();
     }
 
     @AfterEach
