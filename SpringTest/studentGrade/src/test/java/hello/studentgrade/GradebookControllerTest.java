@@ -2,6 +2,7 @@ package hello.studentgrade;
 
 import hello.studentgrade.models.CollegeStudent;
 import hello.studentgrade.models.GradebookCollegeStudent;
+import hello.studentgrade.repository.StudentDao;
 import hello.studentgrade.service.StudentAndGradeService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -48,6 +49,9 @@ public class GradebookControllerTest {
     @Mock
     private StudentAndGradeService studentAndGradeServiceMock;
 
+    @Autowired
+    private StudentDao studentDao;
+
     @BeforeAll
     static void setup() {
          request = new MockHttpServletRequest();
@@ -60,7 +64,7 @@ public class GradebookControllerTest {
     void beforeEach() {
         String sql = "insert into student(id, firstname, lastname, email_address) " +
                 "values (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, 1, "Eric", "Roby", "test@naver.com");
+        jdbcTemplate.update(sql, 4, "Eric", "Roby", "test@naver.com");
     }
 
     @Test
@@ -102,6 +106,10 @@ public class GradebookControllerTest {
         ModelAndView mav = mvcResult.getModelAndView();
 
         ModelAndViewAssert.assertViewName(mav, "index");
+
+        CollegeStudent verifyStudent = studentDao.findByEmailAddress("test3@naver.com");
+
+        assertThat(verifyStudent).as("Student should be found").isNotNull();
     }
 
     @AfterEach
