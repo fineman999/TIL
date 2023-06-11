@@ -268,6 +268,19 @@ public class GradebookControllerTest {
         ModelAndViewAssert.assertViewName(modelAndView, "error");
     }
 
+    @Test
+    void deleteANonValidGradeHttpRequest() throws Exception {
+        int studentId = 9;
+        String nonValidGradeType = "literature";
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/grades/{id}/{gradeType}", studentId, nonValidGradeType))
+                .andExpect(status().isOk()).andReturn();
+        ModelAndView modelAndView = mvcResult.getModelAndView();
+
+        ModelAndViewAssert.assertViewName(modelAndView, "error");
+
+    }
+
 
 
     @AfterEach
