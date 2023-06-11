@@ -1,6 +1,8 @@
 package hello.studentgrade;
 
 import hello.studentgrade.models.CollegeStudent;
+import hello.studentgrade.models.MathGrade;
+import hello.studentgrade.repository.MathGradesDao;
 import hello.studentgrade.repository.StudentDao;
 import hello.studentgrade.service.StudentAndGradeService;
 import org.junit.jupiter.api.AfterEach;
@@ -19,6 +21,7 @@ import static org.assertj.core.api.Assertions.*;
 @SpringBootTest
 class StudentGradeApplicationTests {
 
+    private static int rootId = 9;
     @Autowired
     private JdbcTemplate template;
 
@@ -28,11 +31,14 @@ class StudentGradeApplicationTests {
     @Autowired
     private StudentDao studentDao;
 
+    @Autowired
+    private MathGradesDao mathGradeDao;
+
     @BeforeEach
     void setupDatabase() {
         String sql = "insert into student(id, firstname, lastname, email_address) " +
                 "values (?, ?, ?, ?)";
-        template.update(sql, 9, "Eric", "Roby", "test@naver.com");
+        template.update(sql, rootId, "Eric", "Roby", "test@naver.com");
     }
 
     @Test
@@ -47,7 +53,7 @@ class StudentGradeApplicationTests {
 
     @Test
     void isStudentNullCheck() {
-        assertThat(studentService.checkIfStudentIsNull(9)).isTrue();
+        assertThat(studentService.checkIfStudentIsNull(rootId)).isTrue();
 
         assertThat(studentService.checkIfStudentIsNull(0)).isFalse();
     }
@@ -63,6 +69,18 @@ class StudentGradeApplicationTests {
         assertThat(collegeStudents.size()).isEqualTo(5);
     }
 
+    @Test
+    void createGradeService() {
+        // Create and Grade
+        assertThat(studentService.createGrade(80.50, rootId, "math"));
+
+        // Get all grades with studentId
+        Iterable<MathGrade> mathGrades = mathGradeDao.findGradeByStudentId(rootId);
+
+        // Verify there is grades
+        assertThat(mathGrades.iterator().hasNext()).isTrue();
+    }
+
     @AfterEach
     void setupAfterTransaction() {
         template.execute("DELETE FROM student");
@@ -70,13 +88,13 @@ class StudentGradeApplicationTests {
 
     @Test
     void deleteStudentService() {
-        Optional<CollegeStudent> deletedCollegeStudent = studentDao.findById(9);
+        Optional<CollegeStudent> deletedCollegeStudent = studentDao.findById(rootId);
 
         assertThat(deletedCollegeStudent.isPresent()).isTrue();
 
-        studentService.deleteStudent(9);
+        studentService.deleteStudent(rootId);
 
-        deletedCollegeStudent = studentDao.findById(9);
+        deletedCollegeStudent = studentDao.findById(rootId);
 
         assertThat(deletedCollegeStudent.isPresent()).isFalse();
     }
