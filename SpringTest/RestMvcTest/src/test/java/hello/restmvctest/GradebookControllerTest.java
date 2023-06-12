@@ -2,6 +2,7 @@ package hello.restmvctest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hello.restmvctest.models.CollegeStudent;
+import hello.restmvctest.models.MathGrade;
 import hello.restmvctest.repository.HistoryGradesDao;
 import hello.restmvctest.repository.MathGradesDao;
 import hello.restmvctest.repository.ScienceGradesDao;
@@ -33,7 +34,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -246,6 +247,23 @@ public class GradebookControllerTest {
                 .andExpect(jsonPath("$.status", is(HttpStatus.NOT_FOUND.value())))
                 .andExpect(jsonPath("$.message", is("Student or Grade was not found")));
 
+    }
+
+    @Test
+    void deleteAValidGradeHttpRequest() throws Exception {
+        int validTestId = 9;
+        Optional<MathGrade> mathGrade = mathGradeDao.findById(validTestId);
+
+        assertThat(mathGrade.isPresent()).isTrue();
+
+        mockMvc.perform(delete("/grades/{id}/{gradeType}", validTestId, "math"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.id", is(validTestId)))
+                .andExpect(jsonPath("$.firstname", is("Eric")))
+                .andExpect(jsonPath("$.lastname", is("Roby")))
+                .andExpect(jsonPath("$.emailAddress", is("eric.roby@luv2code_school.com")))
+                .andExpect(jsonPath("$.studentGrades.mathGradeResults", hasSize(0)));
     }
 
     @AfterEach
