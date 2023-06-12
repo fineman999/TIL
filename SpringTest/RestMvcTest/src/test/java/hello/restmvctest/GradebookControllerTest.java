@@ -220,6 +220,19 @@ public class GradebookControllerTest {
 
     }
 
+    @Test
+    void createAValidGradeHttpRequestStudentDoesNotExistEmptyResponse() throws Exception {
+        int NotValidTestId = 0;
+        mockMvc.perform(post("/grades")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("grade", "85.00")
+                        .param("gradeType", "math")
+                        .param("studentId", String.valueOf(NotValidTestId)))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.status", is(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath("$.message", is("Student or Grade was not found")));
+    }
+
     @AfterEach
     public void setupAfterTransaction() {
         jdbc.execute(sqlDeleteStudent);
