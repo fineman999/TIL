@@ -1,5 +1,7 @@
 package hello.restmvctest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import hello.restmvctest.models.CollegeStudent;
 import hello.restmvctest.repository.HistoryGradesDao;
 import hello.restmvctest.repository.MathGradesDao;
 import hello.restmvctest.repository.ScienceGradesDao;
@@ -8,6 +10,7 @@ import hello.restmvctest.service.StudentAndGradeService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -15,8 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 @AutoConfigureMockMvc
@@ -50,6 +55,15 @@ public class GradebookControllerTest {
     @Autowired
     private StudentAndGradeService studentService;
 
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
+    @Autowired
+    private CollegeStudent student;
+
     @Value("${sql.script.create.student}")
     private String sqlAddStudent;
 
@@ -74,6 +88,16 @@ public class GradebookControllerTest {
     @Value("${sql.script.delete.history.grade}")
     private String sqlDeleteHistoryGrade;
 
+    static final MediaType APPLICATION_JSON_UTF8 = MediaType.APPLICATION_JSON;
+
+    @BeforeAll
+    static void setup() {
+        request = new MockHttpServletRequest();
+        request.setParameter("firstname", "Chad");
+        request.setParameter("lastname", "Darby");
+        request.setParameter("emailAddress", "test@naver.com");
+    }
+
     @BeforeEach
     public void setupDatabase() {
         jdbc.update(sqlAddStudent);
@@ -82,10 +106,6 @@ public class GradebookControllerTest {
         jdbc.update(sqlAddHistoryGrade);
     }
 
-    @Test
-    void placeholder() {
-
-    }
 
     @AfterEach
     public void setupAfterTransaction() {
