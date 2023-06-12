@@ -276,6 +276,19 @@ public class GradebookControllerTest {
                 .andExpect(jsonPath("$.message", is("Student or Grade was not found")));
     }
 
+    @Test
+    void deleteANonValidGradeHttpRequest() throws Exception {
+
+        int testId = 9;
+        String notValidTestGradeType = "literature";
+        mockMvc.perform(delete("/grades/{id}/{gradeType}", testId, notValidTestGradeType))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.status", is(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath("$.message", is("Student or Grade was not found")));
+    }
+
+
+
     @AfterEach
     public void setupAfterTransaction() {
         jdbc.execute(sqlDeleteStudent);
