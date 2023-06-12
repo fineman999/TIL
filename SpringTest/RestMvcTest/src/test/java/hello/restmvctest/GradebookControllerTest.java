@@ -191,6 +191,19 @@ public class GradebookControllerTest {
                 .andExpect(jsonPath("$.emailAddress", is("eric.roby@luv2code_school.com")));
     }
 
+    @Test
+    void studentInformationHttpRequestEmptyResponse() throws Exception {
+        int doesNotExistedIt = 0;
+        Optional<CollegeStudent> student = studentDao.findById(doesNotExistedIt);
+
+        assertThat(student.isPresent()).isFalse();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/studentInformation/{id}", doesNotExistedIt))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.status", is(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath("$.message", is("Student or Grade was not found")));
+    }
+
     @AfterEach
     public void setupAfterTransaction() {
         jdbc.execute(sqlDeleteStudent);
