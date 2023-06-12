@@ -28,6 +28,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -171,6 +173,22 @@ public class GradebookControllerTest {
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.status", is(HttpStatus.NOT_FOUND.value())))
                 .andExpect(jsonPath("$.message", is("Student or Grade was not found")));
+    }
+
+    @Test
+    void studentInformationHttpRequest() throws Exception {
+        int checkExistedId = 9;
+        Optional<CollegeStudent> student = studentDao.findById(checkExistedId);
+
+        assertThat(student.isPresent()).isTrue();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/studentInformation/{id}", checkExistedId))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.id", is(checkExistedId)))
+                .andExpect(jsonPath("$.firstname", is("Eric")))
+                .andExpect(jsonPath("$.lastname", is("Roby")))
+                .andExpect(jsonPath("$.emailAddress", is("eric.roby@luv2code_school.com")));
     }
 
     @AfterEach
