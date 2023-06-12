@@ -204,6 +204,22 @@ public class GradebookControllerTest {
                 .andExpect(jsonPath("$.message", is("Student or Grade was not found")));
     }
 
+    @Test
+    void createAValidGradeHttpRequest() throws Exception {
+        int testId = 9;
+        mockMvc.perform(post("/grades")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("grade", "85.00")
+                        .param("gradeType", "math")
+                        .param("studentId", String.valueOf(testId)))
+                .andExpect(jsonPath("$.id", is(testId)))
+                .andExpect(jsonPath("$.firstname", is("Eric")))
+                .andExpect(jsonPath("$.lastname", is("Roby")))
+                .andExpect(jsonPath("$.emailAddress", is("eric.roby@luv2code_school.com")))
+                .andExpect(jsonPath("$.studentGrades.mathGradeResults", hasSize(2)));
+
+    }
+
     @AfterEach
     public void setupAfterTransaction() {
         jdbc.execute(sqlDeleteStudent);
