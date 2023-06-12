@@ -148,6 +148,18 @@ public class GradebookControllerTest {
 
     }
 
+    @Test
+    void deleteStudentHttpRequest() throws Exception {
+        assertThat(studentDao.findById(9).isPresent()).isTrue();
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/student/{id}", 9))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$", hasSize(0)));
+
+        assertThat(studentDao.findById(9).isPresent()).isFalse();
+    }
+
     @AfterEach
     public void setupAfterTransaction() {
         jdbc.execute(sqlDeleteStudent);
