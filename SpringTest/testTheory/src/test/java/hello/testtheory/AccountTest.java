@@ -11,14 +11,14 @@ class AccountTest {
     void create() {
         // given
         String username = "foobar";
-        String superSecretId = "f000aa01-0451-4000-b000-000000000000";
+        UuidHolder uuid = new MockUuidHolder("f000aa01-0451-4000-b000-000000000000");
+        String superSecretId = uuid.randomUuid();
         String autoToken = UUID.fromString(superSecretId).toString();
         // when
         Account account = Account.create(username, autoToken);
         // then
         assertThat(account.getUsername()).isEqualTo("foobar");
         assertThat(account.getAutoToken()).isEqualTo("f000aa01-0451-4000-b000-000000000000");
-
     }
 
 }
