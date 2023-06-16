@@ -1,16 +1,25 @@
 package hello.testdriven.service;
 
+import hello.testdriven.exception.CertificationCodeNotMatchedException;
 import hello.testdriven.exception.ResourceNotFoundException;
+import hello.testdriven.model.UserStatus;
+import hello.testdriven.model.dto.UserCreateDto;
+import hello.testdriven.model.dto.UserUpdateDto;
 import hello.testdriven.repository.UserEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.context.jdbc.Sql.*;
 
 @SpringBootTest
@@ -22,6 +31,9 @@ import static org.springframework.test.context.jdbc.Sql.*;
 
     @Autowired
     private UserService userService;
+
+    @MockBean
+    private JavaMailSender mailSender;
 
     @Test
     @DisplayName("getByEmail은 Active 상태인 유저를 찾을 수 있다")
@@ -52,6 +64,7 @@ import static org.springframework.test.context.jdbc.Sql.*;
     }
 
     @Test
+    @DisplayName("getById은 Active 상태인 유저를 찾을 수 있다")
     void getByIdIsActive() {
         // given
         long id = 1L;
@@ -64,6 +77,7 @@ import static org.springframework.test.context.jdbc.Sql.*;
     }
 
     @Test
+    @DisplayName("getById는 Pending 상태인 유저를 찾을 수 없다")
     void doseNotGetByIdIsPending() {
         // given
         long id = 2L;
@@ -74,5 +88,88 @@ import static org.springframework.test.context.jdbc.Sql.*;
             UserEntity result = userService.getById(id);
         }).isInstanceOf(ResourceNotFoundException.class);
     }
+
+    @Test
+    @DisplayName("userCreateDto를 이용하여 유저를 생성할 수 있다.")
+    void createUserByUserCreateDto() {
+
+        // given
+        UserCreateDto userCreateDto = UserCreateDto.builder()
+                .email("spring@naver.com")
+                .address("spring")
+                .nickname("Seoul")
+                .build();
+        BDDMockito.doNothing().when(mailSender).send(any(SimpleMailMessage.class));
+
+        // when
+        UserEntity result = userService.create(userCreateDto);
+
+        // then
+        assertThat(result.getId()).isNotNull();
+        assertThat(result.getStatus()).isEqualTo(UserStatus.PENDING);
+//        assertThat(result.getCertificationCode()).isEqualTo(T.T);
+    }
+
+    @Test
+    @DisplayName("userUpdateDto를 이용하여 유저를 수정할 수 있다.")
+    void updatedUserByUserUpdateDto() {
+
+        // given
+        UserUpdateDto userUpdateDto = UserUpdateDto.builder()
+                .nickname("spring3")
+                .address("address3")
+                .build();
+
+        // when
+//        UserEntity userEntity = userService.getByEmail("spring2@naver.com");
+//        UserEntity result = userService.update(userEntity.getId(), userUpdateDto);
+        userService.update(1, userUpdateDto);
+        // then
+        UserEntity result = userService.getById(1);
+        assertThat(result.getId()).isNotNull();
+        assertThat(result.getNickname()).isEqualTo("spring3");
+        assertThat(result.getAddress()).isEqualTo("address3");
+    }
+
+    @Test
+    @DisplayName("user를 로그인 시키면 마지막 로그인 시간이 변경된다.")
+    void updatedTimesByLogin() {
+
+        // given
+        // when
+        userService.login(1);
+        // then
+        UserEntity userEntity = userService.getById(1);
+        assertThat(userEntity.getLastLoginAt()).isGreaterThan(0L);
+//        assertThat(userEntity.getLastLoginAt()).isEqualTo(T.T);
+    }
+
+    @Test
+    @DisplayName("PENDING 상태의 사용자는 인증 코드로 ACTIVE 시킬 수 있다.")
+    void updatedPendingUserToActiveUserByVerifyCode() {
+
+        // given
+        // when
+        userService.verifyEmail(2, "aaaaaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        // then
+        UserEntity userEntity = userService.getById(2);
+        assertThat(userEntity.getStatus()).isEqualTo(UserStatus.ACTIVE);
+    }
+
+    @Test
+    @DisplayName("PENDING 상태의 사용자는 잘못된 인증코드를 받으면 에러를 던진다.")
+    void doseNotUpdatedPendingUserToActiveUserByVerifyCode() {
+
+        // given
+        // when
+        // then
+        assertThatThrownBy(() -> {
+            userService.verifyEmail(2, "aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        }).isInstanceOf(CertificationCodeNotMatchedException.class);
+
+    }
+
+
+
 
 }
