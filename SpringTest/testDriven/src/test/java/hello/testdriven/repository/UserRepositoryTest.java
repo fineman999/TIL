@@ -47,7 +47,7 @@ class UserRepositoryTest {
     void findUserDataUsingFindByEmailAndStatus() {
         // given
         // when
-        Optional<UserEntity> result = userRepository.findByEmailAndStatus("33cks1423@naver.com", UserStatus.ACTIVE);
+        Optional<UserEntity> result = userRepository.findByEmailAndStatus("spring@naver.com", UserStatus.ACTIVE);
 
         // then
         assertThat(result.isPresent()).isTrue();
@@ -58,7 +58,7 @@ class UserRepositoryTest {
     void notFindUserEmailUsingFindByIdAndStatus() {
         // given
         // when
-        Optional<UserEntity> result = userRepository.findByEmailAndStatus("33cks1423@naver.com", UserStatus.PENDING);
+        Optional<UserEntity> result = userRepository.findByEmailAndStatus("spring@naver.com", UserStatus.PENDING);
 
         // then
         assertThat(result.isEmpty()).isTrue();
