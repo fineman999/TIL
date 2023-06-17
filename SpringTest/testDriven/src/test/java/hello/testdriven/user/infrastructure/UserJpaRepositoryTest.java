@@ -15,17 +15,17 @@ import static org.assertj.core.api.Assertions.*;
 @DataJpaTest(showSql = true)
 @TestPropertySource("classpath:test-application.properties")
 @Sql(scripts = "/sql/user-repository-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class UserRepositoryTest {
+class UserJpaRepositoryTest {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserJpaRepository userJpaRepository;
 
     @Test
     @DisplayName("findByIdAndStatus 유저 데이터를 찾아올 수 있다.")
     void findUserDataUsingFindByIdAndStatus() {
         // given
         // when
-        Optional<UserEntity> result = userRepository.findByIdAndStatus(1, UserStatus.ACTIVE);
+        Optional<UserEntity> result = userJpaRepository.findByIdAndStatus(1, UserStatus.ACTIVE);
 
         // then
         assertThat(result.isPresent()).isTrue();
@@ -36,7 +36,7 @@ class UserRepositoryTest {
     void notFindUserDataUsingFindByIdAndStatus() {
         // given
         // when
-        Optional<UserEntity> result = userRepository.findByIdAndStatus(1, UserStatus.PENDING);
+        Optional<UserEntity> result = userJpaRepository.findByIdAndStatus(1, UserStatus.PENDING);
 
         // then
         assertThat(result.isEmpty()).isTrue();
@@ -47,7 +47,7 @@ class UserRepositoryTest {
     void findUserDataUsingFindByEmailAndStatus() {
         // given
         // when
-        Optional<UserEntity> result = userRepository.findByEmailAndStatus("spring@naver.com", UserStatus.ACTIVE);
+        Optional<UserEntity> result = userJpaRepository.findByEmailAndStatus("spring@naver.com", UserStatus.ACTIVE);
 
         // then
         assertThat(result.isPresent()).isTrue();
@@ -58,7 +58,7 @@ class UserRepositoryTest {
     void notFindUserEmailUsingFindByIdAndStatus() {
         // given
         // when
-        Optional<UserEntity> result = userRepository.findByEmailAndStatus("spring@naver.com", UserStatus.PENDING);
+        Optional<UserEntity> result = userJpaRepository.findByEmailAndStatus("spring@naver.com", UserStatus.PENDING);
 
         // then
         assertThat(result.isEmpty()).isTrue();
@@ -75,7 +75,7 @@ class UserRepositoryTest {
         userEntity.setStatus(UserStatus.ACTIVE);
         userEntity.setCertificationCode("bbbb-aabbaa-aaaabb-aaaaabbbaaaaa");
         // when
-        UserEntity result = userRepository.save(userEntity);
+        UserEntity result = userJpaRepository.save(userEntity);
 
         // then
         assertThat(result.getId()).isNotNull();

@@ -7,7 +7,7 @@ import hello.testdriven.user.domain.UserStatus;
 import hello.testdriven.user.domain.UserCreate;
 import hello.testdriven.user.domain.UserUpdate;
 import hello.testdriven.user.infrastructure.UserEntity;
-import hello.testdriven.user.infrastructure.UserRepository;
+import hello.testdriven.user.service.port.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;

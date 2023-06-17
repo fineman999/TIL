@@ -4,8 +4,8 @@ import hello.testdriven.common.domain.exception.ResourceNotFoundException;
 import hello.testdriven.post.domain.PostCreate;
 import hello.testdriven.post.domain.PostUpdate;
 import hello.testdriven.post.infrastructure.PostEntity;
-import hello.testdriven.post.infrastructure.PostRepository;
 
+import hello.testdriven.post.service.port.PostRepository;
 import hello.testdriven.user.infrastructure.UserEntity;
 import hello.testdriven.user.service.UserService;
 import lombok.RequiredArgsConstructor;
