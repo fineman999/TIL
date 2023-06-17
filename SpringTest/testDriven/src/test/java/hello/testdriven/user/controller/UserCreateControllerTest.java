@@ -1,4 +1,4 @@
-package hello.testdriven.controller;
+package hello.testdriven.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hello.testdriven.user.domain.UserCreate;

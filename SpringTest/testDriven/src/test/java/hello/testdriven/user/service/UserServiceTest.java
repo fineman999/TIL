@@ -1,4 +1,4 @@
-package hello.testdriven.service;
+package hello.testdriven.user.service;
 
 import hello.testdriven.common.domain.exception.CertificationCodeNotMatchedException;
 import hello.testdriven.common.domain.exception.ResourceNotFoundException;

@@ -1,4 +1,4 @@
-package hello.testdriven.service;
+package hello.testdriven.post.service;
 
 import hello.testdriven.common.domain.exception.ResourceNotFoundException;
 import hello.testdriven.post.domain.PostCreate;

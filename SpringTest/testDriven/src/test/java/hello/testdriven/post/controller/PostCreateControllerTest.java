@@ -1,4 +1,4 @@
-package hello.testdriven.controller;
+package hello.testdriven.post.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hello.testdriven.post.domain.PostCreate;
