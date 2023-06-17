@@ -1,7 +1,7 @@
 package hello.testdriven.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hello.testdriven.model.dto.PostCreateDto;
+import hello.testdriven.post.domain.PostCreate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ class PostCreateControllerTest {
     @DisplayName("사용자는 게시판을 만들 수 있다.")
     void createPost() throws Exception {
         // given
-        PostCreateDto postCreateDto = PostCreateDto.builder()
+        PostCreate postCreate = PostCreate.builder()
                 .writerId(1L)
                 .content("Hello!!")
                 .build();
@@ -47,7 +47,7 @@ class PostCreateControllerTest {
         // then
         mockMvc.perform(post("/api/posts")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(postCreateDto)))
+                .content(objectMapper.writeValueAsString(postCreate)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.content").value("Hello!!"))

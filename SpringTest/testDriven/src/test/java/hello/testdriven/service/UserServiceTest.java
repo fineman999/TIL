@@ -1,11 +1,12 @@
 package hello.testdriven.service;
 
-import hello.testdriven.exception.CertificationCodeNotMatchedException;
-import hello.testdriven.exception.ResourceNotFoundException;
-import hello.testdriven.model.UserStatus;
-import hello.testdriven.model.dto.UserCreateDto;
-import hello.testdriven.model.dto.UserUpdateDto;
-import hello.testdriven.repository.UserEntity;
+import hello.testdriven.common.domain.exception.CertificationCodeNotMatchedException;
+import hello.testdriven.common.domain.exception.ResourceNotFoundException;
+import hello.testdriven.user.domain.UserStatus;
+import hello.testdriven.user.domain.UserCreate;
+import hello.testdriven.user.domain.UserUpdate;
+import hello.testdriven.user.infrastructure.UserEntity;
+import hello.testdriven.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
@@ -94,7 +95,7 @@ import static org.springframework.test.context.jdbc.Sql.*;
     void createUserByUserCreateDto() {
 
         // given
-        UserCreateDto userCreateDto = UserCreateDto.builder()
+        UserCreate userCreate = UserCreate.builder()
                 .email("spring@naver.com")
                 .address("spring")
                 .nickname("Seoul")
@@ -102,7 +103,7 @@ import static org.springframework.test.context.jdbc.Sql.*;
         BDDMockito.doNothing().when(mailSender).send(any(SimpleMailMessage.class));
 
         // when
-        UserEntity result = userService.create(userCreateDto);
+        UserEntity result = userService.create(userCreate);
 
         // then
         assertThat(result.getId()).isNotNull();
@@ -115,15 +116,15 @@ import static org.springframework.test.context.jdbc.Sql.*;
     void updatedUserByUserUpdateDto() {
 
         // given
-        UserUpdateDto userUpdateDto = UserUpdateDto.builder()
+        UserUpdate userUpdate = UserUpdate.builder()
                 .nickname("spring3")
                 .address("address3")
                 .build();
 
         // when
 //        UserEntity userEntity = userService.getByEmail("spring2@naver.com");
-//        UserEntity result = userService.update(userEntity.getId(), userUpdateDto);
-        userService.update(1, userUpdateDto);
+//        UserEntity result = userService.update(userEntity.getId(), userUpdate);
+        userService.update(1, userUpdate);
         // then
         UserEntity result = userService.getById(1);
         assertThat(result.getId()).isNotNull();

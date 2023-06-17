@@ -1,10 +1,10 @@
 package hello.testdriven.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hello.testdriven.model.UserStatus;
-import hello.testdriven.model.dto.UserUpdateDto;
-import hello.testdriven.repository.UserEntity;
-import hello.testdriven.repository.UserRepository;
+import hello.testdriven.user.domain.UserStatus;
+import hello.testdriven.user.domain.UserUpdate;
+import hello.testdriven.user.infrastructure.UserEntity;
+import hello.testdriven.user.infrastructure.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +77,18 @@ class UserControllerTest {
         UserEntity userEntity = userRepository.findById(2L).get();
         assertThat(userEntity.getStatus()).isEqualTo(UserStatus.ACTIVE);
     }
-
+    @Test
+    @DisplayName("사용자는 인증 코드가 일치하지 않을 경우 권한 없음 에러를 내려준다.")
+    void verifyEmailByException() throws Exception {
+        // given
+        // when
+        // then
+        mockMvc.perform(
+                        get("/api/users/{id}/verify", 2)
+                                .queryParam("certificationCode", "aaa-aaaa-aaaa-aaaaaaaaaaaa"))
+                .andExpect(status().isForbidden())
+                .andExpect(content().string("자격 증명에 실패하였습니다."));
+    }
     @Test
     @DisplayName("사용자는 내 정보를 불러올 때 개인정보인 주소도 갖고 올 수 있다.")
     void getMyInfo() throws Exception {
@@ -97,7 +108,7 @@ class UserControllerTest {
     @DisplayName("사용자는 내 정보를 수정할 수 있다.")
     void updateMyInfo() throws Exception {
         // given
-        UserUpdateDto userUpdateDto = UserUpdateDto.builder()
+        UserUpdate userUpdate = UserUpdate.builder()
                 .nickname("spring3")
                 .address("Busan")
                 .build();
@@ -106,7 +117,7 @@ class UserControllerTest {
         mockMvc.perform(put("/api/users/me")
                         .header("EMAIL", "spring2@naver.com")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userUpdateDto)))
+                        .content(objectMapper.writeValueAsString(userUpdate)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.email").value("spring2@naver.com"))
@@ -115,11 +126,4 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.status").value("ACTIVE"));
     }
 
-    @Test
-    void toResponse() {
-    }
-
-    @Test
-    void toMyProfileResponse() {
-    }
 }

@@ -1,7 +1,7 @@
 package hello.testdriven.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hello.testdriven.model.dto.UserCreateDto;
+import hello.testdriven.user.domain.UserCreate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
@@ -44,7 +44,7 @@ class UserCreateControllerTest {
     void createUser() throws Exception {
 
         // given
-        UserCreateDto userCreateDto = UserCreateDto.builder()
+        UserCreate userCreate = UserCreate.builder()
                 .email("spring3@naver.com")
                 .nickname("hahaha")
                 .address("busan")
@@ -57,7 +57,7 @@ class UserCreateControllerTest {
                 post("/api/users")
                         .header("EMAIL","spring3@naver.com")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userCreateDto)))
+                        .content(objectMapper.writeValueAsString(userCreate)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.email").value("spring3@naver.com"))

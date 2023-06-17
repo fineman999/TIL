@@ -1,9 +1,10 @@
 package hello.testdriven.service;
 
-import hello.testdriven.exception.ResourceNotFoundException;
-import hello.testdriven.model.dto.PostCreateDto;
-import hello.testdriven.model.dto.PostUpdateDto;
-import hello.testdriven.repository.PostEntity;
+import hello.testdriven.common.domain.exception.ResourceNotFoundException;
+import hello.testdriven.post.domain.PostCreate;
+import hello.testdriven.post.domain.PostUpdate;
+import hello.testdriven.post.infrastructure.PostEntity;
+import hello.testdriven.post.service.PostService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,12 +55,12 @@ class PostServiceTest {
     @DisplayName("PostCreateDto를 이용하여 게시물을 생성할 수 있다.")
     void createByPostCreateDto() {
         // given
-        PostCreateDto postCreateDto = PostCreateDto.builder()
+        PostCreate postCreate = PostCreate.builder()
                 .content("create Using by postUserDto")
                 .writerId(1)
                 .build();
         // when
-        PostEntity result = postService.create(postCreateDto);
+        PostEntity result = postService.create(postCreate);
 
         // then
         assertThat(result.getId()).isNotNull();
@@ -71,12 +72,12 @@ class PostServiceTest {
     @DisplayName("postUpdatedDto를 이용하여 게시물을 수정할 수 있다.")
     void updateByPostUpdateDto() {
         // given
-        PostUpdateDto postUpdateDto = PostUpdateDto.builder()
+        PostUpdate postUpdate = PostUpdate.builder()
                 .content("It's too difficult!")
                 .build();
 
         // when
-        postService.update(1, postUpdateDto);
+        postService.update(1, postUpdate);
 
         // then
         PostEntity postEntity = postService.getById(1);

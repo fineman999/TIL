@@ -1,7 +1,7 @@
 package hello.testdriven.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hello.testdriven.model.dto.PostUpdateDto;
+import hello.testdriven.post.domain.PostUpdate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,14 +61,14 @@ class PostControllerTest {
     @DisplayName("사용자는 Post 정보를 수정 할 수 있다.")
     void updatePost() throws Exception{
         // given
-        PostUpdateDto postUpdateDto = PostUpdateDto.builder()
+        PostUpdate postUpdate = PostUpdate.builder()
                 .content("chang post content")
                 .build();
         // when
         // then
         mockMvc.perform(put("/api/posts/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(postUpdateDto)))
+                        .content(objectMapper.writeValueAsString(postUpdate)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.content").value("chang post content"));
