@@ -1,14 +1,16 @@
 package hello.testdriven.post.controller;
 
+import hello.testdriven.post.controller.port.PostService;
 import hello.testdriven.post.controller.response.PostResponse;
 import hello.testdriven.post.domain.PostUpdate;
-import hello.testdriven.post.service.PostService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "게시물(posts)")
+@Builder
 @RestController
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor

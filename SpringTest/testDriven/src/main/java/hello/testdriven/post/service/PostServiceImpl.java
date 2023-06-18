@@ -2,6 +2,7 @@ package hello.testdriven.post.service;
 
 import hello.testdriven.common.domain.exception.ResourceNotFoundException;
 import hello.testdriven.common.service.port.ClockHolder;
+import hello.testdriven.post.controller.port.PostService;
 import hello.testdriven.post.domain.Post;
 import hello.testdriven.post.domain.PostCreate;
 import hello.testdriven.post.domain.PostUpdate;
@@ -17,17 +18,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Builder
 @Service
 @RequiredArgsConstructor
-public class PostService {
+public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final ClockHolder clockHolder;
 
+    @Override
     public Post getById(long id) {
         return postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Posts", id));
     }
 
     @Transactional
+    @Override
     public Post create(PostCreate postCreate) {
         User writer = userRepository.getById(postCreate.getWriterId());
         Post post = Post.from(writer, postCreate, clockHolder);
@@ -35,6 +38,7 @@ public class PostService {
     }
 
     @Transactional
+    @Override
     public Post update(long id, PostUpdate postUpdate) {
         Post post = getById(id);
         post = post.update(postUpdate, clockHolder);

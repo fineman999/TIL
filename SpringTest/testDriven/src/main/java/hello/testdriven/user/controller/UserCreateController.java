@@ -1,10 +1,11 @@
 package hello.testdriven.user.controller;
 
+import hello.testdriven.user.controller.port.UserCreateService;
 import hello.testdriven.user.domain.User;
 import hello.testdriven.user.domain.UserCreate;
 import hello.testdriven.user.controller.response.UserResponse;
-import hello.testdriven.user.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,15 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @Tag(name = "유저(users)")
+@Builder
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserCreateController {
-    private final UserService userService;
+    private final UserCreateService userCreateService;
 
     @PostMapping
     public ResponseEntity<UserResponse> createUser(@RequestBody UserCreate userCreate) {
-        User user = userService.create(userCreate);
+        User user = userCreateService.create(userCreate);
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(UserResponse.from(user));

@@ -6,7 +6,7 @@ import hello.testdriven.user.domain.User;
 import hello.testdriven.user.domain.UserStatus;
 import hello.testdriven.user.domain.UserCreate;
 import hello.testdriven.user.domain.UserUpdate;
-import hello.testdriven.user.service.UserService;
+import hello.testdriven.user.service.UserServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
@@ -31,7 +31,7 @@ import static org.springframework.test.context.jdbc.Sql.*;
 })class UserServiceTest {
 
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @MockBean
     private JavaMailSender mailSender;

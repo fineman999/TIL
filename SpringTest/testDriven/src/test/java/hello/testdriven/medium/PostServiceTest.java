@@ -4,7 +4,7 @@ import hello.testdriven.common.domain.exception.ResourceNotFoundException;
 import hello.testdriven.post.domain.Post;
 import hello.testdriven.post.domain.PostCreate;
 import hello.testdriven.post.domain.PostUpdate;
-import hello.testdriven.post.service.PostService;
+import hello.testdriven.post.service.PostServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.*;
 class PostServiceTest {
 
     @Autowired
-    private PostService postService;
+    private PostServiceImpl postService;
 
     @Test
     @DisplayName("getById는 존재하는 게시물을 내려준다.")
