@@ -1,5 +1,6 @@
 package hello.testdriven.user.infrastructure;
 
+import hello.testdriven.common.domain.exception.ResourceNotFoundException;
 import hello.testdriven.user.domain.User;
 import hello.testdriven.user.domain.UserStatus;
 import hello.testdriven.user.service.port.UserRepository;
@@ -13,6 +14,11 @@ import java.util.Optional;
 public class UserRepositoryImpl implements UserRepository {
 
     private final UserJpaRepository userJpaRepository;
+
+    @Override
+    public User getById(long id) {
+        return findById(id).orElseThrow(() -> new ResourceNotFoundException("Posts", id));
+    }
 
     @Override
     public Optional<User> findByEmailAndStatus(String email, UserStatus userStatus) {
