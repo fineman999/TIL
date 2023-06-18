@@ -1,6 +1,6 @@
 package hello.testdriven.user.controller;
 
-import hello.testdriven.user.controller.port.UserCreateService;
+import hello.testdriven.user.controller.port.UserService;
 import hello.testdriven.user.domain.User;
 import hello.testdriven.user.domain.UserCreate;
 import hello.testdriven.user.controller.response.UserResponse;
@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserCreateController {
-    private final UserCreateService userCreateService;
+    private final UserService userService;
 
     @PostMapping
     public ResponseEntity<UserResponse> createUser(@RequestBody UserCreate userCreate) {
-        User user = userCreateService.create(userCreate);
+        User user = userService.create(userCreate);
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(UserResponse.from(user));
