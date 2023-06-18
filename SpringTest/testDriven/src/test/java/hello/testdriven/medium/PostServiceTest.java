@@ -1,9 +1,10 @@
-package hello.testdriven.post.service;
+package hello.testdriven.medium;
 
 import hello.testdriven.common.domain.exception.ResourceNotFoundException;
 import hello.testdriven.post.domain.Post;
 import hello.testdriven.post.domain.PostCreate;
 import hello.testdriven.post.domain.PostUpdate;
+import hello.testdriven.post.service.PostService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

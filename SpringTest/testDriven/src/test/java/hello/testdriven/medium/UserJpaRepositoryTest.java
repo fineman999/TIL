@@ -1,6 +1,8 @@
-package hello.testdriven.user.infrastructure;
+package hello.testdriven.medium;
 
 import hello.testdriven.user.domain.UserStatus;
+import hello.testdriven.user.infrastructure.UserEntity;
+import hello.testdriven.user.infrastructure.UserJpaRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

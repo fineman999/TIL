@@ -9,12 +9,14 @@ import hello.testdriven.user.domain.UserStatus;
 import hello.testdriven.user.domain.UserCreate;
 import hello.testdriven.user.domain.UserUpdate;
 import hello.testdriven.user.service.port.UserRepository;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
+@Builder
 @Service
 @RequiredArgsConstructor
 public class UserService {

@@ -1,4 +1,4 @@
-package hello.testdriven.common.controller;
+package hello.testdriven.medium;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
