@@ -1,10 +1,9 @@
 package hello.testdriven.post.service;
 
 import hello.testdriven.common.domain.exception.ResourceNotFoundException;
+import hello.testdriven.post.domain.Post;
 import hello.testdriven.post.domain.PostCreate;
 import hello.testdriven.post.domain.PostUpdate;
-import hello.testdriven.post.infrastructure.PostEntity;
-import hello.testdriven.post.service.PostService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,8 @@ class PostServiceTest {
     void getById() {
         // given
         // when
-        PostEntity result = postService.getById(1L);
+
+            Post result = postService.getById(1L);
 
         // then
         assertThat(result.getContent()).isEqualTo("hello world");
@@ -47,7 +47,7 @@ class PostServiceTest {
         // when
         // then
         assertThatThrownBy(() -> {
-            PostEntity result = postService.getById(2L);
+            Post result = postService.getById(2L);
         }).isInstanceOf(ResourceNotFoundException.class);
     }
 
@@ -60,7 +60,7 @@ class PostServiceTest {
                 .writerId(1)
                 .build();
         // when
-        PostEntity result = postService.create(postCreate);
+        Post result = postService.create(postCreate);
 
         // then
         assertThat(result.getId()).isNotNull();
@@ -80,9 +80,9 @@ class PostServiceTest {
         postService.update(1, postUpdate);
 
         // then
-        PostEntity postEntity = postService.getById(1);
-        assertThat(postEntity.getContent()).isEqualTo("It's too difficult!");
-        assertThat(postEntity.getModifiedAt()).isGreaterThan(0);
+        Post post = postService.getById(1);
+        assertThat(post.getContent()).isEqualTo("It's too difficult!");
+        assertThat(post.getModifiedAt()).isGreaterThan(0);
 
     }
 }

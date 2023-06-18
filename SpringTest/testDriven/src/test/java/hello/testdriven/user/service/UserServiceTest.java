@@ -2,11 +2,10 @@ package hello.testdriven.user.service;
 
 import hello.testdriven.common.domain.exception.CertificationCodeNotMatchedException;
 import hello.testdriven.common.domain.exception.ResourceNotFoundException;
+import hello.testdriven.user.domain.User;
 import hello.testdriven.user.domain.UserStatus;
 import hello.testdriven.user.domain.UserCreate;
 import hello.testdriven.user.domain.UserUpdate;
-import hello.testdriven.user.infrastructure.UserEntity;
-import hello.testdriven.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
@@ -44,7 +43,7 @@ import static org.springframework.test.context.jdbc.Sql.*;
         String email = "spring2@naver.com";
 
         // when
-        UserEntity result = userService.getByEmail(email);
+        User result = userService.getByEmail(email);
 
         // then
         assertThat(result.getNickname()).isEqualTo("kok202");
@@ -60,7 +59,7 @@ import static org.springframework.test.context.jdbc.Sql.*;
         // when
         // then
         assertThatThrownBy(() -> {
-            UserEntity result = userService.getByEmail(email);
+            User result = userService.getByEmail(email);
         }).isInstanceOf(ResourceNotFoundException.class);
     }
 
@@ -71,7 +70,7 @@ import static org.springframework.test.context.jdbc.Sql.*;
         long id = 1L;
 
         // when
-        UserEntity result = userService.getById(id);
+        User result = userService.getById(id);
 
         // then
         assertThat(result.getNickname()).isEqualTo("kok202");
@@ -86,7 +85,7 @@ import static org.springframework.test.context.jdbc.Sql.*;
         // when
         // then
         assertThatThrownBy(() -> {
-            UserEntity result = userService.getById(id);
+            User result = userService.getById(id);
         }).isInstanceOf(ResourceNotFoundException.class);
     }
 
@@ -103,7 +102,7 @@ import static org.springframework.test.context.jdbc.Sql.*;
         BDDMockito.doNothing().when(mailSender).send(any(SimpleMailMessage.class));
 
         // when
-        UserEntity result = userService.create(userCreate);
+        User result = userService.create(userCreate);
 
         // then
         assertThat(result.getId()).isNotNull();
@@ -122,11 +121,11 @@ import static org.springframework.test.context.jdbc.Sql.*;
                 .build();
 
         // when
-//        UserEntity userEntity = userService.getByEmail("spring2@naver.com");
-//        UserEntity result = userService.update(userEntity.getId(), userUpdate);
+//        User user = userService.getByEmail("spring2@naver.com");
+//        User result = userService.update(user.getId(), userUpdate);
         userService.update(1, userUpdate);
         // then
-        UserEntity result = userService.getById(1);
+        User result = userService.getById(1);
         assertThat(result.getId()).isNotNull();
         assertThat(result.getNickname()).isEqualTo("spring3");
         assertThat(result.getAddress()).isEqualTo("address3");
@@ -140,9 +139,9 @@ import static org.springframework.test.context.jdbc.Sql.*;
         // when
         userService.login(1);
         // then
-        UserEntity userEntity = userService.getById(1);
-        assertThat(userEntity.getLastLoginAt()).isGreaterThan(0L);
-//        assertThat(userEntity.getLastLoginAt()).isEqualTo(T.T);
+        User user = userService.getById(1);
+        assertThat(user.getLastLoginAt()).isGreaterThan(0L);
+//        assertThat(user.getLastLoginAt()).isEqualTo(T.T);
     }
 
     @Test
@@ -153,8 +152,8 @@ import static org.springframework.test.context.jdbc.Sql.*;
         // when
         userService.verifyEmail(2, "aaaaaaa-aaaa-aaaa-aaaaaaaaaaaa");
         // then
-        UserEntity userEntity = userService.getById(2);
-        assertThat(userEntity.getStatus()).isEqualTo(UserStatus.ACTIVE);
+        User user = userService.getById(2);
+        assertThat(user.getStatus()).isEqualTo(UserStatus.ACTIVE);
     }
 
     @Test
@@ -164,9 +163,7 @@ import static org.springframework.test.context.jdbc.Sql.*;
         // given
         // when
         // then
-        assertThatThrownBy(() -> {
-            userService.verifyEmail(2, "aaaa-aaaa-aaaa-aaaaaaaaaaaa");
-        }).isInstanceOf(CertificationCodeNotMatchedException.class);
+        assertThatThrownBy(() -> userService.verifyEmail(2, "aaaa-aaaa-aaaa-aaaaaaaaaaaa")).isInstanceOf(CertificationCodeNotMatchedException.class);
 
     }
 

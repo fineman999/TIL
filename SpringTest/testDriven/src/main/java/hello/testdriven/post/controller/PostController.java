@@ -1,9 +1,7 @@
 package hello.testdriven.post.controller;
 
-import hello.testdriven.user.controller.UserController;
 import hello.testdriven.post.controller.response.PostResponse;
 import hello.testdriven.post.domain.PostUpdate;
-import hello.testdriven.post.infrastructure.PostEntity;
 import hello.testdriven.post.service.PostService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -17,13 +15,12 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
     private final PostService postService;
-    private final UserController userController;
 
     @GetMapping("/{id}")
     public ResponseEntity<PostResponse> getPostById(@PathVariable long id) {
         return ResponseEntity
             .ok()
-            .body(toResponse(postService.getById(id)));
+            .body(PostResponse.from(postService.getById(id)));
     }
 
     @PutMapping("/{id}")
@@ -31,16 +28,8 @@ public class PostController {
     PostUpdate postUpdate) {
         return ResponseEntity
             .ok()
-            .body(toResponse(postService.update(id, postUpdate)));
+            .body(PostResponse.from(postService.update(id, postUpdate)));
     }
 
-    public PostResponse toResponse(PostEntity postEntity) {
-        PostResponse PostResponse = new PostResponse();
-        PostResponse.setId(postEntity.getId());
-        PostResponse.setContent(postEntity.getContent());
-        PostResponse.setCreatedAt(postEntity.getCreatedAt());
-        PostResponse.setModifiedAt(postEntity.getModifiedAt());
-        PostResponse.setWriter(userController.toResponse(postEntity.getWriter()));
-        return PostResponse;
-    }
+
 }

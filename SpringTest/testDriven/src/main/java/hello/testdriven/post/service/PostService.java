@@ -1,17 +1,16 @@
 package hello.testdriven.post.service;
 
 import hello.testdriven.common.domain.exception.ResourceNotFoundException;
+import hello.testdriven.post.domain.Post;
 import hello.testdriven.post.domain.PostCreate;
 import hello.testdriven.post.domain.PostUpdate;
-import hello.testdriven.post.infrastructure.PostEntity;
 
 import hello.testdriven.post.service.port.PostRepository;
-import hello.testdriven.user.infrastructure.UserEntity;
+import hello.testdriven.user.domain.User;
 import hello.testdriven.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.Clock;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,23 +19,21 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserService userService;
 
-    public PostEntity getById(long id) {
+    public Post getById(long id) {
         return postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Posts", id));
     }
 
-    public PostEntity create(PostCreate postCreate) {
-        UserEntity userEntity = userService.getById(postCreate.getWriterId());
-        PostEntity postEntity = new PostEntity();
-        postEntity.setWriter(userEntity);
-        postEntity.setContent(postCreate.getContent());
-        postEntity.setCreatedAt(Clock.systemUTC().millis());
-        return postRepository.save(postEntity);
+    @Transactional
+    public Post create(PostCreate postCreate) {
+        User writer = userService.getById(postCreate.getWriterId());
+        Post post = Post.from(writer, postCreate);
+        return postRepository.save(post);
     }
 
-    public PostEntity update(long id, PostUpdate postUpdate) {
-        PostEntity postEntity = getById(id);
-        postEntity.setContent(postUpdate.getContent());
-        postEntity.setModifiedAt(Clock.systemUTC().millis());
-        return postRepository.save(postEntity);
+    @Transactional
+    public Post update(long id, PostUpdate postUpdate) {
+        Post post = getById(id);
+        post = post.update(postUpdate);
+        return postRepository.save(post);
     }
 }
