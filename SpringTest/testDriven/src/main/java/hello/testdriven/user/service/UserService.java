@@ -2,6 +2,8 @@ package hello.testdriven.user.service;
 
 
 import hello.testdriven.common.domain.exception.ResourceNotFoundException;
+import hello.testdriven.common.service.port.ClockHolder;
+import hello.testdriven.common.service.port.UuidHolder;
 import hello.testdriven.user.domain.User;
 import hello.testdriven.user.domain.UserStatus;
 import hello.testdriven.user.domain.UserCreate;
@@ -20,6 +22,10 @@ public class UserService {
     private final UserRepository userRepository;
 
     private final CertificationService certificationService;
+
+    private final UuidHolder uuidHolder;
+
+    private final ClockHolder clockHolder;
     /*
     사용하지 않으면 원래는 지움 - 공부용
     public Optional<User> findById(long id) {
@@ -39,7 +45,7 @@ public class UserService {
 
     @Transactional
     public User create(UserCreate userCreate) {
-        User user = User.from(userCreate);
+        User user = User.from(userCreate, uuidHolder);
         user = userRepository.save(user);
         certificationService.send(userCreate.getEmail(), user.getId(), user.getCertificationCode());
         return user;
@@ -56,7 +62,7 @@ public class UserService {
     @Transactional
     public void login(long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Users", id));
-        user = user.login();
+        user = user.login(clockHolder);
         userRepository.save(user);
     }
 
