@@ -1,5 +1,25 @@
 # 스프링
+
 ---
+
+
+## [김우근](https://www.inflearn.com/course/%EC%9E%90%EB%B0%94-%EC%8A%A4%ED%94%84%EB%A7%81-%ED%85%8C%EC%8A%A4%ED%8A%B8-%EA%B0%9C%EB%B0%9C%EC%9E%90-%EC%98%A4%EB%8B%B5%EB%85%B8%ED%8A%B8)
+### [Java/Spring 테스트를 추가하고 싶은 개발자들의 오답노트](https://github.com/fineman999/TIL/tree/main/SpringTest)
+
+[섹션 1. 이론 수업](https://github.com/fineman999/TIL/issues/87)
+
+[섹션 2. 1부 실기 수업 - 어쨌든 테스트 코드](https://github.com/fineman999/TIL/issues/88)
+
+[섹션 3. 방향성 탐색](https://github.com/fineman999/TIL/issues/89)
+
+[섹션 4. 2부: 실기 수업 - 구조적 변화를 주는 테스트 코드](https://github.com/fineman999/TIL/issues/90)
+
+[섹션 5. 진화하는 아키텍처](https://github.com/fineman999/TIL/issues/91)
+
+[이슈](https://www.notion.so/23f0f7deed7e4f5a876688590668df16?pvs=21)
+
+---
+
 ## [Chad Darby](https://www.udemy.com/course/spring-boot-unit-testing/learn/lecture/29740414#overview)
 ### [Spring Boot Unit Testing with JUnit, Mockito and MockMvc](https://github.com/fineman999/TIL/tree/main/SpringTest)
 
