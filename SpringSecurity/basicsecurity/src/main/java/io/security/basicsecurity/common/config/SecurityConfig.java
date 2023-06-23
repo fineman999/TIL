@@ -4,12 +4,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final UserDetailsService userDetailsService;
+
+    public SecurityConfig(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -48,6 +55,14 @@ public class SecurityConfig {
                                     response.sendRedirect("/login"); // 로그아웃 성공시 이동할 페이지
                                 })
                                 .deleteCookies("remember-me") // 로그아웃시 쿠키 삭제
+                );
+
+        http.rememberMe(rememberMe ->
+                        rememberMe
+                            .rememberMeParameter("remember") // 기본 파라미터명은 remember-me
+                            .tokenValiditySeconds(3600) // Default 14일 - 지금은 한시간
+                            .alwaysRemember(true) // 리멤버 미 기능이 활성화되지 않아도 항상 실행
+                            .userDetailsService(userDetailsService) // 리멤버 미 기능 동작 시 필요
                 );
 
         return http.build();
