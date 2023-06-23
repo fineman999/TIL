@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -64,6 +66,20 @@ public class SecurityConfig {
                             .alwaysRemember(true) // 리멤버 미 기능이 활성화되지 않아도 항상 실행
                             .userDetailsService(userDetailsService) // 리멤버 미 기능 동작 시 필요
                 );
+
+        http.sessionManagement(sessionManagement ->
+                        sessionManagement
+                                .maximumSessions(1) // 최대 허용 가능 세션 수, -1 무제한 로그인 세션 허용
+                                .maxSessionsPreventsLogin(false) // 동시 로그인 차단, 기존 사용자 세션 만료(default: false) or 신규 로그인 차단
+                                .expiredUrl("/expired") // 세션이 만료된 경우 이동할 페이지
+                );
+        http.sessionManagement(session ->
+                        session.sessionFixation(
+                                SessionManagementConfigurer.SessionFixationConfigurer::changeSessionId // 세션 고정 보호 - 기본값
+                        )
+                );
+        http.sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)); // 세션 정책 - 기본값
 
         return http.build();
     }
