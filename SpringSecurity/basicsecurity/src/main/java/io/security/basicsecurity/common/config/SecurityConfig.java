@@ -35,6 +35,21 @@ public class SecurityConfig {
                             response.sendRedirect("/login");
                         })
                         .permitAll());
+        http.logout(logout ->
+                        logout
+                                .logoutUrl("/logout")
+                                .logoutSuccessUrl("/login")
+                                .deleteCookies("remember-me")
+                                .addLogoutHandler((request, response, authentication) -> {
+                                    request.getSession().invalidate(); // 세션 무효화 - 안해도 LogoutFilter에서 해줌
+                                    System.out.println("authentication" + authentication.getName());
+                                })
+                                .logoutSuccessHandler((request, response, authentication) -> {
+                                    response.sendRedirect("/login"); // 로그아웃 성공시 이동할 페이지
+                                })
+                                .deleteCookies("remember-me") // 로그아웃시 쿠키 삭제
+                );
+
         return http.build();
     }
 }
