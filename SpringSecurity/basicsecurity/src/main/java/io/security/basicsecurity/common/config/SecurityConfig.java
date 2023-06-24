@@ -13,6 +13,8 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
 
 
 @Configuration
@@ -52,6 +54,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
                         authorizeRequests -> authorizeRequests
+                                .requestMatchers("/login").permitAll()
                                 .requestMatchers("/user").hasRole("USER")
                                 .requestMatchers("/admin/pay").hasRole("ADMIN")
                                 .requestMatchers("/admin/**")
@@ -69,7 +72,10 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login_proc")
                         .successHandler((request, response, authentication) -> {
                             System.out.println("authentication" + authentication.getName());
-                            response.sendRedirect("/");
+                            HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+                            SavedRequest savedRequest = requestCache.getRequest(request, response);
+                            String redirectUrl = savedRequest.getRedirectUrl();
+                            response.sendRedirect(redirectUrl);
                         })
                         .failureHandler((request, response, exception) -> {
                             System.out.println("exception" + exception.getMessage());
@@ -113,6 +119,11 @@ public class SecurityConfig {
         http.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)); // 세션 정책 - 기본값
 
+        http.exceptionHandling(exceptionHandling ->
+                        exceptionHandling
+                                .authenticationEntryPoint((request, response, authException) -> response.sendRedirect("/login")) // 인증 예외 처리자
+                                .accessDeniedHandler((request, response, accessDeniedException) -> response.sendRedirect("/denied")) // 인가 예외 처리자
+                );
         return http.build();
     }
 }

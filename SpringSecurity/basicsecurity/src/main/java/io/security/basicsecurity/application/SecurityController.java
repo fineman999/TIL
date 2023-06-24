@@ -27,10 +27,10 @@ public class SecurityController {
     }
 
 
-
-
-
-
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
 
     @GetMapping("/loginPage")
     public String loginPage() {
