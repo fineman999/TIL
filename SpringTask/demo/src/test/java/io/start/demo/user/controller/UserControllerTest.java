@@ -37,6 +37,7 @@ class UserControllerTest {
         // when
         ResponseEntity<UserResponse> result = testContainer.userController
                 .getById(1);
+
         // then
         assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
         assertThat(result.getBody()).isNotNull();
