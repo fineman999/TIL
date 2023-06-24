@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="">
+        function corsTest() {
+            fetch('http://localhost:8080/api/users', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'text/xml',
+                }
+            })
+                .then(response => response.json())
+                .then(data => console.log(data));
+        }
+
+    </script>
+</head>
+<body>
+    <button onclick="corsTest()">Test</button>
+</body>
+</html>
