@@ -3,11 +3,13 @@ package io.security.basicsecurity.common.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -52,18 +54,22 @@ public class SecurityConfig {
         return new InMemoryUserDetailsManager(user, sys, admin);
     }
 
-//    @Bean
-//    @Order(1)
-//    public SecurityFilterChain filterChain2(HttpSecurity http) throws Exception {
-//        return http
-//                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-//                        .anyRequest().permitAll()
-//                )
-//                .build();
-//    }
-
     @Bean
-    @Order(0)
+    public SecurityFilterChain filterChain2(HttpSecurity http) throws Exception {
+         http
+                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .anyRequest().authenticated()
+                );
+        http
+            .formLogin(Customizer.withDefaults());
+
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+
+        return http.build();
+    }
+
+//    @Bean
+//    @Order(0)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
                         authorizeRequests -> authorizeRequests
