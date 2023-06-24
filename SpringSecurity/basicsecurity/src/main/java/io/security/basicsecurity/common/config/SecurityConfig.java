@@ -2,8 +2,10 @@ package io.security.basicsecurity.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
@@ -50,7 +52,18 @@ public class SecurityConfig {
         return new InMemoryUserDetailsManager(user, sys, admin);
     }
 
+//    @Bean
+//    @Order(1)
+//    public SecurityFilterChain filterChain2(HttpSecurity http) throws Exception {
+//        return http
+//                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+//                        .anyRequest().permitAll()
+//                )
+//                .build();
+//    }
+
     @Bean
+    @Order(0)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
                         authorizeRequests -> authorizeRequests
@@ -79,7 +92,7 @@ public class SecurityConfig {
                         })
                         .failureHandler((request, response, exception) -> {
                             System.out.println("exception" + exception.getMessage());
-                            response.sendRedirect("/login");
+//                            response.sendRedirect("/login");
                         })
                         .permitAll());
         http.logout(logout ->
@@ -121,9 +134,11 @@ public class SecurityConfig {
 
         http.exceptionHandling(exceptionHandling ->
                         exceptionHandling
-                                .authenticationEntryPoint((request, response, authException) -> response.sendRedirect("/login")) // 인증 예외 처리자
+//                                .authenticationEntryPoint((request, response, authException) -> response.sendRedirect("/loginPage")) // 인증 예외 처리자
                                 .accessDeniedHandler((request, response, accessDeniedException) -> response.sendRedirect("/denied")) // 인가 예외 처리자
                 );
+
+        http.csrf(AbstractHttpConfigurer::disable); // CSRF 토큰 비활성화
         return http.build();
     }
 }
