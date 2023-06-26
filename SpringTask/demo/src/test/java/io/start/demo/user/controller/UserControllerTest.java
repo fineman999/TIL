@@ -2,6 +2,7 @@ package io.start.demo.user.controller;
 
 import io.start.demo.common.domain.exception.CertificationCodeNotMatchedException;
 import io.start.demo.common.domain.exception.ResourceNotFoundException;
+import io.start.demo.common.domain.utils.ApiUtils;
 import io.start.demo.mock.TestClockHolder;
 import io.start.demo.mock.TestContainer;
 import io.start.demo.user.controller.response.MyProfileResponse;
@@ -36,17 +37,17 @@ class UserControllerTest {
                 .build());
 
         // when
-        ResponseEntity<UserResponse> result = testContainer.userController
+        ResponseEntity<ApiUtils.ApiResult<UserResponse>> result = testContainer.userController
                 .getById(1);
 
         // then
         assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
         assertThat(result.getBody()).isNotNull();
-        assertThat(result.getBody().getId()).isEqualTo(1);
-        assertThat(result.getBody().getEmail()).isEqualTo("spring@naver.com");
-        assertThat(result.getBody().getNickname()).isEqualTo("kok202");
-        assertThat(result.getBody().getStatus()).isEqualTo(UserStatus.ACTIVE);
-        assertThat(result.getBody().getLastLoginAt()).isEqualTo(100L);
+        assertThat(result.getBody().getResponse().getId()).isEqualTo(1);
+        assertThat(result.getBody().getResponse().getEmail()).isEqualTo("spring@naver.com");
+        assertThat(result.getBody().getResponse().getNickname()).isEqualTo("kok202");
+        assertThat(result.getBody().getResponse().getStatus()).isEqualTo(UserStatus.ACTIVE);
+        assertThat(result.getBody().getResponse().getLastLoginAt()).isEqualTo(100L);
     }
 
     @Test
@@ -122,17 +123,17 @@ class UserControllerTest {
                 .build());
 
         // when
-        ResponseEntity<MyProfileResponse> result = testContainer.userController
+        ResponseEntity<ApiUtils.ApiResult<MyProfileResponse>> result = testContainer.userController
                 .getMyInfo("spring@naver.com");
         // then
         assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
         assertThat(result.getBody()).isNotNull();
-        assertThat(result.getBody().getId()).isEqualTo(1);
-        assertThat(result.getBody().getEmail()).isEqualTo("spring@naver.com");
-        assertThat(result.getBody().getNickname()).isEqualTo("kok202");
-        assertThat(result.getBody().getStatus()).isEqualTo(UserStatus.ACTIVE);
-        assertThat(result.getBody().getLastLoginAt()).isEqualTo(1678530673958L);
-        assertThat(result.getBody().getAddress()).isEqualTo("Seoul");
+        assertThat(result.getBody().getResponse().getId()).isEqualTo(1);
+        assertThat(result.getBody().getResponse().getEmail()).isEqualTo("spring@naver.com");
+        assertThat(result.getBody().getResponse().getNickname()).isEqualTo("kok202");
+        assertThat(result.getBody().getResponse().getStatus()).isEqualTo(UserStatus.ACTIVE);
+        assertThat(result.getBody().getResponse().getLastLoginAt()).isEqualTo(1678530673958L);
+        assertThat(result.getBody().getResponse().getAddress()).isEqualTo("Seoul");
 
     }
 
@@ -153,7 +154,7 @@ class UserControllerTest {
                 .build());
 
         // when
-        ResponseEntity<MyProfileResponse> result = testContainer.userController
+        ResponseEntity<ApiUtils.ApiResult<MyProfileResponse>> result = testContainer.userController
                 .updateMyInfo("spring@naver.com", UserUpdate.builder()
                         .address("Busan")
                         .nickname("Spring3")
@@ -161,12 +162,12 @@ class UserControllerTest {
         // then
         assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
         assertThat(result.getBody()).isNotNull();
-        assertThat(result.getBody().getId()).isEqualTo(1);
-        assertThat(result.getBody().getEmail()).isEqualTo("spring@naver.com");
-        assertThat(result.getBody().getNickname()).isEqualTo("Spring3");
-        assertThat(result.getBody().getStatus()).isEqualTo(UserStatus.ACTIVE);
-        assertThat(result.getBody().getLastLoginAt()).isEqualTo(100L);
-        assertThat(result.getBody().getAddress()).isEqualTo("Busan");
+        assertThat(result.getBody().getResponse().getId()).isEqualTo(1);
+        assertThat(result.getBody().getResponse().getEmail()).isEqualTo("spring@naver.com");
+        assertThat(result.getBody().getResponse().getNickname()).isEqualTo("Spring3");
+        assertThat(result.getBody().getResponse().getStatus()).isEqualTo(UserStatus.ACTIVE);
+        assertThat(result.getBody().getResponse().getLastLoginAt()).isEqualTo(100L);
+        assertThat(result.getBody().getResponse().getAddress()).isEqualTo("Busan");
 
     }
 

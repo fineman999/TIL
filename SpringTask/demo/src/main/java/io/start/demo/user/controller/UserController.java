@@ -1,5 +1,7 @@
 package io.start.demo.user.controller;
 
+
+import io.start.demo.common.domain.utils.ApiUtils.ApiResult;
 import io.start.demo.user.controller.port.UserService;
 import io.start.demo.user.controller.response.MyProfileResponse;
 import io.start.demo.user.controller.response.UserResponse;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
+import static io.start.demo.common.domain.utils.ApiUtils.success;
+
 @Tag(name = "유저(users)")
 @RestController
 @RequestMapping("/api/v1/users")
@@ -26,9 +30,9 @@ public class UserController {
 
     @ResponseStatus
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getById(@PathVariable long id) {
+    public ResponseEntity<ApiResult<UserResponse>> getById(@PathVariable long id) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(UserResponse.from(userService.getById(id)));
+                .body(success(UserResponse.from(userService.getById(id))));
     }
 
     @GetMapping("/{id}/verify")
@@ -42,7 +46,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<MyProfileResponse> getMyInfo(
+    public ResponseEntity<ApiResult<MyProfileResponse>> getMyInfo(
         @Parameter(name = "EMAIL", in = ParameterIn.HEADER)
         @RequestHeader("EMAIL") String email // 일반적으로 스프링 시큐리티를 사용한다면 UserPrincipal 에서 가져옵니다.
     ) {
@@ -51,12 +55,12 @@ public class UserController {
         user = userService.getByEmail(email);
         return ResponseEntity
             .ok()
-            .body(MyProfileResponse.from(user));
+            .body(success(MyProfileResponse.from(user)));
     }
 
     @PutMapping("/me")
     @Parameter(in = ParameterIn.HEADER, name = "EMAIL")
-    public ResponseEntity<MyProfileResponse> updateMyInfo(
+    public ResponseEntity<ApiResult<MyProfileResponse>> updateMyInfo(
         @Parameter(name = "EMAIL", in = ParameterIn.HEADER)
         @RequestHeader("EMAIL") String email, // 일반적으로 스프링 시큐리티를 사용한다면 UserPrincipal 에서 가져옵니다.
         @RequestBody UserUpdate userUpdate
@@ -65,7 +69,7 @@ public class UserController {
         user = userService.update(user.getId(), userUpdate);
         return ResponseEntity
             .ok()
-            .body(MyProfileResponse.from(user));
+            .body(success(MyProfileResponse.from(user)));
     }
 
 }

@@ -1,6 +1,7 @@
 package io.start.demo.user.controller;
 
 
+import io.start.demo.common.domain.utils.ApiUtils;
 import io.start.demo.mock.TestContainer;
 import io.start.demo.user.controller.response.UserResponse;
 import io.start.demo.user.domain.UserCreate;
@@ -32,15 +33,15 @@ class UserCreateControllerTest {
                 .build();
 
         // when
-        ResponseEntity<UserResponse> result = testContainer.userCreateController.create(userCreate);
+        ResponseEntity<ApiUtils.ApiResult<UserResponse>> result = testContainer.userCreateController.create(userCreate);
         // then
         assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(201));
         assertThat(result.getBody()).isNotNull();
-        assertThat(result.getBody().getId()).isEqualTo(1);
-        assertThat(result.getBody().getEmail()).isEqualTo("spring3@naver.com");
-        assertThat(result.getBody().getNickname()).isEqualTo("hahaha");
-        assertThat(result.getBody().getStatus()).isEqualTo(UserStatus.PENDING);
-        assertThat(result.getBody().getLastLoginAt()).isNull();
+        assertThat(result.getBody().getResponse().getId()).isEqualTo(1);
+        assertThat(result.getBody().getResponse().getEmail()).isEqualTo("spring3@naver.com");
+        assertThat(result.getBody().getResponse().getNickname()).isEqualTo("hahaha");
+        assertThat(result.getBody().getResponse().getStatus()).isEqualTo(UserStatus.PENDING);
+        assertThat(result.getBody().getResponse().getLastLoginAt()).isNull();
         assertThat(testContainer.userRepository.getById(1).getCertificationCode()).isEqualTo("aaaaaaa-aaaa-aaaa-aaaaaaaaaaaa");
     }
 }

@@ -5,10 +5,11 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.start.demo.common.domain.exception.*;
 
+import io.start.demo.common.domain.utils.ApiUtils;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.web.HttpMediaTypeException;
@@ -21,19 +22,22 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import java.lang.module.ResolutionException;
 import java.security.SignatureException;
 
+import static io.start.demo.common.domain.utils.ApiUtils.error;
+
 
 @Slf4j
 @ControllerAdvice
 public class GeneralExceptionHandler {
 
 
-    private ResponseEntity<?> newResponse(Throwable throwable, HttpStatus status) {
+    private ResponseEntity<ApiUtils.ApiResult<?>> newResponse(Throwable throwable, HttpStatus status) {
         return newResponse(throwable.getMessage(), status);
     }
 
-    private ResponseEntity<?> newResponse(String message, HttpStatus status) {
-        return ResponseEntity.status(status).contentType(MediaType.APPLICATION_JSON)
-                .body(message);
+    private ResponseEntity<ApiUtils.ApiResult<?>> newResponse(String message, HttpStatus status) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        return new ResponseEntity<>(error(message, status), headers, status);
     }
 
     // 필요한 경우 적절한 예외타입을 선언하고 newResponse 메소드를 통해 응답을 생성하도록 합니다.
@@ -42,7 +46,8 @@ public class GeneralExceptionHandler {
             NoHandlerFoundException.class,
             NotFoundException.class,
             ResolutionException.class,
-            MyUsernameNotFoundException.class
+            MyUsernameNotFoundException.class,
+            ResourceNotFoundException.class
     })
     public ResponseEntity<?> handleNotFoundException(Exception e) {
         return newResponse(e, HttpStatus.NOT_FOUND);

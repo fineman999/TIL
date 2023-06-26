@@ -1,5 +1,6 @@
 package io.start.demo.user.controller;
 
+import io.start.demo.common.domain.utils.ApiUtils.ApiResult;
 import io.start.demo.user.controller.port.UserService;
 import io.start.demo.user.controller.response.UserResponse;
 import io.start.demo.user.domain.User;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static io.start.demo.common.domain.utils.ApiUtils.success;
+
 @Slf4j
 @Tag(name = "유저(users)")
 @Builder
@@ -25,11 +28,11 @@ public class UserCreateController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserResponse> create(@RequestBody UserCreate userCreate) {
+    public ResponseEntity<ApiResult<UserResponse>> create(@RequestBody UserCreate userCreate) {
         User user = userService.create(userCreate);
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(UserResponse.from(user));
+            .body(success(UserResponse.from(user)));
     }
 
 }
