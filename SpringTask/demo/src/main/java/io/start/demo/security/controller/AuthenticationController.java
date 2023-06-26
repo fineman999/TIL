@@ -4,6 +4,7 @@ import io.start.demo.security.controller.request.RegisterRequest;
 import io.start.demo.security.controller.request.AuthenticationRequest;
 import io.start.demo.security.controller.response.AuthenticationResponse;
 import io.start.demo.security.service.AuthenticationService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class AuthenticationController {
        return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("/preAuthorize")
     public ResponseEntity<String> preAuthorize(
             HttpServletRequest request
