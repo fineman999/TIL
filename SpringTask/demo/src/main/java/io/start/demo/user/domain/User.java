@@ -52,7 +52,7 @@ public class User {
                 .nickname(request.getNickname())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .certificationCode(uuidHolder.random())
-                .role(Role.USER)
+                .role(Role.ROLE_USER)
                 .status(UserStatus.PENDING)
                 .build();
     }

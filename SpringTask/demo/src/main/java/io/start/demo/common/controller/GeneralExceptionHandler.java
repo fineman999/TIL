@@ -1,6 +1,7 @@
 package io.start.demo.common.controller;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.start.demo.common.domain.exception.*;
 
@@ -58,6 +59,11 @@ public class GeneralExceptionHandler {
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<?> handleExpiredJwtException() {
         return newResponse("토큰이 만료되었습니다. 다시 로그인해주세요.", HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<?> handleJwtException() {
+        return newResponse("올바르지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED);
     }
 
 

@@ -37,19 +37,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
 
-        http
-                .exceptionHandling(handler ->
-                        {
-                            log.info("exceptionHandling commence");
-                            handler
-                                    .authenticationEntryPoint(entryPoint)
-                                    .accessDeniedHandler(accessDeniedHandler);
-                        });
         http.authorizeHttpRequests(
                 auth ->
                         auth
-                            .requestMatchers(deniedUris)
-                            .authenticated()
+                            .requestMatchers(deniedUris).hasRole("USER")
                             .anyRequest().permitAll()
         );
         http.sessionManagement(
@@ -57,6 +48,10 @@ public class SecurityConfig {
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         ).authenticationProvider(authenticationProvider)
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        http.exceptionHandling(handler ->
+                handler
+                        .authenticationEntryPoint(entryPoint));
 
         return http.build();
     }

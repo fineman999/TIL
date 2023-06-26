@@ -1,5 +1,7 @@
 package io.start.demo.security.config;
 
+\import io.jsonwebtoken.JwtException;
+import io.start.demo.common.domain.exception.MyUsernameNotFoundException;
 import io.start.demo.security.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -46,22 +48,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+                log.info("UserDetails userDetails={}", userDetails);
                 if (jwtService.isTokenValid(jwt, userDetails)) {
+                    log.info("jwtService.isTokenValid=true");
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
                             userDetails.getAuthorities()
                     );
+                    log.info("UsernamePasswordAuthenticationToken={}", authToken);
                     authToken.setDetails(
                             new WebAuthenticationDetailsSource().buildDetails(request)
                     );
+
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+                    log.info("SecurityContextHolder.getContext().getAuthentication()={}",
+                            SecurityContextHolder.getContext().getAuthentication());
                 }
             }
-        } catch (Exception e){
-            //시그니처 에러
+        } catch (JwtException e) {
+            request.setAttribute("exception", e);
+        } catch (MyUsernameNotFoundException e) {
             request.setAttribute("exception", e);
         }
-        filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);
+
     }
 }

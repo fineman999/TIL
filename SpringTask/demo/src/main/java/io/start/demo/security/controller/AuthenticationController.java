@@ -4,8 +4,6 @@ import io.start.demo.security.controller.request.RegisterRequest;
 import io.start.demo.security.controller.request.AuthenticationRequest;
 import io.start.demo.security.controller.response.AuthenticationResponse;
 import io.start.demo.security.service.AuthenticationService;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -39,10 +37,8 @@ public class AuthenticationController {
 
     @PostMapping("/preAuthorize")
     public ResponseEntity<String> preAuthorize(
-            @Parameter(name = "TOKEN", in = ParameterIn.HEADER)
             HttpServletRequest request
     ) {
-        log.info("preAuthorize request: {}", request.getHeader("TOKEN"));
         log.info("preAuthorize request: {}", request);
         return ResponseEntity.ok("preAuthorize");
     }
