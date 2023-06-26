@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -66,6 +67,11 @@ public class GeneralExceptionHandler {
         return newResponse("올바르지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(InsufficientAuthenticationException.class)
+    public ResponseEntity<?> handleInsufficientAuthenticationException() {
+        return newResponse("토큰의 값이 비었습니다. 확인해주세요", HttpStatus.NOT_FOUND);
+    }
+
 
     @ExceptionHandler({UnauthorizedException.class,
         CertificationCodeNotMatchedException.class
@@ -91,6 +97,7 @@ public class GeneralExceptionHandler {
         }
         return newResponse(e, HttpStatus.BAD_REQUEST);
     }
+
 
     @ExceptionHandler(HttpMediaTypeException.class)
     public ResponseEntity<?> handleHttpMediaTypeException(Exception e) {
