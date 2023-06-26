@@ -2,6 +2,7 @@ package io.start.demo.user.controller;
 
 import io.start.demo.common.domain.exception.CertificationCodeNotMatchedException;
 import io.start.demo.common.domain.exception.ResourceNotFoundException;
+import io.start.demo.mock.TestClockHolder;
 import io.start.demo.mock.TestContainer;
 import io.start.demo.user.controller.response.MyProfileResponse;
 import io.start.demo.user.controller.response.UserResponse;
@@ -109,7 +110,7 @@ class UserControllerTest {
     void getMyInfo() {
         // given
         TestContainer testContainer = TestContainer.builder()
-                .clockHolder(() -> 1678530673958L)
+                .clockHolder(new TestClockHolder(1678530673958L))
                 .build();
         testContainer.userRepository.save(User.builder()
                 .email("spring@naver.com")

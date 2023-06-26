@@ -1,7 +1,6 @@
 package io.start.demo.common.controller;
 
-import io.start.demo.common.domain.exception.NotFoundException;
-import io.start.demo.common.domain.exception.UnauthorizedException;
+import io.start.demo.common.domain.exception.*;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +13,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.NoHandlerFoundException;
+
+import java.lang.module.ResolutionException;
 
 
 @Slf4j
@@ -34,13 +35,18 @@ public class GeneralExceptionHandler {
 
     @ExceptionHandler({
             NoHandlerFoundException.class,
-            NotFoundException.class
+            NotFoundException.class,
+            ResolutionException.class,
+            MyUsernameNotFoundException.class
     })
     public ResponseEntity<?> handleNotFoundException(Exception e) {
         return newResponse(e, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(UnauthorizedException.class)
+
+    @ExceptionHandler({UnauthorizedException.class,
+        CertificationCodeNotMatchedException.class
+    })
     public ResponseEntity<?> handleUnauthorizedException(Exception e) {
         return newResponse(e, HttpStatus.UNAUTHORIZED);
     }
@@ -49,7 +55,8 @@ public class GeneralExceptionHandler {
             IllegalArgumentException.class,
             IllegalStateException.class,
             ConstraintViolationException.class,
-            MethodArgumentNotValidException.class
+            MethodArgumentNotValidException.class,
+            NotValidException.class
     })
     public ResponseEntity<?> handleBadRequestException(Exception e) {
         log.debug("Bad request exception occurred: {}", e.getMessage(), e);

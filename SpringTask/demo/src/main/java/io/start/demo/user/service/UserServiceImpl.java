@@ -29,12 +29,6 @@ public class UserServiceImpl implements UserService {
     private final UuidHolder uuidHolder;
 
     private final ClockHolder clockHolder;
-    /*
-    사용하지 않으면 원래는 지움 - 공부용
-    public Optional<User> findById(long id) {
-        return userRepository.findByIdAndStatus(id, UserStatus.ACTIVE);
-    }
-    */
 
     @Override
     public User getByEmail(String email) {

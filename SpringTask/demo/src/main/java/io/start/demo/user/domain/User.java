@@ -3,8 +3,10 @@ package io.start.demo.user.domain;
 import io.start.demo.common.domain.exception.CertificationCodeNotMatchedException;
 import io.start.demo.common.service.port.ClockHolder;
 import io.start.demo.common.service.port.UuidHolder;
+import io.start.demo.security.controller.request.RegisterRequest;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
 public class User {
@@ -16,8 +18,12 @@ public class User {
     private final UserStatus status;
     private final Long lastLoginAt;
 
+    private final Role role;
+
+    private final String password;
+
     @Builder
-    public User(Long id, String email, String nickname, String address, String certificationCode, UserStatus status, Long lastLoginAt) {
+    public User(Long id, String email, String nickname, String address, String certificationCode, UserStatus status, Long lastLoginAt, Role role, String password) {
         this.id = id;
         this.email = email;
         this.nickname = nickname;
@@ -25,6 +31,8 @@ public class User {
         this.certificationCode = certificationCode;
         this.status = status;
         this.lastLoginAt = lastLoginAt;
+        this.role = role;
+        this.password = password;
     }
 
     public static User from(UserCreate userCreate, UuidHolder uuidHolder) {
@@ -34,6 +42,18 @@ public class User {
                 .address(userCreate.getAddress())
                 .status(UserStatus.PENDING)
                 .certificationCode(uuidHolder.random())
+                .build();
+    }
+
+
+    public static User register(RegisterRequest request, PasswordEncoder passwordEncoder, UuidHolder uuidHolder) {
+        return User.builder()
+                .email(request.getEmail())
+                .nickname(request.getNickname())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .certificationCode(uuidHolder.random())
+                .role(Role.USER)
+                .status(UserStatus.PENDING)
                 .build();
     }
 

@@ -1,0 +1,8 @@
+security:
+  jwt:
+    secret-key: ${SECRET_KEY}
+    expiration-time-access: 3600000
+    expiration-time-refresh: 86400000
+    token-prefix: Bearer
+    header-string: Authorization
+
