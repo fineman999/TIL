@@ -1,6 +1,6 @@
 package io.start.demo.security.config;
 
-\import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.JwtException;
 import io.start.demo.common.domain.exception.MyUsernameNotFoundException;
 import io.start.demo.security.service.JwtService;
 import jakarta.servlet.FilterChain;
@@ -66,12 +66,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             SecurityContextHolder.getContext().getAuthentication());
                 }
             }
-        } catch (JwtException e) {
-            request.setAttribute("exception", e);
-        } catch (MyUsernameNotFoundException e) {
+        } catch (JwtException | MyUsernameNotFoundException e) {
             request.setAttribute("exception", e);
         }
-            filterChain.doFilter(request, response);
+        filterChain.doFilter(request, response);
 
     }
 }
