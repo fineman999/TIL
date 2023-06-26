@@ -18,7 +18,7 @@ import java.net.URI;
 
 @Tag(name = "유저(users)")
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 @Builder
 @RequiredArgsConstructor
 public class UserController {

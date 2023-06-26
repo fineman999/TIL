@@ -1,4 +1,5 @@
 security:
+  denied-uris: /api/v1/auth/preAuthorize
   jwt:
     secret-key: ${SECRET_KEY}
     expiration-time-access: 3600000
