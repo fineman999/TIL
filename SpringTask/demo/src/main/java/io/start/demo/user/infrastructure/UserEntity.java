@@ -59,6 +59,7 @@ public class UserEntity implements UserDetails {
         userEntity.status = user.getStatus();
         userEntity.lastLoginAt = user.getLastLoginAt();
         userEntity.password = user.getPassword();
+        userEntity.role = user.getRole();
         return userEntity;
     }
 
@@ -72,6 +73,7 @@ public class UserEntity implements UserDetails {
                 .status(status)
                 .lastLoginAt(lastLoginAt)
                 .password(password)
+                .role(role)
                 .build();
     }
 
