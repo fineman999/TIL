@@ -1,12 +1,17 @@
 package io.start.demo.mock;
 
 import io.start.demo.common.service.port.UuidHolder;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-@RequiredArgsConstructor
+@Setter
 public class TestUuidHolder implements UuidHolder {
 
-    private final String uuid;
+    private String uuid;
+
+    public TestUuidHolder(String uuid) {
+        this.uuid = uuid;
+    }
+
     @Override
     public String random() {
         return uuid;

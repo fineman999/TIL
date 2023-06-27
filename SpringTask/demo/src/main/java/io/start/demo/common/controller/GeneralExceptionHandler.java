@@ -108,7 +108,17 @@ public class GeneralExceptionHandler {
         }
         return newResponse(e, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(MultipartFileException.class)
+    public ResponseEntity<?> handleMultipartFileException(Exception e) {
+        log.debug("handleMultipartFileException occurred: {}", e.getMessage(), e);
+        return newResponse(e, HttpStatus.BAD_REQUEST);
+    }
 
+    @ExceptionHandler(SaveAmazonS3Exception.class)
+    public ResponseEntity<?> handleSaveAmazonS3Exception(Exception e) {
+        log.debug("SaveAmazonS3Exception occurred: {}", e.getMessage(), e);
+        return newResponse(e, HttpStatus.SERVICE_UNAVAILABLE);
+    }
 
     @ExceptionHandler(HttpMediaTypeException.class)
     public ResponseEntity<?> handleHttpMediaTypeException(Exception e) {

@@ -1,4 +1,4 @@
-package io.start.demo.swagger;
+package io.start.demo.openapi;
 
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
         description = "프로젝트 시작시 필요한 jwt, security, swagger, user 초기값 세팅 프로젝트입니다"
 ))
 @Configuration
-public class SwaggerConfig {
+public class OpenAPIConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {

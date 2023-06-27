@@ -21,7 +21,7 @@ spring:
           starttls:
             enable: true
   profiles:
-    include: security, mysql
+    include: security, mysql, s3
 
 
 springdoc:
