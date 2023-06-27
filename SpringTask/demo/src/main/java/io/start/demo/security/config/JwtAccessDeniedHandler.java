@@ -26,6 +26,9 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
 
         log.info("JwtAccessDeniedHandler commence");
+        if (accessDeniedException != null) {
+            request.setAttribute("exception", accessDeniedException);
+        }
         resolver.resolveException(request, response, null, (Exception) request.getAttribute("exception"));
     }
 }

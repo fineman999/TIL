@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -65,6 +66,11 @@ public class GeneralExceptionHandler {
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<?> handleExpiredJwtException() {
         return newResponse("토큰이 만료되었습니다. 다시 로그인해주세요.", HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<?> handleAccessDeniedException() {
+        return newResponse("접근 권한이 없습니다. 확인해주세요.", HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(JwtException.class)
