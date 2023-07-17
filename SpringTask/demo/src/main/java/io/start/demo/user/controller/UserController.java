@@ -31,7 +31,7 @@ public class UserController {
     @ResponseStatus
     @GetMapping("/{id}")
     public ResponseEntity<ApiResult<UserResponse>> getById(@PathVariable long id) {
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.        OK)
                 .body(success(UserResponse.from(userService.getById(id))));
     }
 
