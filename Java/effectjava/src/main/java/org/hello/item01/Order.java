@@ -1,5 +1,7 @@
 package org.hello.item01;
 
+import org.hello.item01.enumeration.OrderStatus;
+
 public class Order {
 
     private boolean prime;
@@ -8,6 +10,7 @@ public class Order {
 
     private Product product;
 
+    public OrderStatus orderStatus;
 
     public static Order primeOrder(Product product) {
         Order order = new Order();
