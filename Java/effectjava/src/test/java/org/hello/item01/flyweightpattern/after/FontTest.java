@@ -1,4 +1,4 @@
-package org.hello.item01.flyweight.after;
+package org.hello.item01.flyweightpattern.after;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

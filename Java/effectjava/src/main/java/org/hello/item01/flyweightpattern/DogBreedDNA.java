@@ -1,4 +1,4 @@
-package org.hello.item01.flyweight;
+package org.hello.item01.flyweightpattern;
 
 public class DogBreedDNA {
     private final String breed;

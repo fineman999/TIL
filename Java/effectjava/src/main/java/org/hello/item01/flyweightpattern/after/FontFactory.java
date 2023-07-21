@@ -1,4 +1,4 @@
-package org.hello.item01.flyweight.after;
+package org.hello.item01.flyweightpattern.after;
 
 import java.util.HashMap;
 import java.util.Map;

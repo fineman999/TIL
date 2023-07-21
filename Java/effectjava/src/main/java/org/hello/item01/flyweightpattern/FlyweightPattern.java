@@ -1,4 +1,4 @@
-package org.hello.item01.flyweight;
+package org.hello.item01.flyweightpattern;
 
 public class FlyweightPattern {
     public static void main(String[] args) {

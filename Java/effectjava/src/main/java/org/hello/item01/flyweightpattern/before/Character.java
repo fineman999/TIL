@@ -1,4 +1,4 @@
-package org.hello.item01.flyweight.before;
+package org.hello.item01.flyweightpattern.before;
 
 public class Character {
     private char value;
