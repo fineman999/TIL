@@ -10,7 +10,11 @@ public class SpellChecker {
         this.dictionary = dictionary;
     }
 
-    public SpellChecker(Supplier<Directory> directorySupplier) {
+    public SpellChecker(DictionaryFactory dictionaryFactory) {
+        this.dictionary = DictionaryFactory.get();
+    }
+
+    public SpellChecker(Supplier<? extends Directory> directorySupplier) {
         this.dictionary = directorySupplier.get();
     }
     public boolean isValid(String word) {
