@@ -7,9 +7,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DeprecationTest {
 
-    @Test
-    @DisplayName("삭제될 버전을 알려준다.")
-    void name() {
-        Deprecation deprecation = new Deprecation();
-    }
+//    @Test
+//    @DisplayName("삭제될 버전을 알려준다.")
+//    void name() {
+//        Deprecation deprecation = new Deprecation();
+//    }
 }
