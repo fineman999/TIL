@@ -1,13 +1,14 @@
-package org.hello.item05;
+package org.hello.item05.springioc;
 
 import org.hello.item05.dependencyinjection.Dictionary;
 
 import java.util.List;
 
-public class MockDictionary implements Dictionary {
+public class SpringDictionary implements Dictionary {
     @Override
     public boolean contains(String word) {
-        return false;
+        System.out.println("SpringDictionary.contains" + word);
+        return true;
     }
 
     @Override

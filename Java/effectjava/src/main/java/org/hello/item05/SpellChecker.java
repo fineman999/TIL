@@ -3,7 +3,7 @@ package org.hello.item05;
 import java.util.List;
 
 public class SpellChecker {
-    private static final DefaultDirectory dictionary = new DefaultDirectory();
+    private static final DefaultDictionary dictionary = new DefaultDictionary();
 
     private SpellChecker() {
     }

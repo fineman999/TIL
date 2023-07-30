@@ -1,9 +1,9 @@
 package org.hello.item05.dependencyinjection;
 
-import org.hello.item05.DefaultDirectory;
+import org.hello.item05.DefaultDictionary;
 
 public class DictionaryFactory {
-    public static Directory get() {
-        return new DefaultDirectory();
+    public static Dictionary get() {
+        return new DefaultDictionary();
     }
 }

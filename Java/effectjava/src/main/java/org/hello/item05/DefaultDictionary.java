@@ -1,10 +1,10 @@
 package org.hello.item05;
 
-import org.hello.item05.dependencyinjection.Directory;
+import org.hello.item05.dependencyinjection.Dictionary;
 
 import java.util.List;
 
-public class DefaultDirectory implements Directory {
+public class DefaultDictionary implements Dictionary {
 
     @Override
     public boolean contains(String word) {
