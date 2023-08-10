@@ -5,6 +5,8 @@ import org.hello.item10.Point;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -51,6 +53,30 @@ class ColorPointTest {
         assertAll(
                 () -> assertThat(timestamp.equals(date)).isFalse(),
                 () -> assertThat(date.equals(timestamp)).isTrue()
+        );
+    }
+
+    @Test
+    @DisplayName("equals 규약 준수 테스트")
+    void equals3() {
+        Point p1 = new Point(1, 0);
+        Point p2 = new org.hello.item10.composition.ColorPoint(1, 0, Color.RED).asPoint();
+
+        assertAll(
+                () -> assertThat(p1.equals(p2)).isTrue(),
+                () -> assertThat(p2.equals(p1)).isTrue()
+        );
+    }
+
+    @Test
+    @DisplayName("일관성 위배 테스트")
+    void equals4() throws MalformedURLException {
+        URL google1 = new URL("https", "about.google", "/products/");
+        URL google2 = new URL("https", "about.google", "/products/");
+
+        assertAll(
+                () -> assertThat(google1.equals(google2)).isTrue(),
+                () -> assertThat(google2.equals(google1)).isTrue()
         );
     }
 }
