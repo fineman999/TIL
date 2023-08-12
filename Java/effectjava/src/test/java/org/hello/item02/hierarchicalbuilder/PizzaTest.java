@@ -1,5 +1,8 @@
 package org.hello.item02.hierarchicalbuilder;
 
+import org.hello.chapter01.item02.hierarchicalbuilder.Calzone;
+import org.hello.chapter01.item02.hierarchicalbuilder.NyPizza;
+import org.hello.chapter01.item02.hierarchicalbuilder.Pizza;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;

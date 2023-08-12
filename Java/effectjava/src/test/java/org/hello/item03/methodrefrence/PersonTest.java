@@ -1,5 +1,6 @@
 package org.hello.item03.methodrefrence;
 
+import org.hello.chapter01.item03.methodrefrence.Person;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

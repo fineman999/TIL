@@ -1,5 +1,6 @@
 package org.hello.item02.freeze;
 
+import org.hello.chapter01.item02.freeze.Person;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

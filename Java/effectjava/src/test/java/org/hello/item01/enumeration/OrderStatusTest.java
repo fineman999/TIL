@@ -1,12 +1,11 @@
 package org.hello.item01.enumeration;
 
-import org.hello.item01.Order;
+import org.hello.chapter01.item01.Order;
+import org.hello.chapter01.item01.enumeration.OrderStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class OrderStatusTest {
 

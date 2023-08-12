@@ -1,7 +1,7 @@
 package org.hello.item01.serviceproviderframework;
 
-import org.assertj.core.api.Assertions;
-import org.hello.item01.HelloService;
+import org.hello.chapter01.item01.HelloService;
+import org.hello.chapter01.item01.serviceproviderframework.AppConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;

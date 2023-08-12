@@ -1,5 +1,6 @@
 package org.hello.item03.third;
 
+import org.hello.chapter01.item03.third.Elvis;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

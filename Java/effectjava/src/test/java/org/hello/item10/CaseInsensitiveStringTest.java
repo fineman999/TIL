@@ -1,5 +1,6 @@
 package org.hello.item10;
 
+import org.hello.chapter02.item10.CaseInsensitiveString;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

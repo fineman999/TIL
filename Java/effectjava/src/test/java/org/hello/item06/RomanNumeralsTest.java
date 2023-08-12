@@ -4,8 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hello.item06.RomanNumerals.isRomanNumeralFast;
-import static org.hello.item06.RomanNumerals.isRomanNumeralSlow;
+import static org.hello.chapter01.item06.RomanNumerals.isRomanNumeralFast;
+import static org.hello.chapter01.item06.RomanNumerals.isRomanNumeralSlow;
 
 class RomanNumeralsTest {
 

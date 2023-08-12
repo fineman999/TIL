@@ -1,11 +1,10 @@
 package org.hello.item01.enumeration;
 
+import org.hello.chapter01.item01.enumeration.Color;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.EnumMap;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ColorTest {
     @Test

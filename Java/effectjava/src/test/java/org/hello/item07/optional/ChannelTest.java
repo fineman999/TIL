@@ -1,6 +1,7 @@
 package org.hello.item07.optional;
 
-import org.assertj.core.api.Assertions;
+import org.hello.chapter01.item07.optional.Channel;
+import org.hello.chapter01.item07.optional.MemberShip;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -8,7 +9,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 class ChannelTest {
 

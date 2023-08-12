@@ -1,6 +1,7 @@
 package org.hello.item02.illigalargumentexception;
 
 import org.assertj.core.api.Assertions;
+import org.hello.chapter01.item02.illigalargumentexception.Order;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

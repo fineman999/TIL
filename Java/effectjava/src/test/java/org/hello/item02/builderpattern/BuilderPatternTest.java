@@ -1,5 +1,8 @@
 package org.hello.item02.builderpattern;
 
+import org.hello.chapter01.item02.builderpattern.DefaultTourBuilder;
+import org.hello.chapter01.item02.builderpattern.TourDirector;
+import org.hello.chapter01.item02.builderpattern.TourPlan;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

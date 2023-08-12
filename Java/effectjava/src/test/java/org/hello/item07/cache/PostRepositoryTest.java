@@ -1,6 +1,8 @@
 package org.hello.item07.cache;
 
-import org.assertj.core.api.Assertions;
+import org.hello.chapter01.item07.cache.CacheKey;
+import org.hello.chapter01.item07.cache.Post;
+import org.hello.chapter01.item07.cache.PostRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +13,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class PostRepositoryTest {
 

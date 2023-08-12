@@ -1,5 +1,7 @@
 package org.hello.item03.second;
 
+import org.hello.chapter01.item03.second.Elvis;
+import org.hello.chapter01.item03.second.MetaElvis;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

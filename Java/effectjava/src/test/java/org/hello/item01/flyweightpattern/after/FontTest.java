@@ -1,5 +1,7 @@
 package org.hello.item01.flyweightpattern.after;
 
+import org.hello.chapter01.item01.flyweightpattern.after.Character;
+import org.hello.chapter01.item01.flyweightpattern.after.FontFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

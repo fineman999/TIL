@@ -1,5 +1,7 @@
 package org.hello.item03.serialization;
 
+import org.hello.chapter01.item03.serialization.Book;
+import org.hello.chapter01.item03.serialization.SerializationExample;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

@@ -1,6 +1,9 @@
 package org.hello.item05.dependencyinjection;
 
-import org.hello.item05.DefaultDictionary;
+import org.hello.chapter01.item05.DefaultDictionary;
+import org.hello.chapter01.item05.dependencyinjection.Dictionary;
+import org.hello.chapter01.item05.dependencyinjection.DictionaryFactory;
+import org.hello.chapter01.item05.dependencyinjection.SpellChecker;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

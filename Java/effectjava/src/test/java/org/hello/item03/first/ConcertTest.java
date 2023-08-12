@@ -1,5 +1,7 @@
 package org.hello.item03.first;
 
+import org.hello.chapter01.item03.first.Concert;
+import org.hello.chapter01.item03.first.Elvis;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;

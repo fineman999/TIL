@@ -1,13 +1,13 @@
 package org.hello.item07.listener;
 
-import org.assertj.core.api.Assertions;
+import org.hello.chapter01.item07.listener.ChatRoom;
+import org.hello.chapter01.item07.listener.User;
 import org.junit.jupiter.api.Test;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class ChatRoomTest {
 

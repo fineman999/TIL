@@ -1,5 +1,7 @@
 package org.hello.item05.springioc;
 
+import org.hello.chapter01.item05.springioc.AppConfig;
+import org.hello.chapter01.item05.springioc.SpellChecker;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

@@ -1,9 +1,8 @@
 package org.hello.item02.chain.before;
 
+import org.hello.chapter01.item02.chain.before.NutritionFacts;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class NutritionFactsTest {
 

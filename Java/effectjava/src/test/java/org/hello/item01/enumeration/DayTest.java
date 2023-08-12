@@ -1,11 +1,10 @@
 package org.hello.item01.enumeration;
 
+import org.hello.chapter01.item01.enumeration.Day;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.EnumSet;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class DayTest {
 

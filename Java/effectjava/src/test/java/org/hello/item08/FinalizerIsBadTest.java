@@ -1,5 +1,6 @@
 package org.hello.item08;
 
+import org.hello.chapter01.item08.FinalizerIsBad;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

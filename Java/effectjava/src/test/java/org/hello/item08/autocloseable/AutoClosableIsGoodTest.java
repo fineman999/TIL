@@ -1,9 +1,8 @@
 package org.hello.item08.autocloseable;
 
+import org.hello.chapter01.item08.autocloseable.AutoClosableIsGood;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class AutoClosableIsGoodTest {
 

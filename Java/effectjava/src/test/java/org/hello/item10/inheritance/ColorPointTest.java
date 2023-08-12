@@ -1,7 +1,8 @@
 package org.hello.item10.inheritance;
 
-import org.hello.item10.Color;
-import org.hello.item10.Point;
+import org.hello.chapter02.item10.composition.ColorPoint;
+import org.hello.chapter02.item10.Color;
+import org.hello.chapter02.item10.Point;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +21,7 @@ class ColorPointTest {
     void equals() {
         Point point = new Point(1, 2);
 
-        ColorPoint colorPoint = new ColorPoint(1, 2, Color.RED);
+        org.hello.chapter02.item10.inheritance.ColorPoint colorPoint = new org.hello.chapter02.item10.inheritance.ColorPoint(1, 2, Color.RED);
 
         assertAll(
                 () -> assertThat(point.equals(colorPoint)).isTrue(),
@@ -31,10 +32,10 @@ class ColorPointTest {
     @Test
     @DisplayName("추이성 위배 테스트")
     void test() {
-        ColorPoint p1 = new ColorPoint(1, 2, Color.RED);
+        org.hello.chapter02.item10.inheritance.ColorPoint p1 = new org.hello.chapter02.item10.inheritance.ColorPoint(1, 2, Color.RED);
         Point p2 = new Point(1, 2);
 
-        ColorPoint p3 = new ColorPoint(1, 2, Color.BLUE);
+        org.hello.chapter02.item10.inheritance.ColorPoint p3 = new org.hello.chapter02.item10.inheritance.ColorPoint(1, 2, Color.BLUE);
         assertAll(
                 () -> assertThat(p1.equals(p2)).isTrue(),
                 () -> assertThat(p2.equals(p3)).isTrue(),
@@ -60,7 +61,7 @@ class ColorPointTest {
     @DisplayName("equals 규약 준수 테스트")
     void equals3() {
         Point p1 = new Point(1, 0);
-        Point p2 = new org.hello.item10.composition.ColorPoint(1, 0, Color.RED).asPoint();
+        Point p2 = new ColorPoint(1, 0, Color.RED).asPoint();
 
         assertAll(
                 () -> assertThat(p1.equals(p2)).isTrue(),

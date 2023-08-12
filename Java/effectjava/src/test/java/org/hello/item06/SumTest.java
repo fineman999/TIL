@@ -1,5 +1,6 @@
 package org.hello.item06;
 
+import org.hello.chapter01.item06.Sum;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

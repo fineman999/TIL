@@ -1,6 +1,9 @@
 package org.hello.item03.first;
 
 import org.assertj.core.api.Assertions;
+import org.hello.chapter01.item03.first.Elvis;
+import org.hello.chapter01.item03.first.PreventElvis;
+import org.hello.chapter01.item03.first.SerializableElvis;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
