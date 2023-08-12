@@ -48,4 +48,25 @@ public class PhoneNumber {
             return result;
         }
     }
+
+    /**
+     * 이 전화번호의 문자열 표현을 반환한다.
+     * 이 문자열은 "XXX-YYY-ZZZZ" 형태의 12글자로 구성된다.
+     * XXX는 지역코드, YYY는 프리픽스, ZZZZ는 가입자 번호다.
+     * 각각의 대문자는 10진수 숫자 하나를 나타낸다.
+     * <p>
+     *     전화번호의 각 필드가 주어진 자릿수를 만족하지 못하면,
+     *     앞에서부터 0으로 채워나간다. 예를 들어 가입자 번호가 123이면
+     *     전화번호의 마지막 네 문자는 "0123"이 된다.
+ *     </p>
+     */
+    @Override
+    public String toString() {
+        return String.format("%03d-%03d-%04d", areaCode, prefix, lineNum);
+    }
+
+    public static PhoneNumber of(String phoneNumber) {
+        String[] split = phoneNumber.split("-");
+        return new PhoneNumber(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
+    }
 }

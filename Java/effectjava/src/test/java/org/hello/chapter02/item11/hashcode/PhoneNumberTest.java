@@ -29,4 +29,12 @@ class PhoneNumberTest {
         System.out.println(map.get(new PhoneNumber(111, 222, 3333)));
 
     }
+
+    @Test
+    @DisplayName("toString을 이용한 출력")
+    void test2() {
+        PhoneNumber number1 = new PhoneNumber(111, 222, 3333);
+        System.out.println(number1.toString());
+    }
+
 }
