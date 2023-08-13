@@ -1,4 +1,4 @@
-package org.hello.chapter03.item15.member;
+package org.hello.chapter04.item15.member;
 
 class DefaultMemberService implements MemberService {
 
