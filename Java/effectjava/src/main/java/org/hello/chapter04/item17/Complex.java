@@ -2,7 +2,7 @@ package org.hello.chapter04.item17;
 
 import java.util.Objects;
 
-public final class Complex {
+public class Complex {
     private final double re;
     private final double im;
 
@@ -10,9 +10,15 @@ public final class Complex {
     public static final Complex ONE = new Complex(1, 0);
     public static final Complex I = new Complex(0, 1);
 
-    public Complex(double re, double im) {
+    private Complex(double re, double im) {
         this.re = re;
         this.im = im;
+    }
+
+    private static class MyComplex extends Complex {
+        public MyComplex(double re, double im) {
+            super(re, im);
+        }
     }
 
     public double realPart() {
