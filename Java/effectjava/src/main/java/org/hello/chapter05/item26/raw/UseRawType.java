@@ -4,7 +4,7 @@ public class UseRawType<E> {
     private E e;
 
     public static void main(String[] args) {
-        System.out.println(UseRawType<Integer>.class); // 컴파일 에러
+//        System.out.println(UseRawType<Integer>.class); // 컴파일 에러
 
         UseRawType<Integer> useRawType = new UseRawType<>();
 
