@@ -1,4 +1,4 @@
-package org.example.create_object.factorymethod;
+package org.example.create_object.factorymethod._01_before;
 
 
 import java.util.StringJoiner;
