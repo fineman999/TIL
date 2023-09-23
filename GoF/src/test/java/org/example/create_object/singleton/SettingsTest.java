@@ -3,6 +3,10 @@ package org.example.create_object.singleton;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SettingsTest {
@@ -24,5 +28,39 @@ class SettingsTest {
         StaticSettings staticSettings2 = StaticSettings.getInstance();
 
         assertThat(staticSettings1).isSameAs(staticSettings2);
+    }
+
+    @Test
+    @DisplayName("싱글톤 패턴 구현 깨트리는 방법 - 리플렉션")
+    void reflection() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        StaticSettings settings = StaticSettings.getInstance();
+
+        Constructor<StaticSettings> constructor = StaticSettings.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+
+        StaticSettings newInstance = constructor.newInstance();
+
+        assertThat(settings).isNotSameAs(newInstance);
+    }
+
+    @Test
+    @DisplayName("싱글톤 패턴 구현 깨트리는 방법 - 직렬화")
+    void serialization() throws IOException, ClassNotFoundException {
+        StaticSettings settings = StaticSettings.getInstance();
+        StaticSettings newInstance = null;
+
+        // 직렬화
+         try (FileOutputStream fos = new FileOutputStream("settings.bin");
+              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+             oos.writeObject(settings);
+         }
+
+        // 역직렬화
+         try (FileInputStream fis = new FileInputStream("settings.bin");
+              ObjectInputStream ois = new ObjectInputStream(fis)) {
+             newInstance = (StaticSettings) ois.readObject();
+         }
+
+        assertThat(settings).isNotSameAs(newInstance);
     }
 }
