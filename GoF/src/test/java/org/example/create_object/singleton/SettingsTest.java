@@ -63,4 +63,26 @@ class SettingsTest {
 
         assertThat(settings).isNotSameAs(newInstance);
     }
+
+    @Test
+    @DisplayName("enum 싱글톤 - 역직렬화")
+    void enumSingleton() throws IOException, ClassNotFoundException {
+        EnumSettings instance1 = EnumSettings.INSTANCE;
+        EnumSettings instance2 = null;
+
+        // 직렬화
+        try (FileOutputStream fos = new FileOutputStream("settings.bin");
+             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            oos.writeObject(instance1);
+        }
+
+        // 역직렬화
+        try (FileInputStream fis = new FileInputStream("settings.bin");
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
+            instance2 = (EnumSettings) ois.readObject();
+        }
+
+        assertThat(instance1).isSameAs(instance2);
+    }
 }
+
