@@ -9,6 +9,7 @@ public interface ShipFactory {
         return createShip();
     }
 
+
     Ship createShip();
 
     private void checkValid(String name, String country) {
