@@ -6,7 +6,6 @@ public class ShipFactory {
     public static Ship orderShip(String name, String country) {
         checkValid(name, country);
 
-        prepareFor(name);
 
         Ship ship = new Ship();
         ship.setName(name);
@@ -20,11 +19,6 @@ public class ShipFactory {
         }
 
         return ship;
-    }
-
-
-    private static void prepareFor(String name) {
-        System.out.println("preparing for " + name);
     }
 
     private static void checkValid(String name, String country) {

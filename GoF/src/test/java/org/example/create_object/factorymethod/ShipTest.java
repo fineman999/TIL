@@ -1,10 +1,9 @@
 package org.example.create_object.factorymethod;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ShipTest {
     @Test
@@ -12,7 +11,10 @@ class ShipTest {
     void client() {
 
         Ship whiteship = ShipFactory.orderShip("Whiteship", "Korea");
-        org.assertj.core.api.Assertions.assertThat("Whiteship").isEqualTo(whiteship.toString());
+        assertThat("Ship[name='Whiteship', country='Korea', logo='WhiteColor']").isEqualTo(whiteship.toString());
+
+        Ship blackship = ShipFactory.orderShip("Blackship", "Korea");
+        assertThat("Ship[name='Blackship', country='Korea', logo='BlackColor']").isEqualTo(blackship.toString());
 
     }
 }
