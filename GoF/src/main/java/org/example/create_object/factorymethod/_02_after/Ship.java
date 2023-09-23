@@ -3,6 +3,8 @@ package org.example.create_object.factorymethod._02_after;
 
 import org.example.create_object.abstract_factory._01_before.WhiteAnchor;
 import org.example.create_object.abstract_factory._01_before.WhiteCabin;
+import org.example.create_object.abstract_factory._02_after.Anchor;
+import org.example.create_object.abstract_factory._02_after.Cabin;
 
 import java.util.StringJoiner;
 
@@ -11,8 +13,24 @@ public class Ship {
     private String country;
     private String logo;
 
-    private WhiteAnchor whiteAnchor;
-    private WhiteCabin whiteCabin;
+    private Anchor anchor;
+    private Cabin cabin;
+
+    public Anchor getAnchor() {
+        return anchor;
+    }
+
+    public void setAnchor(Anchor anchor) {
+        this.anchor = anchor;
+    }
+
+    public Cabin getCabin() {
+        return cabin;
+    }
+
+    public void setCabin(Cabin cabin) {
+        this.cabin = cabin;
+    }
 
     public Ship(String name, String country, String logo) {
         this.name = name;
@@ -57,11 +75,4 @@ public class Ship {
                 .toString();
     }
 
-    public void setAnchor(WhiteAnchor whiteAnchor) {
-        whiteAnchor = new WhiteAnchor();
-    }
-
-    public void setCabin(WhiteCabin whiteCabin) {
-        whiteCabin = new WhiteCabin();
-    }
 }
