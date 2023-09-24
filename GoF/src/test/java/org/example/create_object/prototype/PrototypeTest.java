@@ -1,7 +1,7 @@
 package org.example.create_object.prototype;
 
-import org.example.create_object.prototype._01_before.GitHubIssue;
-import org.example.create_object.prototype._01_before.GitHubRepository;
+import org.example.create_object.prototype._02_after.GitHubIssue;
+import org.example.create_object.prototype._02_after.GitHubRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -10,8 +10,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PrototypeTest {
 
     @Test
-    @DisplayName("프로토타입을 사용하지 않은 객체 생성")
-    void test() {
+    @DisplayName("프로토타입 패턴을 사용한 객체 생성 - clone 메서드를 사용하여 객체를 생성한다.")
+    void test() throws CloneNotSupportedException {
 
         GitHubRepository repository = new GitHubRepository();
 
@@ -26,9 +26,13 @@ class PrototypeTest {
         assertThat(url).isEqualTo("https://github.com/jojoldu/springboot-webservice/issues/1");
 
 
-//        GitHubIssue clone = gitHubIssue.clone();
+        GitHubIssue clone = (GitHubIssue) gitHubIssue.clone();
 
-        // clone != gitHubIssue why? 다른 객체(레퍼런스)이다.
-        // clone.equals(gitHubIssue) == true why? 값은 같지만 다른 객체이다.
+        assertThat(clone).isNotSameAs(gitHubIssue); // clone != gitHubIssue why? 다른 객체(레퍼런스)이다.
+        assertThat(clone).isEqualTo(gitHubIssue); // clone.equals(gitHubIssue) == true why? 값은 같지만 다른 객체이다.
+
+
+        assertThat(clone.getRepository()).isSameAs(gitHubIssue.getRepository()); // clone.getRepository() == gitHubIssue.getRepository() why? 같은 객체(레퍼런스)이다.
+        assertThat(clone.getUrl()).isNotSameAs(gitHubIssue.getUrl()); // clone.getUrl() != gitHubIssue.getUrl() why? 다른 객체(레퍼런스)이다.
     }
 }
