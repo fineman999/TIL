@@ -5,8 +5,10 @@ import org.example.create_object.builder._02_after.DefaultTourBuilder;
 import org.example.create_object.builder._02_after.TourDirector;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.web.servlet.htmlunit.MockMvcWebClientBuilder;
 
 import java.time.LocalDate;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -58,4 +60,13 @@ class BuilderTest {
 
         assertThat(tourPlan.getTitle()).isEqualTo("제주도 여행");
     }
+
+    @Test
+    @DisplayName("Stream.Builder 사용")
+    void streamBuilder() {
+
+        var build = Stream.<String>builder().add("a").add("b").add("c").build();
+        assertThat(build.count()).isEqualTo(3);
+    }
+
 }
