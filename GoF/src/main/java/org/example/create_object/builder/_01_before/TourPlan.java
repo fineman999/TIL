@@ -1,7 +1,9 @@
 package org.example.create_object.builder._01_before;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class TourPlan {
     private String title;
@@ -77,6 +79,9 @@ public class TourPlan {
     }
 
     public void addPlan(int day, String plan) {
+        if (Objects.isNull(plans)) {
+            this.plans = new ArrayList<>();
+        }
         this.plans.add(new DetailPlan(day, plan));
     }
 }
