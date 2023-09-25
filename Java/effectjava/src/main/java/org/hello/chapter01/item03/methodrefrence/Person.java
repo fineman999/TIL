@@ -3,10 +3,12 @@ package org.hello.chapter01.item03.methodrefrence;
 import java.time.LocalDate;
 
 public class Person {
-    LocalDate birthday;
+    public LocalDate birthday;
 
     public Person() {
     }
+
+
 
     public Person(LocalDate birthday) {
         this.birthday = birthday;

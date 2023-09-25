@@ -13,7 +13,7 @@ public class Calzone extends Pizza {
         }
 
         @Override
-        Calzone build() {
+        public Calzone build() {
             return new Calzone(this);
         }
 
