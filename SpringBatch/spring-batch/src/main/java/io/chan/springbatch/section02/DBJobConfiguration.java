@@ -1,4 +1,4 @@
-package io.chan.springbatch;
+package io.chan.springbatch.section02;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
