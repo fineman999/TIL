@@ -2,7 +2,7 @@ spring:
   batch:
     job:
       enabled: false
-      name: instanceJob
+      name: parameterJob
     jdbc:
       initialize-schema: never
   profiles:

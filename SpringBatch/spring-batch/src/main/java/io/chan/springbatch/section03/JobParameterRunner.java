@@ -9,20 +9,24 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-//@Component
+@Component
 @RequiredArgsConstructor
-public class JobRunner implements ApplicationRunner {
+public class JobParameterRunner implements ApplicationRunner {
 
     private final JobLauncher jobLauncher;
-    private final Job instanceJob;
+    private final Job parameterJob;
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
-        JobParameters jobParameters = new JobParametersBuilder()
-                .addString("name", "chan")
-                .addDate("date", new java.util.Date())
-                .toJobParameters();
+            JobParameters jobParameters = new JobParametersBuilder()
+                    .addString("name", "chan")
+                    .addLong("seq", 1L)
+                    .addDate("date", new java.util.Date())
+                    .addLocalDateTime("localDateTime", java.time.LocalDateTime.now())
+                    .addDouble("double", 1.1)
+                    .toJobParameters();
 
-        jobLauncher.run(instanceJob, jobParameters);
+            jobLauncher.run(parameterJob, jobParameters);
     }
 }
+
