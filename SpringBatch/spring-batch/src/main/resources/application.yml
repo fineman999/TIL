@@ -1,14 +1,9 @@
 spring:
-  h2:
-    console:
-      enabled: false
-  datasource:
-    url: jdbc:h2:tcp://localhost/~/test;MODE=MySQL
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
   batch:
     job:
       enabled: true
+      name: dbJob
     jdbc:
-      initialize-schema: always
+      initialize-schema: never
+  profiles:
+    include: mysql
