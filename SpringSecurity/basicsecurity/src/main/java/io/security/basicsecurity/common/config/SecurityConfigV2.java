@@ -20,7 +20,7 @@ public class SecurityConfigV2 {
                 );
         http.formLogin(
             formLogin -> formLogin
-                .loginPage("/loginPage")
+//                .loginPage("/loginPage")
                 .defaultSuccessUrl("/user", true)
                 .failureUrl("/loginPage?error")
                 .usernameParameter("userId")
@@ -35,6 +35,19 @@ public class SecurityConfigV2 {
                     response.sendRedirect("/loginPage");
                 })
                 .permitAll()
+        );
+
+        http.logout(
+            logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login")
+                .deleteCookies("remember-me")
+                .addLogoutHandler((request, response, authentication) -> {
+                    request.getSession().invalidate();
+                })
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    response.sendRedirect("/login");
+                })
         );
 
         return http.build();
