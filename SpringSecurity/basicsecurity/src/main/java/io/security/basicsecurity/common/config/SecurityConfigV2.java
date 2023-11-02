@@ -1,17 +1,22 @@
 package io.security.basicsecurity.common.config;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Slf4j
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfigV2 {
+
+    private final UserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain section1(HttpSecurity http) throws Exception {
@@ -48,6 +53,14 @@ public class SecurityConfigV2 {
                 .logoutSuccessHandler((request, response, authentication) -> {
                     response.sendRedirect("/login");
                 })
+        );
+
+        http.rememberMe(
+            rememberMe -> rememberMe
+                .rememberMeParameter("remember-me")
+                .tokenValiditySeconds(3600)
+                .alwaysRemember(false)
+                .userDetailsService(userDetailsService)
         );
 
         return http.build();
