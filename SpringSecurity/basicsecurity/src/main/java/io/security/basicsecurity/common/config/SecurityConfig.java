@@ -21,8 +21,8 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 
 
-@Configuration
-@EnableWebSecurity
+//@Configuration
+//@EnableWebSecurity
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
@@ -31,7 +31,7 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
-    @Bean
+//    @Bean
     public static UserDetailsManager users() {
         UserDetails user = User.builder()
                 .username("user")
@@ -54,7 +54,7 @@ public class SecurityConfig {
         return new InMemoryUserDetailsManager(user, sys, admin);
     }
 
-    @Bean
+//    @Bean
     public SecurityFilterChain filterChain2(HttpSecurity http) throws Exception {
          http
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
