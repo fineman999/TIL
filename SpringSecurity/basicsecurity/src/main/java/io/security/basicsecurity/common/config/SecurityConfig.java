@@ -21,7 +21,7 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 
 
-//@Configuration
+@Configuration
 //@EnableWebSecurity
 public class SecurityConfig {
 
@@ -31,7 +31,7 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
-//    @Bean
+    @Bean
     public static UserDetailsManager users() {
         UserDetails user = User.builder()
                 .username("user")

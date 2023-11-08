@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 
 @Slf4j
 @Configuration
@@ -19,9 +19,15 @@ public class SecurityConfigV2 {
 
     private final UserDetailsService userDetailsService;
 
+
     @Bean
     public SecurityFilterChain section1(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers("/user/**").hasAnyRole("USER", "SYS")
+                        .requestMatchers("/admin/pay").hasRole("ADMIN")
+                        .requestMatchers("/admin/**").access(new WebExpressionAuthorizationManager("hasRole('ADMIN') or hasRole('SYS')"))
+                        .requestMatchers("/shop/pay").hasAuthority("ROLE_USER")
+                        .requestMatchers("/shop/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .anyRequest().authenticated()
                 );
         http.formLogin(
@@ -51,9 +57,7 @@ public class SecurityConfigV2 {
                 .addLogoutHandler((request, response, authentication) -> {
                     request.getSession().invalidate();
                 })
-                .logoutSuccessHandler((request, response, authentication) -> {
-                    response.sendRedirect("/login");
-                })
+                .logoutSuccessHandler((request, response, authentication) -> response.sendRedirect("/login"))
         );
 
         http.rememberMe(

@@ -45,6 +45,11 @@ public class SecurityController {
         return "adminAll";
     }
 
+    @GetMapping("/shop/**")
+    public String shop() {
+        return "shop";
+    }
+
 
     @GetMapping("/login")
     public String login() {
