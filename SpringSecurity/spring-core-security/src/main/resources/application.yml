@@ -4,6 +4,15 @@ spring:
     username: root
     password: {password}
     driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+  thymeleaf:
+    cache: false
 
 server:
   port: 8082
