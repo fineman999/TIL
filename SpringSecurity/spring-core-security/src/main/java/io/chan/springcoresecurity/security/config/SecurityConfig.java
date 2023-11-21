@@ -1,5 +1,6 @@
 package io.chan.springcoresecurity.security.config;
 
+import io.chan.springcoresecurity.security.common.FormAuthenticationDetailsSource;
 import io.chan.springcoresecurity.security.provider.CustomAuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -72,6 +73,7 @@ public class SecurityConfig {
             httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer
                 .loginPage("/login")
                 .loginProcessingUrl("/login_proc")
+                .authenticationDetailsSource(new FormAuthenticationDetailsSource())
                 .defaultSuccessUrl("/")
                 .permitAll()
         );
