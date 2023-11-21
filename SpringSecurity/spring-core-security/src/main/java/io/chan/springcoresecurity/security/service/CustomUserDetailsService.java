@@ -4,6 +4,7 @@ import io.chan.springcoresecurity.domain.Account;
 import io.chan.springcoresecurity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(username + "is not found"));
 
         List<GrantedAuthority> roles = new ArrayList<>();
-        roles.add(account::getRole);
+        roles.add(new SimpleGrantedAuthority(account.getRole()));
         return new AccountContext(account, roles);
     }
 }
