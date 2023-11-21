@@ -68,7 +68,13 @@ public class SecurityConfig {
                 .requestMatchers("/messages").hasAnyAuthority("MANAGER", "ADMIN")
                 .requestMatchers("/config").hasAnyAuthority("ADMIN", "MANAGER", "USER")
                 .anyRequest().authenticated()
-        ).formLogin(Customizer.withDefaults());
+        ).formLogin(
+            httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer
+                .loginPage("/login")
+                .loginProcessingUrl("/login_proc")
+                .defaultSuccessUrl("/")
+                .permitAll()
+        );
         return http.build();
     }
 
