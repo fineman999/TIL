@@ -2,7 +2,9 @@ package io.chan.springcoresecurity.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -24,33 +26,41 @@ public class SecurityConfig {
 //                .requestMatchers("/css/**", "/js/**", "/img/**", "/lib/**", "/favicon.ico");
 //    }
 
+
     @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        manager.createUser(
-                User.withUsername("user")
-                    .password(passwordEncoder.encode("1111"))
-                    .roles("USER").build());
-        manager.createUser(
-                User.withUsername("manager")
-                    .password(passwordEncoder.encode("1111"))
-                    .roles("MANAGER").build());
-        manager.createUser(
-                User.withUsername("admin")
-                    .password(passwordEncoder.encode("1111"))
-                    .roles("ADMIN").build());
-        return manager;
+    AuthenticationManager authenticationManager(
+            AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
+
+    // 메모리 방식으로 유저 정보를 등록할 수 있다.
+//    @Bean
+//    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
+//        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+//        manager.createUser(
+//                User.withUsername("user")
+//                    .password(passwordEncoder.encode("1111"))
+//                    .roles("USER").build());
+//        manager.createUser(
+//                User.withUsername("manager")
+//                    .password(passwordEncoder.encode("1111"))
+//                    .roles("MANAGER").build());
+//        manager.createUser(
+//                User.withUsername("admin")
+//                    .password(passwordEncoder.encode("1111"))
+//                    .roles("ADMIN").build());
+//        return manager;
+//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
             auth -> auth
-                .requestMatchers("/css/**", "/js/**", "/img/**", "/lib/**", "/favicon.ico").permitAll()
-                .requestMatchers("/").permitAll()
-                .requestMatchers("/mypage").hasRole("USER")
-                .requestMatchers("/messages").hasAnyRole("MANAGER", "ADMIN")
-                .requestMatchers("/config").hasAnyRole("ADMIN", "MANAGER", "USER")
+//                .requestMatchers("/css/**", "/js/**", "/img/**", "/lib/**", "/favicon.ico").permitAll()
+                .requestMatchers("/","/users").permitAll()
+                .requestMatchers("/mypage").hasAuthority("USER")
+                .requestMatchers("/messages").hasAnyAuthority("MANAGER", "ADMIN")
+                .requestMatchers("/config").hasAnyAuthority("ADMIN", "MANAGER", "USER")
                 .anyRequest().authenticated()
         ).formLogin(Customizer.withDefaults());
         return http.build();
