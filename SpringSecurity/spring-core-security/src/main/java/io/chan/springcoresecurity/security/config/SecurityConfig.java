@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
@@ -24,6 +25,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 public class SecurityConfig {
 
     private final AuthenticationSuccessHandler authenticationSuccessHandler;
+    private final AuthenticationFailureHandler authenticationFailureHandler;
 
     // please use permitAll via HttpSecurity#authorizeHttpRequests instead.
 //    @Bean
@@ -70,7 +72,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(
             auth -> auth
 //                .requestMatchers("/css/**", "/js/**", "/img/**", "/lib/**", "/favicon.ico").permitAll()
-                .requestMatchers("/","/users").permitAll()
+                .requestMatchers("/","/users","user/login/**","/login*").permitAll()
                 .requestMatchers("/mypage").hasAuthority("USER")
                 .requestMatchers("/messages").hasAnyAuthority("MANAGER", "ADMIN")
                 .requestMatchers("/config").hasAnyAuthority("ADMIN", "MANAGER", "USER")
@@ -82,6 +84,7 @@ public class SecurityConfig {
                 .authenticationDetailsSource(new FormAuthenticationDetailsSource())
                 .defaultSuccessUrl("/")
                 .successHandler(authenticationSuccessHandler)
+                .failureHandler(authenticationFailureHandler)
                 .permitAll()
         );
         return http.build();
