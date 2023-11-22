@@ -1,18 +1,18 @@
 package io.chan.springcoresecurity.security.config;
 
 import io.chan.springcoresecurity.security.common.FormAuthenticationDetailsSource;
+import io.chan.springcoresecurity.security.filter.AjaxLoginProcessingFilter;
 import io.chan.springcoresecurity.security.handler.CustomAccessDeniedHandler;
-import io.chan.springcoresecurity.security.handler.CustomAuthenticationSuccessHandler;
 import io.chan.springcoresecurity.security.provider.CustomAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -28,6 +29,8 @@ public class SecurityConfig {
 
     private final AuthenticationSuccessHandler authenticationSuccessHandler;
     private final AuthenticationFailureHandler authenticationFailureHandler;
+
+    private final AuthenticationConfiguration authenticationConfiguration;
 
     // please use permitAll via HttpSecurity#authorizeHttpRequests instead.
 //    @Bean
@@ -45,8 +48,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager() throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
@@ -94,6 +96,11 @@ public class SecurityConfig {
             exceptionHandlingConfigurer -> exceptionHandlingConfigurer
                 .accessDeniedHandler(accessDeniedHandler())
         );
+
+        http.addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        http.csrf(AbstractHttpConfigurer::disable);
+
         return http.build();
     }
 
@@ -105,5 +112,13 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    @Bean
+    public AjaxLoginProcessingFilter ajaxLoginProcessingFilter() throws Exception {
+
+        AjaxLoginProcessingFilter ajaxLoginProcessingFilter = new AjaxLoginProcessingFilter();
+        ajaxLoginProcessingFilter.setAuthenticationManager(authenticationManager());
+        return ajaxLoginProcessingFilter;
     }
 }
