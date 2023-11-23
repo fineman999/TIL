@@ -1,12 +1,10 @@
 package io.chan.springcoresecurity.security.provider;
 
-import io.chan.springcoresecurity.security.common.FormWebAuthenticationDetails;
 import io.chan.springcoresecurity.security.service.AccountContext;
 import io.chan.springcoresecurity.security.token.AjaxAuthenticationToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
