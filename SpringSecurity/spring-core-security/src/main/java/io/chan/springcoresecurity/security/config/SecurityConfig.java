@@ -1,8 +1,9 @@
 package io.chan.springcoresecurity.security.config;
 
 import io.chan.springcoresecurity.security.common.FormAuthenticationDetailsSource;
-import io.chan.springcoresecurity.security.filter.AjaxLoginProcessingFilter;
 import io.chan.springcoresecurity.security.handler.CustomAccessDeniedHandler;
+import io.chan.springcoresecurity.security.handler.CustomAuthenticationFailureHandler;
+import io.chan.springcoresecurity.security.handler.CustomAuthenticationSuccessHandler;
 import io.chan.springcoresecurity.security.provider.CustomAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +14,6 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,7 +21,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Order(1)
 @Configuration
@@ -29,15 +28,22 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final AuthenticationSuccessHandler authenticationSuccessHandler;
-    private final AuthenticationFailureHandler authenticationFailureHandler;
-
     // please use permitAll via HttpSecurity#authorizeHttpRequests instead.
 //    @Bean
 //    public WebSecurityCustomizer webSecurityCustomizer() {
 //        return (web) -> web.ignoring()
 //                .requestMatchers("/css/**", "/js/**", "/img/**", "/lib/**", "/favicon.ico");
 //    }
+
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+        return new CustomAuthenticationSuccessHandler();
+    }
+
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler() {
+        return new CustomAuthenticationFailureHandler();
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -69,8 +75,8 @@ public class SecurityConfig {
                 .loginProcessingUrl("/login_proc")
                 .authenticationDetailsSource(new FormAuthenticationDetailsSource())
                 .defaultSuccessUrl("/")
-                .successHandler(authenticationSuccessHandler)
-                .failureHandler(authenticationFailureHandler)
+                .successHandler(authenticationSuccessHandler())
+                .failureHandler(authenticationFailureHandler())
                 .permitAll()
         );
 

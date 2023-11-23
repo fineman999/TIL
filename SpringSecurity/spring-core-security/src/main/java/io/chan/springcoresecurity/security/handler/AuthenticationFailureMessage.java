@@ -1,12 +1,14 @@
 package io.chan.springcoresecurity.security.handler;
 
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
 
 public enum AuthenticationFailureMessage {
     INVALID_CREDENTIALS("Invalid Username or Password", BadCredentialsException.class),
-    INVALID_SECRET_KEY("Invalid Secret Key", InsufficientAuthenticationException.class);
+    INVALID_SECRET_KEY("Invalid Secret Key", InsufficientAuthenticationException.class),
+    DISABLED_ACCOUNT("Disabled Account", DisabledException.class);
 
     public static final String INVALID_USERNAME_OR_PASSWORD = "Invalid Username or Password";
     private final String message;

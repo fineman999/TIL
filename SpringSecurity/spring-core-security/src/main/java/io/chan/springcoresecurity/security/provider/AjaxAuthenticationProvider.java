@@ -32,18 +32,9 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
             throw new BadCredentialsException("Invalid password");
         }
 
-        validSecretKey(authentication);
-
         return getAjaxAuthenticationToken(accountContext);
     }
 
-    private void validSecretKey(Authentication authentication) {
-        FormWebAuthenticationDetails formWebAuthenticationDetails = (FormWebAuthenticationDetails) authentication.getDetails();
-        String secretKey = formWebAuthenticationDetails.getSecretKey();
-        if (!"secret".equals(secretKey)) {
-            throw new InsufficientAuthenticationException("Invalid secret");
-        }
-    }
 
     @Override
     public boolean supports(Class<?> authentication) {

@@ -1,6 +1,8 @@
 package io.chan.springcoresecurity.security.config;
 
 import io.chan.springcoresecurity.security.filter.AjaxLoginProcessingFilter;
+import io.chan.springcoresecurity.security.handler.AjaxAuthenticationFailureHandler;
+import io.chan.springcoresecurity.security.handler.AjaxAuthenticationSuccessHandler;
 import io.chan.springcoresecurity.security.provider.AjaxAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +19,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Order(0)
@@ -27,10 +31,21 @@ public class AjaxSecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
+
     @Bean
     public AuthenticationProvider ajaxAuthenticationProvider(
     ) {
         return new AjaxAuthenticationProvider(userDetailsService, passwordEncoder);
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler ajaxAuthenticationSuccessHandler() {
+        return new AjaxAuthenticationSuccessHandler();
+    }
+
+    @Bean
+    public AuthenticationFailureHandler ajaxAuthenticationFailureHandler() {
+        return new AjaxAuthenticationFailureHandler();
     }
 
 
@@ -41,6 +56,8 @@ public class AjaxSecurityConfig {
                 .requestMatchers("/api/**").authenticated()
                 .anyRequest().authenticated()
         );
+
+
         http.addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http.csrf(AbstractHttpConfigurer::disable);
@@ -53,6 +70,8 @@ public class AjaxSecurityConfig {
 
         AjaxLoginProcessingFilter ajaxLoginProcessingFilter = new AjaxLoginProcessingFilter();
         ajaxLoginProcessingFilter.setAuthenticationManager(ajaxAuthenticationManager());
+        ajaxLoginProcessingFilter.setAuthenticationSuccessHandler(ajaxAuthenticationSuccessHandler());
+        ajaxLoginProcessingFilter.setAuthenticationFailureHandler(ajaxAuthenticationFailureHandler());
         return ajaxLoginProcessingFilter;
     }
 
