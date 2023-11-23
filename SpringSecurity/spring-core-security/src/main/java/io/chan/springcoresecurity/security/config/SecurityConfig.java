@@ -21,19 +21,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-
 @Order(1)
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
-    // please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return (web) -> web.ignoring()
-//                .requestMatchers("/css/**", "/js/**", "/img/**", "/lib/**", "/favicon.ico");
-//    }
 
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
@@ -57,7 +49,6 @@ public class SecurityConfig {
     ) {
         return new CustomAuthenticationProvider(userDetailsService, passwordEncoder);
     }
-
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

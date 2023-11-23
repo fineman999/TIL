@@ -4,25 +4,21 @@ Content-Type: application/json
 X-Requested-With: XMLHttpRequest
 
 {
-    "username": "test",
-    "password": "111"
+    "username": "test2",
+    "password": "1111"
 }
 
-### Send POST request with json body
-POST https://ijhttp-examples.jetbrains.com/post
-Content-Type: application/json
-
-{
-  "id": 999,
-  "value": "content"
-}
-
-### Send POST request with json body
+### Send POST request with body as prameters
 POST http://localhost:8082/api/login
 Content-Type: application/json
 X-Requested-With: XMLHttpRequest
 
 {
-  "username": "test",
+  "username": "manager",
   "password": "1111"
 }
+
+### Send POST request with body as prameters
+GET http://localhost:8082/api/messages
+Content-Type: application/json
+X-Requested-With: XMLHttpRequest
