@@ -7,6 +7,7 @@ import io.chan.springcoresecurity.security.provider.CustomAuthenticationProvider
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -22,6 +23,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+@Order(1)
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -29,8 +31,6 @@ public class SecurityConfig {
 
     private final AuthenticationSuccessHandler authenticationSuccessHandler;
     private final AuthenticationFailureHandler authenticationFailureHandler;
-
-    private final AuthenticationConfiguration authenticationConfiguration;
 
     // please use permitAll via HttpSecurity#authorizeHttpRequests instead.
 //    @Bean
@@ -40,6 +40,11 @@ public class SecurityConfig {
 //    }
 
     @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
     public AuthenticationProvider authenticationProvider(
             UserDetailsService userDetailsService,
             PasswordEncoder passwordEncoder
@@ -47,29 +52,6 @@ public class SecurityConfig {
         return new CustomAuthenticationProvider(userDetailsService, passwordEncoder);
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager() throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    // 메모리 방식으로 유저 정보를 등록할 수 있다.
-//    @Bean
-//    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-//        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-//        manager.createUser(
-//                User.withUsername("user")
-//                    .password(passwordEncoder.encode("1111"))
-//                    .roles("USER").build());
-//        manager.createUser(
-//                User.withUsername("manager")
-//                    .password(passwordEncoder.encode("1111"))
-//                    .roles("MANAGER").build());
-//        manager.createUser(
-//                User.withUsername("admin")
-//                    .password(passwordEncoder.encode("1111"))
-//                    .roles("ADMIN").build());
-//        return manager;
-//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -97,10 +79,6 @@ public class SecurityConfig {
                 .accessDeniedHandler(accessDeniedHandler())
         );
 
-        http.addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
-
-        http.csrf(AbstractHttpConfigurer::disable);
-
         return http.build();
     }
 
@@ -114,11 +92,4 @@ public class SecurityConfig {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    @Bean
-    public AjaxLoginProcessingFilter ajaxLoginProcessingFilter() throws Exception {
-
-        AjaxLoginProcessingFilter ajaxLoginProcessingFilter = new AjaxLoginProcessingFilter();
-        ajaxLoginProcessingFilter.setAuthenticationManager(authenticationManager());
-        return ajaxLoginProcessingFilter;
-    }
 }
