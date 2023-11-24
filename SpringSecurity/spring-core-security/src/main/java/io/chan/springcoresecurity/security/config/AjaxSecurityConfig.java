@@ -1,7 +1,6 @@
 package io.chan.springcoresecurity.security.config;
 
 import io.chan.springcoresecurity.security.common.AjaxLoginAuthenticationEntryPoint;
-import io.chan.springcoresecurity.security.filter.AjaxLoginProcessingFilter;
 import io.chan.springcoresecurity.security.handler.AjaxAccessDeniedHandler;
 import io.chan.springcoresecurity.security.handler.AjaxAuthenticationFailureHandler;
 import io.chan.springcoresecurity.security.handler.AjaxAuthenticationSuccessHandler;
@@ -22,7 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.DelegatingSecurityContextRepository;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
@@ -64,7 +62,7 @@ public class AjaxSecurityConfig {
         );
 
 
-        http.addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
+//        http.addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http.exceptionHandling(
             exceptionHandling -> exceptionHandling
@@ -74,19 +72,31 @@ public class AjaxSecurityConfig {
 
         http.csrf(AbstractHttpConfigurer::disable);
 
+        customConfigurerAjax(http);
+
         return http.build();
     }
 
-    @Bean
-    public AjaxLoginProcessingFilter ajaxLoginProcessingFilter() throws Exception {
-
-        AjaxLoginProcessingFilter ajaxLoginProcessingFilter = new AjaxLoginProcessingFilter();
-        ajaxLoginProcessingFilter.setAuthenticationManager(ajaxAuthenticationManager());
-        ajaxLoginProcessingFilter.setSecurityContextRepository(securityContextRepository());
-        ajaxLoginProcessingFilter.setAuthenticationSuccessHandler(ajaxAuthenticationSuccessHandler());
-        ajaxLoginProcessingFilter.setAuthenticationFailureHandler(ajaxAuthenticationFailureHandler());
-        return ajaxLoginProcessingFilter;
+    private void customConfigurerAjax(HttpSecurity http) throws Exception {
+        http
+            .apply(new AjaxLoginConfigurer<>())
+            .successHandlerAjax(ajaxAuthenticationSuccessHandler())
+            .failureHandlerAjax(ajaxAuthenticationFailureHandler())
+            .setAuthenticationManager(ajaxAuthenticationManager())
+            .loginProcessingUrl("/api/login");
     }
+
+    // Custom Dsl를 사용함으로써 주석하기
+//    @Bean
+//    public AjaxLoginProcessingFilter ajaxLoginProcessingFilter() throws Exception {
+//
+//        AjaxLoginProcessingFilter ajaxLoginProcessingFilter = new AjaxLoginProcessingFilter();
+//        ajaxLoginProcessingFilter.setAuthenticationManager(ajaxAuthenticationManager());
+//        ajaxLoginProcessingFilter.setSecurityContextRepository(securityContextRepository());
+//        ajaxLoginProcessingFilter.setAuthenticationSuccessHandler(ajaxAuthenticationSuccessHandler());
+//        ajaxLoginProcessingFilter.setAuthenticationFailureHandler(ajaxAuthenticationFailureHandler());
+//        return ajaxLoginProcessingFilter;
+//    }
 
     @Bean
     public SecurityContextRepository securityContextRepository() {
