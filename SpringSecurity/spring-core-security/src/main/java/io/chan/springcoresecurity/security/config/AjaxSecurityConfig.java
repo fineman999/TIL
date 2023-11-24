@@ -25,10 +25,10 @@ import org.springframework.security.web.context.DelegatingSecurityContextReposit
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
-
-@Order(0)
-@Configuration
-@EnableWebSecurity
+//
+//@Order(0)
+//@Configuration
+//@EnableWebSecurity
 @RequiredArgsConstructor
 public class AjaxSecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;

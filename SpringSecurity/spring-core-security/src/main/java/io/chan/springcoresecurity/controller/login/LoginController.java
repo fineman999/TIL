@@ -1,7 +1,7 @@
 package io.chan.springcoresecurity.controller.login;
 
 
-import io.chan.springcoresecurity.domain.Account;
+import io.chan.springcoresecurity.domain.entity.Account;
 import io.chan.springcoresecurity.security.token.AjaxAuthenticationToken;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,7 +28,7 @@ public class LoginController {
     ) {
         model.addAttribute("error", error);
         model.addAttribute("exception", exception);
-        return "user/login/login";
+        return "login";
     }
 
     @GetMapping("/logout")

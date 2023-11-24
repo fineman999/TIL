@@ -1,15 +1,14 @@
 package io.chan.springcoresecurity.controller.user;
 
 
-import io.chan.springcoresecurity.domain.Account;
-import io.chan.springcoresecurity.domain.AccountDto;
+import io.chan.springcoresecurity.domain.dto.AccountDto;
+import io.chan.springcoresecurity.domain.entity.Account;
 import io.chan.springcoresecurity.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @Controller
 @RequiredArgsConstructor

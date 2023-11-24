@@ -1,7 +1,7 @@
 package io.chan.springcoresecurity.security.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.chan.springcoresecurity.domain.Account;
+import io.chan.springcoresecurity.domain.entity.Account;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
