@@ -2,8 +2,10 @@ package io.chan.springcoresecurity.controller.login;
 
 
 import io.chan.springcoresecurity.domain.Account;
+import io.chan.springcoresecurity.security.token.AjaxAuthenticationToken;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -12,12 +14,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.security.Principal;
 import java.util.Objects;
 
 @Controller
 public class LoginController {
 
-    @GetMapping("/login")
+    @GetMapping(value = {"/login", "/api/login"})
     public String login(
             @RequestParam(value = "error", required = false) String error,
             @RequestParam(value = "exception", required = false) String exception,
@@ -38,14 +41,23 @@ public class LoginController {
         return "redirect:/login";
     }
 
-    @GetMapping("/denied")
+    @GetMapping(value = {"/denied", "/api/denied"})
     public String denied(
             @RequestParam(value = "exception", required = false) String exception,
-            Model model
+            Model model,
+            Principal principal
     ) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Account account = (Account) authentication.getPrincipal();
+        Account account;
+        if (principal instanceof UsernamePasswordAuthenticationToken) {
+            UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) principal;
+            account = (Account) token.getPrincipal();
+
+        } else {
+            AjaxAuthenticationToken token = (AjaxAuthenticationToken) principal;
+            account = (Account) token.getPrincipal();
+        }
+
         model.addAttribute("username", account.getUsername());
         model.addAttribute("exception", exception);
 
