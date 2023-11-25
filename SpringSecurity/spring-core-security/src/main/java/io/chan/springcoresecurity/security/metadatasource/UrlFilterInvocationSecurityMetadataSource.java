@@ -2,6 +2,7 @@ package io.chan.springcoresecurity.security.metadatasource;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -11,15 +12,21 @@ import java.util.*;
 
 public class UrlFilterInvocationSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
 
+    // 순서를 보장하는 LinkedHashMap 사용
     private final LinkedHashMap<RequestMatcher, List<ConfigAttribute>> requestMap = new LinkedHashMap<>();
+
+    public UrlFilterInvocationSecurityMetadataSource(LinkedHashMap<RequestMatcher, List<ConfigAttribute>> requestMatcherListLinkedHashMap) {
+        this.requestMap.putAll(requestMatcherListLinkedHashMap);
+    }
 
     @Override
     public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
 
         FilterInvocation fi = (FilterInvocation) object;
+
         HttpServletRequest request = fi.getRequest();
 
-        requestMap.put(new AntPathRequestMatcher("/mypage"), Arrays.asList(() -> "USER"));
+
 
         for (RequestMatcher matcher : requestMap.keySet()) {
             if (matcher.matches(request)) {

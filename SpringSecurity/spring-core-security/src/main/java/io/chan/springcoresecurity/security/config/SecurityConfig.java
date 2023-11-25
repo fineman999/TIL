@@ -1,38 +1,42 @@
 package io.chan.springcoresecurity.security.config;
 
 import io.chan.springcoresecurity.security.common.FormAuthenticationDetailsSource;
+import io.chan.springcoresecurity.security.factory.UrlResourcesMapFactoryBean;
 import io.chan.springcoresecurity.security.handler.CustomAccessDeniedHandler;
 import io.chan.springcoresecurity.security.handler.CustomAuthenticationFailureHandler;
 import io.chan.springcoresecurity.security.handler.CustomAuthenticationSuccessHandler;
 import io.chan.springcoresecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import io.chan.springcoresecurity.security.provider.CustomAuthenticationProvider;
+import io.chan.springcoresecurity.security.service.SecurityResourceService;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.RoleVoter;
+import org.springframework.security.access.vote.UnanimousBased;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.RequestCacheConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
+import java.io.IOException;
 import java.util.List;
 
 //@Order(1)
@@ -42,7 +46,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
-
+    private final SecurityResourceService securityResourceService;
 
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
@@ -71,7 +75,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-//                .securityMatcher("/")
+                .securityMatcher("/**")
                 .authorizeHttpRequests(
             auth -> auth
                 .requestMatchers("/images/**", "/js/**", "/css/**", "/lib/**", "/favicon.ico").permitAll()
@@ -79,7 +83,7 @@ public class SecurityConfig {
 //                .requestMatchers("/mypage").hasRole("USER")
 //                .requestMatchers("/messages").hasAnyRole("MANAGER", "ADMIN")
 //                .requestMatchers("/config").hasAnyRole("ADMIN", "MANAGER", "USER")
-                .anyRequest().authenticated()
+                    .anyRequest().authenticated()
         ).formLogin(
             httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer
                 .loginPage("/login")
@@ -91,11 +95,11 @@ public class SecurityConfig {
                 .permitAll()
         );
 
-        http.addFilterBefore(filterSecurityInterceptor(), FilterSecurityInterceptor.class);
+        http.addFilterBefore(filterSecurityInterceptor(), AuthorizationFilter.class);
 
         http.exceptionHandling(
             exceptionHandlingConfigurer -> exceptionHandlingConfigurer
-                .accessDeniedHandler(accessDeniedHandler())
+                    .accessDeniedHandler(accessDeniedHandler())
         );
 
         return http.build();
@@ -104,7 +108,10 @@ public class SecurityConfig {
 
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {
-        return new CustomAccessDeniedHandler("/denied");
+        return (request, response, accessDeniedException) -> {
+            String deniedUrl = "/denied";
+            response.sendRedirect(deniedUrl);
+        };
     }
 
     @Bean
@@ -123,7 +130,7 @@ public class SecurityConfig {
     }
 
     private AccessDecisionManager affirmativeBased() {
-        return new AffirmativeBased(getAccessDecisionVoters());
+        return new UnanimousBased(getAccessDecisionVoters());
     }
 
     private List<AccessDecisionVoter<?>> getAccessDecisionVoters() {
@@ -134,6 +141,10 @@ public class SecurityConfig {
 
     @Bean
     public FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetadataSource() {
-        return new UrlFilterInvocationSecurityMetadataSource();
+        return new UrlFilterInvocationSecurityMetadataSource(urlResourcesMapFactoryBean().getObject());
+    }
+
+    private UrlResourcesMapFactoryBean urlResourcesMapFactoryBean() {
+        return new UrlResourcesMapFactoryBean(securityResourceService);
     }
 }
