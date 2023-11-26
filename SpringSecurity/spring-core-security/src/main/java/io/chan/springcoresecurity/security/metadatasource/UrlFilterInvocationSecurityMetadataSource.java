@@ -28,7 +28,6 @@ public class UrlFilterInvocationSecurityMetadataSource implements FilterInvocati
         HttpServletRequest request = fi.getRequest();
 
 
-
         for (RequestMatcher matcher : requestMap.keySet()) {
             if (matcher.matches(request)) {
                 return requestMap.get(matcher);

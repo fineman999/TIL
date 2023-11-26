@@ -8,13 +8,14 @@ import io.chan.springcoresecurity.security.handler.CustomAuthenticationSuccessHa
 import io.chan.springcoresecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import io.chan.springcoresecurity.security.provider.CustomAuthenticationProvider;
 import io.chan.springcoresecurity.security.service.SecurityResourceService;
+import io.chan.springcoresecurity.service.RoleHierarchyService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
-import org.springframework.security.access.vote.RoleVoter;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.access.vote.RoleHierarchyVoter;
 import org.springframework.security.access.vote.UnanimousBased;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -30,6 +31,7 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 //@Order(1)
@@ -40,8 +42,8 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final SecurityResourceService securityResourceService;
-    private final String[] permitAllResources = {"/", "/users", "/user/login/**", "/login*", "/denied",
-    "css/**", "/images/**", "/js/**", "/lib/**", "/favicon.ico"};
+    private final RoleHierarchyService roleHierarchyService;
+    private final String[] permitAllResources = {"css/**", "/images/**", "/js/**", "/lib/**", "/favicon.ico"};
 
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
@@ -74,7 +76,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
             auth -> auth
 //                .requestMatchers("/images/**", "/js/**", "/css/**", "/lib/**", "/favicon.ico").permitAll()
-//                .requestMatchers("/","/users","user/login/**","/login*").permitAll()
+                .requestMatchers("/","/users","user/login/**","/login*").permitAll()
 //                .requestMatchers("/mypage").hasRole("USER")
 //                .requestMatchers("/messages").hasAnyRole("MANAGER", "ADMIN")
 //                .requestMatchers("/config").hasAnyRole("ADMIN", "MANAGER", "USER")
@@ -129,9 +131,26 @@ public class SecurityConfig {
     }
 
     private List<AccessDecisionVoter<?>> getAccessDecisionVoters() {
-        RoleVoter roleVoter = new RoleVoter();
-        roleVoter.setRolePrefix("");
-        return List.of(roleVoter);
+        List<AccessDecisionVoter<? extends Object>> accessDecisionVoters = new ArrayList<>();
+        accessDecisionVoters.add(roleVoter());
+        return accessDecisionVoters;
+    }
+//    private List<AccessDecisionVoter<?>> getAccessDecisionVoters() {
+//        RoleVoter roleVoter = new RoleVoter();
+//        roleVoter.setRolePrefix("");
+//        return List.of(roleVoter);
+//    }
+
+
+    private AccessDecisionVoter<? extends Object> roleVoter() {
+        return new RoleHierarchyVoter(roleHierarchy());
+    }
+
+    @Bean
+    public RoleHierarchyImpl roleHierarchy() {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        roleHierarchy.setHierarchy(roleHierarchyService.findAllHierarchy());
+        return roleHierarchy;
     }
 
     @Bean
