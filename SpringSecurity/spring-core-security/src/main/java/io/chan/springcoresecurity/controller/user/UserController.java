@@ -5,10 +5,14 @@ import io.chan.springcoresecurity.domain.dto.AccountDto;
 import io.chan.springcoresecurity.domain.entity.Account;
 import io.chan.springcoresecurity.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.security.Principal;
 
 @Controller
 @RequiredArgsConstructor
@@ -18,7 +22,14 @@ public class UserController {
 	private final PasswordEncoder passwordEncoder;
 
 	@GetMapping(value="/mypage")
-	public String myPage() throws Exception {
+	public String myPage(
+			@AuthenticationPrincipal Account account,
+			Principal principal,
+			Authentication authentication
+	) throws Exception {
+
+		String name = principal.getName();
+		userService.order("user");
 		return "user/mypage";
 	}
 
@@ -41,7 +52,8 @@ public class UserController {
 
 	@GetMapping("/order")
 	public String order(){
-		userService.order();
+		String username = "user";
+		userService.order(username);
 		return "user/mypage";
 	}
 }

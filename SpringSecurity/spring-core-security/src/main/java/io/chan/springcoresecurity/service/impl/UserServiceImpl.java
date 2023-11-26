@@ -8,7 +8,7 @@ import io.chan.springcoresecurity.repository.UserRepository;
 import io.chan.springcoresecurity.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,8 +85,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Secured("ROLE_MANAGER")
-    public void order() {
+    @PreAuthorize("hasRole('ROLE_USER') and #username == principal.username")
+    public void order(String username) {
         log.info("order");
     }
 }

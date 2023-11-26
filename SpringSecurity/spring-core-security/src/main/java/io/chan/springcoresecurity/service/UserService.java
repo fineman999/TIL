@@ -18,5 +18,5 @@ public interface UserService {
 
     void deleteUser(Long idx);
 
-    void order();
+    void order(String username);
 }
