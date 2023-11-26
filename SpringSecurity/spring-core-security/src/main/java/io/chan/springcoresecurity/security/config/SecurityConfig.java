@@ -2,22 +2,16 @@ package io.chan.springcoresecurity.security.config;
 
 import io.chan.springcoresecurity.security.common.FormAuthenticationDetailsSource;
 import io.chan.springcoresecurity.security.factory.UrlResourcesMapFactoryBean;
-import io.chan.springcoresecurity.security.handler.CustomAccessDeniedHandler;
 import io.chan.springcoresecurity.security.handler.CustomAuthenticationFailureHandler;
 import io.chan.springcoresecurity.security.handler.CustomAuthenticationSuccessHandler;
 import io.chan.springcoresecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import io.chan.springcoresecurity.security.provider.CustomAuthenticationProvider;
 import io.chan.springcoresecurity.security.service.SecurityResourceService;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.access.vote.UnanimousBased;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,7 +30,6 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
-import java.io.IOException;
 import java.util.List;
 
 //@Order(1)
@@ -140,8 +133,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetadataSource() {
-        return new UrlFilterInvocationSecurityMetadataSource(urlResourcesMapFactoryBean().getObject());
+    public UrlFilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetadataSource() {
+        return new UrlFilterInvocationSecurityMetadataSource(urlResourcesMapFactoryBean().getObject(), securityResourceService);
     }
 
     private UrlResourcesMapFactoryBean urlResourcesMapFactoryBean() {
