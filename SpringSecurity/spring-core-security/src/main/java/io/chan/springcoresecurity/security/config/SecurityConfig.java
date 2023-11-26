@@ -2,12 +2,14 @@ package io.chan.springcoresecurity.security.config;
 
 import io.chan.springcoresecurity.security.common.FormAuthenticationDetailsSource;
 import io.chan.springcoresecurity.security.factory.UrlResourcesMapFactoryBean;
+import io.chan.springcoresecurity.security.filter.PermitAllFilter;
 import io.chan.springcoresecurity.security.handler.CustomAuthenticationFailureHandler;
 import io.chan.springcoresecurity.security.handler.CustomAuthenticationSuccessHandler;
 import io.chan.springcoresecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import io.chan.springcoresecurity.security.provider.CustomAuthenticationProvider;
 import io.chan.springcoresecurity.security.service.SecurityResourceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDecisionManager;
@@ -25,8 +27,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
-import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
@@ -40,6 +40,8 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final SecurityResourceService securityResourceService;
+    private final String[] permitAllResources = {"/", "/users", "/user/login/**", "/login*", "/denied",
+    "css/**", "/images/**", "/js/**", "/lib/**", "/favicon.ico"};
 
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
@@ -68,11 +70,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/**")
+//                .securityMatcher("/**")
                 .authorizeHttpRequests(
             auth -> auth
-                .requestMatchers("/images/**", "/js/**", "/css/**", "/lib/**", "/favicon.ico").permitAll()
-                .requestMatchers("/","/users","user/login/**","/login*").permitAll()
+//                .requestMatchers("/images/**", "/js/**", "/css/**", "/lib/**", "/favicon.ico").permitAll()
+//                .requestMatchers("/","/users","user/login/**","/login*").permitAll()
 //                .requestMatchers("/mypage").hasRole("USER")
 //                .requestMatchers("/messages").hasAnyRole("MANAGER", "ADMIN")
 //                .requestMatchers("/config").hasAnyRole("ADMIN", "MANAGER", "USER")
@@ -113,13 +115,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    public FilterSecurityInterceptor filterSecurityInterceptor(
+    public PermitAllFilter filterSecurityInterceptor(
      ) throws Exception {
-        FilterSecurityInterceptor filterSecurityInterceptor = new FilterSecurityInterceptor();
-        filterSecurityInterceptor.setSecurityMetadataSource(urlFilterInvocationSecurityMetadataSource());
-        filterSecurityInterceptor.setAccessDecisionManager(affirmativeBased());
-        filterSecurityInterceptor.setAuthenticationManager(authenticationManager());
-        return filterSecurityInterceptor;
+        PermitAllFilter permitAllFilter = new PermitAllFilter(permitAllResources);
+        permitAllFilter.setSecurityMetadataSource(urlFilterInvocationSecurityMetadataSource());
+        permitAllFilter.setAccessDecisionManager(affirmativeBased());
+        permitAllFilter.setAuthenticationManager(authenticationManager());
+        return permitAllFilter;
     }
 
     private AccessDecisionManager affirmativeBased() {
