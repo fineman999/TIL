@@ -1,6 +1,8 @@
 package io.chan.springcoresecurity.security.service;
 
+import io.chan.springcoresecurity.domain.entity.AccessIp;
 import io.chan.springcoresecurity.domain.entity.Resources;
+import io.chan.springcoresecurity.repository.AccessIpRepository;
 import io.chan.springcoresecurity.repository.ResourcesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.ConfigAttribute;
@@ -17,6 +19,7 @@ import java.util.List;
 public class SecurityResourceService {
 
     private final ResourcesRepository resourcesRepository;
+    private final AccessIpRepository accessIpRepository;
 
     public LinkedHashMap<RequestMatcher, List<ConfigAttribute>> getResourceList() {
         LinkedHashMap<RequestMatcher, List<ConfigAttribute>> result = new LinkedHashMap<>();
@@ -30,4 +33,7 @@ public class SecurityResourceService {
         return result;
     }
 
+    public List<AccessIp> getAccessIps() {
+        return accessIpRepository.findAll();
+    }
 }

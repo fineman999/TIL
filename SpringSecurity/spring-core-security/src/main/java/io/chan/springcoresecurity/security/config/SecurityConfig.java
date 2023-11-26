@@ -8,6 +8,7 @@ import io.chan.springcoresecurity.security.handler.CustomAuthenticationSuccessHa
 import io.chan.springcoresecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import io.chan.springcoresecurity.security.provider.CustomAuthenticationProvider;
 import io.chan.springcoresecurity.security.service.SecurityResourceService;
+import io.chan.springcoresecurity.security.voter.IpAddressVoter;
 import io.chan.springcoresecurity.service.RoleHierarchyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -130,8 +131,15 @@ public class SecurityConfig {
         return new UnanimousBased(getAccessDecisionVoters());
     }
 
+    /**
+     * AccessDecisionVoter를 설정한다.
+     * 두 가지 Voter를 설정한다.
+     * 1. IpAddressVoter
+     * 2. RoleVoter
+     */
     private List<AccessDecisionVoter<?>> getAccessDecisionVoters() {
         List<AccessDecisionVoter<? extends Object>> accessDecisionVoters = new ArrayList<>();
+        accessDecisionVoters.add(new IpAddressVoter(securityResourceService));
         accessDecisionVoters.add(roleVoter());
         return accessDecisionVoters;
     }
