@@ -27,9 +27,6 @@ public class UserController {
 			Principal principal,
 			Authentication authentication
 	) throws Exception {
-
-		String name = principal.getName();
-		userService.order("user");
 		return "user/mypage";
 	}
 
