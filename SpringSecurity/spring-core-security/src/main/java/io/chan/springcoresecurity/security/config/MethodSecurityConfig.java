@@ -4,19 +4,13 @@ import io.chan.springcoresecurity.security.factory.MethodResourcesFactoryBean;
 import io.chan.springcoresecurity.security.processor.ProtectPointcutPostProcessor;
 import io.chan.springcoresecurity.security.service.SecurityResourceService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.method.MapBasedMethodSecurityMetadataSource;
 import org.springframework.security.access.method.MethodSecurityMetadataSource;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Map;
 import java.util.Objects;
 
 @Configuration
