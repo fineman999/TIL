@@ -12,9 +12,15 @@ import java.util.List;
 public class MethodResourcesFactoryBean implements FactoryBean<LinkedHashMap<String, List<ConfigAttribute>>> {
 
     private final LinkedHashMap<String, List<ConfigAttribute>> resourceMap;
+    private final String resourceType;
 
-    public MethodResourcesFactoryBean(SecurityResourceService securityResourceService) {
-        this.resourceMap = securityResourceService.getMethodResourceList();
+    public MethodResourcesFactoryBean(SecurityResourceService securityResourceService, String resourceType) {
+        this.resourceType = resourceType;
+        if (resourceType.equals("method")) {
+            this.resourceMap = securityResourceService.getMethodResourceList();
+        } else {
+            this.resourceMap = securityResourceService.getPointcutResourceList();
+        }
     }
 
     @Override

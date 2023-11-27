@@ -36,6 +36,20 @@ public class SecurityResourceService {
     public LinkedHashMap<String, List<ConfigAttribute>> getMethodResourceList() {
         LinkedHashMap<String, List<ConfigAttribute>> result = new LinkedHashMap<>();
         List<Resources> resources = resourcesRepository.findAllMethodResources();
+        return getResources(resources, result);
+    }
+
+    public List<AccessIp> getAccessIps() {
+        return accessIpRepository.findAll();
+    }
+
+    public LinkedHashMap<String, List<ConfigAttribute>> getPointcutResourceList() {
+        LinkedHashMap<String, List<ConfigAttribute>> result = new LinkedHashMap<>();
+        List<Resources> resources = resourcesRepository.findAllPointcutResources();
+        return getResources(resources, result);
+    }
+
+    private LinkedHashMap<String, List<ConfigAttribute>> getResources(List<Resources> resources, LinkedHashMap<String, List<ConfigAttribute>> result) {
         resources.forEach(re -> {
             List<ConfigAttribute> configAttributes = new ArrayList<>();
             re.getRoleSet().forEach(role ->
@@ -43,9 +57,5 @@ public class SecurityResourceService {
             result.put(re.getResourceName(), configAttributes);
         });
         return result;
-    }
-
-    public List<AccessIp> getAccessIps() {
-        return accessIpRepository.findAll();
     }
 }
