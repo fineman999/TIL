@@ -8,11 +8,11 @@ spring:
         registration:
           keycloak:
             client-id: oauth2-client-app
-            client-secret: hXGCxVSRKC5b9Ge8H5gPWP3kjVNlP055
+            client-secret: naPA94uPKQ8VAuZuj6L1o7PXhIVa6VDX
             client-name: OAuth2 Client App
             redirect-uri: http://localhost:8081/login/oauth2/code/keycloak
             authorization-grant-type: authorization_code
-            client-authentication-method: client_secret_basic
+            client-authentication-method: client_secret_post
             scope: openid, profile, email
         provider:
           keycloak:

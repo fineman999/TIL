@@ -20,33 +20,33 @@ public class OAuth2ClientConfig {
 
     private final ClientRegistrationRepository clientRegistrationRepository;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
-//                .requestMatchers("/loginPage").permitAll()
-//                .anyRequest().authenticated()
-//            )
-//            .oauth2Login(oauth2 ->
-//                oauth2.loginPage("/loginPage")
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+////        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
+////                .requestMatchers("/loginPage").permitAll()
+////                .anyRequest().authenticated()
+////            )
+////            .oauth2Login(oauth2 ->
+////                oauth2.loginPage("/loginPage")
+////            );
+////        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
+////                .anyRequest().permitAll()
+////            );
+//
+//        http.logout(logout -> logout
+//                .logoutSuccessHandler(oidcLogoutSuccessHandler())
+//                .invalidateHttpSession(true)
+//                .clearAuthentication(true)
+//                .deleteCookies("JSESSIONID")
 //            );
-        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                .anyRequest().permitAll()
-            );
-
-        http.logout(logout -> logout
-                .logoutSuccessHandler(oidcLogoutSuccessHandler())
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .deleteCookies("JSESSIONID")
-            );
-        return http.build();
-    }
-
-    private LogoutSuccessHandler oidcLogoutSuccessHandler() {
-        OidcClientInitiatedLogoutSuccessHandler successHandler = new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
-        successHandler.setPostLogoutRedirectUri("http://localhost:8081/loginPage");
-        return successHandler;
-    }
+//        return http.build();
+//    }
+//
+//    private LogoutSuccessHandler oidcLogoutSuccessHandler() {
+//        OidcClientInitiatedLogoutSuccessHandler successHandler = new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
+//        successHandler.setPostLogoutRedirectUri("http://localhost:8081/login");
+//        return successHandler;
+//    }
 
 //    @Bean
 //    public ClientRegistrationRepository clientRegistrationRepository() {
