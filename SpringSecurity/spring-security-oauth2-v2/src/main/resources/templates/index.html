@@ -3,8 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script>
+        function authorizationCode() {
+            window.location = new URL("http://localhost:8081/oauth2/authorization/keycloak");
+        }
+
+        function authorizationCodeWithPKCE() {
+            window.location = new URL("http://localhost:8081/oauth2/authorization/pkce");
+        }
+
+        function implicit() {
+            window.location = new URL("http://localhost:8081/oauth2/authorization/keycloak2");
+        }
+    </script>
 </head>
 <body>
 <h1>Hello World!</h1>
+<form>
+    <input type="button" value="Authorization Code" onclick="authorizationCode()"/>
+</form>
 </body>
 </html>

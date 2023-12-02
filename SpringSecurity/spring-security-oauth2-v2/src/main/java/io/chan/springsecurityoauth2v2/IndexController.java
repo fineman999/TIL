@@ -31,7 +31,7 @@ import java.util.Map;
 public class IndexController {
     private final ClientRegistrationRepository clientRegistrationRepository;
 
-    @GetMapping("/")
+    @GetMapping("/index")
     public String index() {
         ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId("keycloak");
 

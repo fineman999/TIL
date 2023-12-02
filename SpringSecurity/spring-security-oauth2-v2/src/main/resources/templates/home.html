@@ -3,34 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-
-    <script>
-        function authorizationCode() {
-            window.location = new URL("http://localhost:8081/oauth2/authorization/keycloak");
-        }
-
-        function authorizationCodeWithPKCE() {
-            window.location = new URL("http://localhost:8081/oauth2/authorization/pkce");
-        }
-
-        function implicit() {
-            window.location = new URL("http://localhost:8081/oauth2/authorization/keycloak2");
-        }
-    </script>
 </head>
 <body>
-<div class="container">
-    <h2 class="text-center">Login</h2>
-    <tr>
-        <td><a href="javascript:authorizationCode()">authorization code</a></td>
-    </tr>
-    <tr>
-        <td><a href="javascript:authorizationCodeWithPKCE()">authorization code with PKCE</a></td>
-    </tr>
-    <tr>
-        <td><a href="javascript:implicit()">implicit</a></td>
-    </tr>
+<div> Welcome to the home page! </div>
+<div>
+    <p><span th:text = "${oAuth2AuthenticationToken}"></span></p>
 </div>
 
+<div>
+    <a href="/logout">Logout</a>
+</div>
 </body>
 </html>
