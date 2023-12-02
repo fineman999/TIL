@@ -96,7 +96,44 @@ public class LoginController {
         log.info("authorize: {}", authorize);
         return "home";
     }
+    @GetMapping("/clientCredentialsLogin")
+    public String clientCredentialsLogin(
+            Model model,
+            HttpServletRequest request,
+            HttpServletResponse response) {
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        Map<String, Object> httpServlet = new HashMap<>();
+        httpServlet.put(HttpServletRequest.class.getName(), request);
+        httpServlet.put(HttpServletResponse.class.getName(), response);
+
+
+        OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest.withClientRegistrationId("keycloak")
+                .principal(authentication)
+                .attributes(attributes -> attributes.putAll(httpServlet))
+                .build();
+
+        OAuth2AuthorizationSuccessHandler oAuth2AuthorizationSuccessHandler = (OAuth2AuthorizedClient, principal, attributes) -> {
+            oAuth2AuthorizedClientRepository.saveAuthorizedClient(
+                    OAuth2AuthorizedClient,
+                    principal,
+                    (HttpServletRequest) attributes.get(HttpServletRequest.class.getName()),
+                    (HttpServletResponse) attributes.get(HttpServletResponse.class.getName())
+            );
+        };
+
+
+        authorizedClientManager.setAuthorizationSuccessHandler(oAuth2AuthorizationSuccessHandler);
+
+        OAuth2AuthorizedClient authorize = authorizedClientManager.authorize(authorizeRequest);
+
+
+
+        log.info("authorize: {}", authorize.getAccessToken().getTokenType());
+        model.addAttribute("authorizedClient", authorize.getAccessToken().getTokenValue());
+        return "home";
+    }
     @GetMapping("/logout")
     public String logoutPage(
             Authentication authentication,
