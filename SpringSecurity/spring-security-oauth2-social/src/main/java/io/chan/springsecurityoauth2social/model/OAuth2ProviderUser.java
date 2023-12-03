@@ -3,6 +3,7 @@ package io.chan.springsecurityoauth2social.model;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.List;
@@ -16,11 +17,28 @@ public abstract class OAuth2ProviderUser implements ProviderUser {
     private final ClientRegistration clientRegistration;
     private final Map<String, Object> attributes;
 
-    public OAuth2ProviderUser(Map<String, Object> authorities, OAuth2User oAuth2User, ClientRegistration clientRegistration) {
+    public OAuth2ProviderUser(
+            Map<String, Object> authorities,
+            OAuth2User oAuth2User,
+            ClientRegistration clientRegistration) {
         this.attributes = authorities;
         this.oAuth2User = oAuth2User;
         this.clientRegistration = clientRegistration;
     }
+
+    /**
+     * OAuth2User의 attributes를 Map으로 형변환 해주는 생성자
+     */
+    public OAuth2ProviderUser(
+            Map<String, Object> authorities,
+            OAuth2User oAuth2User,
+            ClientRegistration clientRegistration,
+            String usernameAttributeName) {
+        this.attributes = authorities;
+        this.oAuth2User = convert(oAuth2User, usernameAttributeName);
+        this.clientRegistration = clientRegistration;
+    }
+
 
     @Override
     public String getProvider() {
@@ -42,5 +60,17 @@ public abstract class OAuth2ProviderUser implements ProviderUser {
     @Override
     public Map<String, Object> getAttributes() {
         return attributes;
+    }
+
+    /**
+     * OAuth2User의 attributes를 Map으로 형변환 해주는 메서드
+     */
+    @SuppressWarnings("unchecked")
+    protected OAuth2User convert(OAuth2User oAuth2User, String key) {
+        return new DefaultOAuth2User(
+                oAuth2User.getAuthorities(),
+                (Map<String, Object>) oAuth2User.getAttributes().get(key),
+                EMAIL
+        );
     }
 }

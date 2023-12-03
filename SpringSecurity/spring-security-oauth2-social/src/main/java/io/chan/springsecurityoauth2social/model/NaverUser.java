@@ -10,13 +10,15 @@ public class NaverUser extends OAuth2ProviderUser {
     private static final String ID = "id";
     private static final String USERNAME = "email";
 
+    private static final String USER_NAME_ATTRIBUTE_NAME = "response";
+
     /**
      * Naver OAuth 같은 경우 response 객체에 담겨져 있다.
      * 그러므로 response 객체를 받아서 Map으로 형변환을 해준다.
      */
     @SuppressWarnings("unchecked")
     public NaverUser(OAuth2User oAuth2User, ClientRegistration clientRegistration) {
-        super( (Map<String, Object>) oAuth2User.getAttributes().get("response"), oAuth2User, clientRegistration);
+        super((Map<String, Object>) oAuth2User.getAttributes().get(USER_NAME_ATTRIBUTE_NAME), oAuth2User, clientRegistration, USER_NAME_ATTRIBUTE_NAME);
     }
 
     @Override
@@ -28,4 +30,10 @@ public class NaverUser extends OAuth2ProviderUser {
     public String getUsername() {
         return getAttributes().get(USERNAME).toString();
     }
+
+    @Override
+    public String getEmail() {
+        return getAttributes().get(USERNAME).toString();
+    }
+
 }
