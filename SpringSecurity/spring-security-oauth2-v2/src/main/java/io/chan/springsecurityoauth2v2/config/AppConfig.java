@@ -12,6 +12,7 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepo
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.util.StringUtils;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -27,9 +28,11 @@ public class AppConfig {
 
         OAuth2AuthorizedClientProvider clientProvider = OAuth2AuthorizedClientProviderBuilder.builder()
                 .authorizationCode()
-                .password()
+                .password(passwordGrantBuilder -> passwordGrantBuilder
+                        .clockSkew(Duration.ofSeconds(3600)))
                 .clientCredentials()
-                .refreshToken()
+                .refreshToken(refreshTokenGrantBuilder -> refreshTokenGrantBuilder
+                        .clockSkew(Duration.ofSeconds(3600))) // 현재 시간에서 1시간 빼기
                 .build();
         DefaultOAuth2AuthorizedClientManager authorizedClientManager = new DefaultOAuth2AuthorizedClientManager(
                 clientRegistrationRepository,

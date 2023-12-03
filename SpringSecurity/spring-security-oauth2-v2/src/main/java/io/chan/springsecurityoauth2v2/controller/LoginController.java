@@ -25,8 +25,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.time.Clock;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 @Slf4j
@@ -37,6 +40,9 @@ public class LoginController {
     private final DefaultOAuth2AuthorizedClientManager authorizedClientManager;
 
     private final OAuth2AuthorizedClientRepository oAuth2AuthorizedClientRepository;
+
+    private final Duration clockSkew = Duration.ofSeconds(3600);
+    private final Clock clock = Clock.systemUTC();
 
     @GetMapping("/oauth2Login")
     public String loginPage(
@@ -72,6 +78,11 @@ public class LoginController {
 
 
         if (authorize != null) {
+
+            if (hasTokenExpired(authorize.getAccessToken()) && authorize.getRefreshToken() != null) {
+                authorizedClientManager.authorize(authorizeRequest);
+            }
+
             DefaultOAuth2UserService oAuth2UserService = new DefaultOAuth2UserService();
             ClientRegistration clientRegistration = authorize.getClientRegistration();
             OAuth2AccessToken accessToken = authorize.getAccessToken();
@@ -93,7 +104,7 @@ public class LoginController {
 
             model.addAttribute("oAuth2AuthenticationToken", oAuth2AuthenticationToken);
         }
-        log.info("authorize: {}", authorize);
+            log.info("authorize: {}", authorize);
         return "home";
     }
     @GetMapping("/clientCredentialsLogin")
@@ -128,12 +139,15 @@ public class LoginController {
 
         OAuth2AuthorizedClient authorize = authorizedClientManager.authorize(authorizeRequest);
 
-
-
         log.info("authorize: {}", authorize.getAccessToken().getTokenType());
         model.addAttribute("authorizedClient", authorize.getAccessToken().getTokenValue());
         return "home";
     }
+
+    private boolean hasTokenExpired(OAuth2AccessToken accessToken) {
+        return this.clock.instant().isAfter(Objects.requireNonNull(accessToken.getExpiresAt()).minus(this.clockSkew));
+    }
+
     @GetMapping("/logout")
     public String logoutPage(
             Authentication authentication,
