@@ -1,6 +1,6 @@
 package io.chan.springsecurityoauth2social.repository;
 
-import io.chan.springsecurityoauth2social.model.User;
+import io.chan.springsecurityoauth2social.model.users.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;

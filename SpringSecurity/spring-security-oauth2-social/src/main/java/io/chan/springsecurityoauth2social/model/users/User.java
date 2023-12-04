@@ -1,5 +1,6 @@
-package io.chan.springsecurityoauth2social.model;
+package io.chan.springsecurityoauth2social.model.users;
 
+import io.chan.springsecurityoauth2social.model.ProviderUser;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;

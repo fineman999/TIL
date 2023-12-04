@@ -1,5 +1,7 @@
 package io.chan.springsecurityoauth2social.service;
 
+import io.chan.springsecurityoauth2social.converters.ProviderUserConverter;
+import io.chan.springsecurityoauth2social.converters.ProviderUserRequest;
 import io.chan.springsecurityoauth2social.model.ProviderUser;
 import io.chan.springsecurityoauth2social.repository.UserRepository;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
@@ -15,8 +17,12 @@ public class CustomOidcUserService extends AbstractOAuth2UserService implements 
 
     private final OidcUserService oidcUserService;
 
-    public CustomOidcUserService(UserService userService, UserRepository userRepository, OidcUserService oidcUserService) {
-        super(userService, userRepository);
+    public CustomOidcUserService(
+            UserService userService,
+            UserRepository userRepository,
+            OidcUserService oidcUserService,
+            ProviderUserConverter<ProviderUserRequest, ProviderUser> providerUserConverter) {
+        super(userService, userRepository, providerUserConverter);
         this.oidcUserService = oidcUserService;
     }
 
@@ -27,7 +33,9 @@ public class CustomOidcUserService extends AbstractOAuth2UserService implements 
         // OAuth2UserRequest 객체를 이용하여 OAuth2User 객체를 생성
         OidcUser oidcUser = oidcUserService.loadUser(userRequest);
 
-        ProviderUser providerUser = super.providerUser(clientRegistration, oidcUser);
+        ProviderUserRequest providerUserRequest = new ProviderUserRequest(clientRegistration, oidcUser);
+
+        ProviderUser providerUser = providerUser(providerUserRequest);
 
         // 회원 가입
         super.register(providerUser);

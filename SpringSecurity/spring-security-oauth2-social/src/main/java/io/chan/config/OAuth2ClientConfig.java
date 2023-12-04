@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 @Configuration
 @EnableWebSecurity
@@ -29,6 +30,13 @@ public class OAuth2ClientConfig {
                 .anyRequest().authenticated()
         );
 
+        http.formLogin(formLogin -> formLogin
+            .loginPage("/login")
+            .loginProcessingUrl("/loginProc")
+            .defaultSuccessUrl("/")
+            .permitAll()
+        );
+
         http.oauth2Login(
             oauth2Login -> oauth2Login
                 .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
@@ -36,6 +44,10 @@ public class OAuth2ClientConfig {
                     .userService(customOAuth2UserService)
                 )
                 .defaultSuccessUrl("/")
+        );
+
+        http.exceptionHandling(exceptionHandling -> exceptionHandling
+            .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
         );
 
         http.logout(logout -> logout.logoutSuccessUrl("/"));

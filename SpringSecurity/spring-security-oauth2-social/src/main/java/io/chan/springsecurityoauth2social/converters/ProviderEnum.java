@@ -1,10 +1,14 @@
-package io.chan.springsecurityoauth2social.model;
+package io.chan.springsecurityoauth2social.converters;
 
+import io.chan.springsecurityoauth2social.model.Attributes;
+import io.chan.springsecurityoauth2social.model.ProviderUser;
+import io.chan.springsecurityoauth2social.model.social.GoogleUser;
+import io.chan.springsecurityoauth2social.model.social.KeycloakUser;
+import io.chan.springsecurityoauth2social.model.social.NaverUser;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Arrays;
-import java.util.function.BiFunction;
 
 /**
  * @link @BiFunction
@@ -19,18 +23,23 @@ public enum ProviderEnum {
     KEYCLOAK("keycloak", KeycloakUser::new);
 
     private final String registrationId;
-    private final BiFunction<OAuth2User, ClientRegistration, ProviderUser> userFactory;
+    private final TriFunction<Attributes, OAuth2User, ClientRegistration, ProviderUser> userFactory;
 
-    ProviderEnum(String registrationId, BiFunction<OAuth2User, ClientRegistration, ProviderUser> userFactory) {
+    ProviderEnum(String registrationId, TriFunction<Attributes, OAuth2User, ClientRegistration, ProviderUser> userFactory) {
         this.registrationId = registrationId;
         this.userFactory = userFactory;
     }
 
-    public static ProviderUser newProviderUser(String registrationId, OAuth2User oAuth2User, ClientRegistration clientRegistration) {
+    public static ProviderUser newProviderUser(
+            Attributes attributes,
+            String registrationId,
+            OAuth2User oAuth2User,
+            ClientRegistration clientRegistration
+    ) {
         return Arrays.stream(values())
                 .filter(provider -> provider.registrationId.equals(registrationId))
                 .findFirst()
-                .map(provider -> provider.userFactory.apply(oAuth2User, clientRegistration))
+                .map(provider -> provider.userFactory.apply(attributes, oAuth2User, clientRegistration))
                 .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 OAuth2 인증 서버입니다."));
     }
 

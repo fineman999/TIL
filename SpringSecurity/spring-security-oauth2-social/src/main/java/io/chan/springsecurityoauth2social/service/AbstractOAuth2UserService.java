@@ -1,12 +1,11 @@
 package io.chan.springsecurityoauth2social.service;
 
-import io.chan.springsecurityoauth2social.model.ProviderEnum;
+import io.chan.springsecurityoauth2social.converters.ProviderUserConverter;
+import io.chan.springsecurityoauth2social.converters.ProviderUserRequest;
 import io.chan.springsecurityoauth2social.model.ProviderUser;
 import io.chan.springsecurityoauth2social.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,12 +18,11 @@ public abstract class AbstractOAuth2UserService {
 
     private final UserService userService;
     private final UserRepository userRepository;
+    private final ProviderUserConverter<ProviderUserRequest, ProviderUser> providerUserConverter;
 
 
-    protected ProviderUser providerUser(ClientRegistration clientRegistration, OAuth2User oAuth2User) {
-        String registrationId = clientRegistration.getRegistrationId();
-
-        return ProviderEnum.newProviderUser(registrationId, oAuth2User, clientRegistration);
+    protected ProviderUser providerUser(ProviderUserRequest providerUserRequest) {
+        return providerUserConverter.converter(providerUserRequest);
     }
 
     protected void register(ProviderUser providerUser) {

@@ -1,7 +1,7 @@
 package io.chan.springsecurityoauth2social.service;
 
 import io.chan.springsecurityoauth2social.model.ProviderUser;
-import io.chan.springsecurityoauth2social.model.User;
+import io.chan.springsecurityoauth2social.model.users.User;
 import io.chan.springsecurityoauth2social.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -43,10 +43,12 @@ public class UserService {
         OAuth2AuthenticationToken authenticationToken = (OAuth2AuthenticationToken) authentication;
         if (authenticationToken != null) {
             Map<String, Object> attributes = provider.getAttributes();
-            name = attributes.get("name").toString();
+
             if (authenticationToken.getAuthorizedClientRegistrationId().equals("naver")) {
                 Map<String, Object> response = (Map<String, Object>) attributes.get("response");
                 name = response.get("name").toString();
+            } else {
+                name = attributes.get("name").toString();
             }
         }
         return name;
