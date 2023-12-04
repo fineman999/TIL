@@ -5,16 +5,16 @@ import io.chan.springsecurityoauth2social.model.OAuth2ProviderUser;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-public class GoogleUser extends OAuth2ProviderUser {
+public class KakaoUser extends OAuth2ProviderUser {
 
     private static final String ID = "sub";
-    private static final String NAME = "name";
+    private static final String EMAIL = "email";
 
-    public GoogleUser(
-            Attributes attributes,
-            OAuth2User oAuth2User,
-            ClientRegistration clientRegistration
-    ) {
+    public static final String PROFILE_IMAGE = "picture";
+    public static final String NICKNAME = "nickname";
+
+
+    public KakaoUser(Attributes attributes, OAuth2User oAuth2User, ClientRegistration clientRegistration) {
         super(attributes.getMainAttributes(), oAuth2User, clientRegistration);
     }
 
@@ -25,11 +25,17 @@ public class GoogleUser extends OAuth2ProviderUser {
 
     @Override
     public String getUsername() {
-        return getAttributes().get(NAME).toString();
+        return getAttributes().get(NICKNAME).toString();
+    }
+
+    @Override
+    public String getEmail() {
+        return getAttributes().get(EMAIL).toString();
     }
 
     @Override
     public String getPicture() {
-        return "default picture";
+        return getAttributes().get(PROFILE_IMAGE).toString();
     }
+
 }

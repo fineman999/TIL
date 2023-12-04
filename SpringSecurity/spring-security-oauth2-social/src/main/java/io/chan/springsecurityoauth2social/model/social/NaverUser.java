@@ -8,16 +8,16 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 public class NaverUser extends OAuth2ProviderUser {
 
     private static final String ID = "id";
-    private static final String USERNAME = "email";
-
-    public static final String USER_NAME_ATTRIBUTE_NAME = "response";
+    private static final String USERNAME = "name";
+    private static final String EMAIL = "email";
+    public static final String PROFILE_IMAGE = "profile_image";
 
     /**
      * Naver OAuth 같은 경우 response 객체에 담겨져 있다.
      * 그러므로 response 객체를 받아서 Map으로 형변환을 해준다.
      */
     public NaverUser(Attributes attributes, OAuth2User oAuth2User, ClientRegistration clientRegistration) {
-        super(attributes.getSubAttributes(), oAuth2User, clientRegistration, USER_NAME_ATTRIBUTE_NAME);
+        super(attributes.getSubAttributes(), oAuth2User, clientRegistration);
     }
 
     @Override
@@ -32,7 +32,12 @@ public class NaverUser extends OAuth2ProviderUser {
 
     @Override
     public String getEmail() {
-        return getAttributes().get(USERNAME).toString();
+        return getAttributes().get(EMAIL).toString();
+    }
+
+    @Override
+    public String getPicture() {
+        return getAttributes().get(PROFILE_IMAGE).toString();
     }
 
 }

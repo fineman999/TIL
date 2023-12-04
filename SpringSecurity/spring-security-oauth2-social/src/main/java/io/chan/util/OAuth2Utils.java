@@ -6,7 +6,12 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import java.util.Map;
 import java.util.Objects;
 
-public class OAuth2Utils {
+public final class OAuth2Utils {
+
+    private OAuth2Utils() {
+        throw new IllegalStateException("Utility class");
+    }
+
 
     public static Attributes getAttributes(
             OAuth2User oAuth2User,
@@ -26,7 +31,7 @@ public class OAuth2Utils {
         return getOtherAttributes(oAuth2User, subAttributesKey, otherAttributesKey);
     }
 
-    public static Attributes getMainAttributes(OAuth2User oAuth2User) {
+    private static Attributes getMainAttributes(OAuth2User oAuth2User) {
 
         return Attributes.builder()
                 .mainAttributes(oAuth2User.getAttributes())
@@ -39,7 +44,7 @@ public class OAuth2Utils {
      * ex) Naver
      */
     @SuppressWarnings("unchecked")
-    public static Attributes getSubAttributes(OAuth2User oAuth2User, String subAttributesKey) {
+    private static Attributes getSubAttributes(OAuth2User oAuth2User, String subAttributesKey) {
 
         Map<String, Object> subAttributes = (Map<String, Object>) oAuth2User.getAttributes().get(subAttributesKey);
         return Attributes.builder()
@@ -53,7 +58,7 @@ public class OAuth2Utils {
      * ex) Kakao
      */
     @SuppressWarnings("unchecked")
-    public static Attributes getOtherAttributes(OAuth2User oAuth2User, String subAttributesKey, String otherAttributesKey) {
+    private static Attributes getOtherAttributes(OAuth2User oAuth2User, String subAttributesKey, String otherAttributesKey) {
 
         Map<String, Object> subAttributes = (Map<String, Object>) oAuth2User.getAttributes().get(subAttributesKey);
         Map<String, Object> otherAttributes = (Map<String, Object>) subAttributes.get(otherAttributesKey);

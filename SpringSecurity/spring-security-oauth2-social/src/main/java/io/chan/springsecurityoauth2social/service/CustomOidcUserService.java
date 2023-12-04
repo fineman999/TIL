@@ -1,6 +1,7 @@
 package io.chan.springsecurityoauth2social.service;
 
 import io.chan.converters.ProviderUserRequest;
+import io.chan.springsecurityoauth2social.model.PrincipalUser;
 import io.chan.springsecurityoauth2social.model.ProviderUser;
 import io.chan.springsecurityoauth2social.repository.UserRepository;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
@@ -41,6 +42,6 @@ public class CustomOidcUserService extends AbstractOAuth2UserService implements 
         // 회원 가입
         super.register(providerUser);
 
-        return oidcUser;
+        return new PrincipalUser(providerUser);
     }
 }

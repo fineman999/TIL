@@ -19,7 +19,7 @@ public class LoginController {
     public String logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication ) {
 
         SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
-        logoutHandler.logout(request, response, authentication);
+            logoutHandler.logout(request, response, authentication);
 
         return "redirect:/login";
 

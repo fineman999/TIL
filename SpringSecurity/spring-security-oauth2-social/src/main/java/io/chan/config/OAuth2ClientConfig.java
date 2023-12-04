@@ -50,7 +50,7 @@ public class OAuth2ClientConfig {
             .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
         );
 
-        http.logout(logout -> logout.logoutSuccessUrl("/"));
+//        http.logout(logout -> logout.logoutSuccessUrl("/"));
 
         return http.build();
     }

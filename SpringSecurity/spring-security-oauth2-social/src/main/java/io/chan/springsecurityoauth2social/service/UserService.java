@@ -1,15 +1,11 @@
 package io.chan.springsecurityoauth2social.service;
 
+import io.chan.springsecurityoauth2social.model.PrincipalUser;
 import io.chan.springsecurityoauth2social.model.ProviderUser;
 import io.chan.springsecurityoauth2social.model.users.User;
 import io.chan.springsecurityoauth2social.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 /**
  * 저장소와 연동하여 사용자 정보를 저장하는 서비스
@@ -32,25 +28,7 @@ public class UserService {
     }
 
 
-    /**
-     * OAuth2User 객체에서 사용자의 이름을 추출하는 메서드
-     * naver 프로바이더의 경우, 사용자의 이름이 "name"이 아닌 "response"라는 키로 저장되어 있기 때문에
-     * 이를 처리하기 위해 추가로 분기를 처리하였다.
-     */
-    @SuppressWarnings("unchecked")
-    public String getName(Authentication authentication, OAuth2User provider) {
-        String name = "anonymous";
-        OAuth2AuthenticationToken authenticationToken = (OAuth2AuthenticationToken) authentication;
-        if (authenticationToken != null) {
-            Map<String, Object> attributes = provider.getAttributes();
-
-            if (authenticationToken.getAuthorizedClientRegistrationId().equals("naver")) {
-                Map<String, Object> response = (Map<String, Object>) attributes.get("response");
-                name = response.get("name").toString();
-            } else {
-                name = attributes.get("name").toString();
-            }
-        }
-        return name;
+    public String getName(PrincipalUser provider) {
+        return provider.getName();
     }
 }
