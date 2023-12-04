@@ -1,5 +1,6 @@
 package io.chan.springsecurityoauth2social.service;
 
+import io.chan.certification.SelfCertification;
 import io.chan.converters.ProviderUserRequest;
 import io.chan.springsecurityoauth2social.model.PrincipalUser;
 import io.chan.springsecurityoauth2social.model.ProviderUser;
@@ -40,9 +41,10 @@ public class CustomOAuth2UserService extends AbstractOAuth2UserService implement
     public CustomOAuth2UserService(
             UserService userService, UserRepository userRepository,
             DefaultOAuth2UserService defaultOAuth2UserService,
-            Function<ProviderUserRequest, ProviderUser> providerUserConverter
+            Function<ProviderUserRequest, ProviderUser> providerUserConverter,
+            SelfCertification certification
     ) {
-        super(userService, userRepository, providerUserConverter);
+        super(userService, userRepository, providerUserConverter, certification);
         this.defaultOAuth2UserService = defaultOAuth2UserService;
     }
 
@@ -62,6 +64,10 @@ public class CustomOAuth2UserService extends AbstractOAuth2UserService implement
         // 회원 가입
         super.register(providerUser);
 
+        // 본인인증 체크
+        selfCertificate(providerUser);
+
         return new PrincipalUser(providerUser);
     }
+
 }

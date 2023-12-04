@@ -32,4 +32,5 @@ public class GoogleUser extends OAuth2ProviderUser {
     public String getPicture() {
         return "default picture";
     }
+
 }

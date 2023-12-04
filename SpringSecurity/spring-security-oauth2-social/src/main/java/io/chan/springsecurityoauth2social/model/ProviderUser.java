@@ -23,4 +23,5 @@ public interface ProviderUser {
         return UUID.randomUUID().toString();
     } // 랜덤으로 만들어서 의미는 없다.
 
+    void isCertificated(boolean bool);
 }

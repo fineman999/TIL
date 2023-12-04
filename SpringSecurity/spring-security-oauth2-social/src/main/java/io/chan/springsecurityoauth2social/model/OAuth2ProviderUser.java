@@ -16,6 +16,7 @@ public abstract class OAuth2ProviderUser implements ProviderUser {
     private final ClientRegistration clientRegistration;
     private final Map<String, Object> attributes;
 
+    private boolean isCertificated;
     public OAuth2ProviderUser(
             Map<String, Object> authorities,
             OAuth2User oAuth2User,
@@ -23,6 +24,7 @@ public abstract class OAuth2ProviderUser implements ProviderUser {
         this.attributes = authorities;
         this.oAuth2User = oAuth2User;
         this.clientRegistration = clientRegistration;
+        isCertificated = false;
     }
 
     @Override
@@ -52,5 +54,8 @@ public abstract class OAuth2ProviderUser implements ProviderUser {
         return attributes;
     }
 
-
+    @Override
+    public void isCertificated(boolean bool) {
+        isCertificated = bool;
+    }
 }

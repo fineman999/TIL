@@ -1,5 +1,6 @@
 package io.chan.springsecurityoauth2social.service;
 
+import io.chan.certification.SelfCertification;
 import io.chan.converters.ProviderUserRequest;
 import io.chan.springsecurityoauth2social.model.PrincipalUser;
 import io.chan.springsecurityoauth2social.model.ProviderUser;
@@ -19,14 +20,15 @@ public class CustomOidcUserService extends AbstractOAuth2UserService implements 
 
     private final OidcUserService oidcUserService;
 
-    public CustomOidcUserService(
-            UserService userService,
-            UserRepository userRepository,
-            OidcUserService oidcUserService,
-            Function<ProviderUserRequest, ProviderUser> providerUserConverter) {
-        super(userService, userRepository, providerUserConverter);
+    public CustomOidcUserService(UserService userService,
+                                 UserRepository userRepository,
+                                 Function<ProviderUserRequest, ProviderUser> providerUserConverter,
+                                 SelfCertification certification,
+                                 OidcUserService oidcUserService) {
+        super(userService, userRepository, providerUserConverter, certification);
         this.oidcUserService = oidcUserService;
     }
+
 
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
@@ -41,6 +43,8 @@ public class CustomOidcUserService extends AbstractOAuth2UserService implements 
 
         // 회원 가입
         super.register(providerUser);
+
+        selfCertificate(providerUser);
 
         return new PrincipalUser(providerUser);
     }

@@ -1,5 +1,6 @@
 package io.chan.springsecurityoauth2social.service;
 
+import io.chan.certification.SelfCertification;
 import io.chan.converters.ProviderUserRequest;
 import io.chan.springsecurityoauth2social.model.PrincipalUser;
 import io.chan.springsecurityoauth2social.model.ProviderUser;
@@ -21,10 +22,11 @@ public class CustomUserDetailsService extends AbstractOAuth2UserService implemen
 
     private final UserRepository userRepository;
 
-    public CustomUserDetailsService(UserService userService, UserRepository userRepository, Function<ProviderUserRequest, ProviderUser> providerUserConverter, UserRepository userRepository1) {
-        super(userService, userRepository, providerUserConverter);
-        this.userRepository = userRepository1;
+    public CustomUserDetailsService(UserService userService, UserRepository userRepository, Function<ProviderUserRequest, ProviderUser> providerUserConverter, SelfCertification certification) {
+        super(userService, userRepository, providerUserConverter, certification);
+        this.userRepository = userRepository;
     }
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -38,6 +40,8 @@ public class CustomUserDetailsService extends AbstractOAuth2UserService implemen
                         .build());
         ProviderUserRequest providerUserRequest = new ProviderUserRequest(user);
         ProviderUser providerUser = providerUser(providerUserRequest);
+
+        selfCertificate(providerUser);
 
         return new PrincipalUser(providerUser);
     }

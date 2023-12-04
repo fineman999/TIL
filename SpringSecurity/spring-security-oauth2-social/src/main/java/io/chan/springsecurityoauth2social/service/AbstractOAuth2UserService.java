@@ -1,5 +1,6 @@
 package io.chan.springsecurityoauth2social.service;
 
+import io.chan.certification.SelfCertification;
 import io.chan.converters.ProviderUserRequest;
 import io.chan.springsecurityoauth2social.model.ProviderUser;
 import io.chan.springsecurityoauth2social.repository.UserRepository;
@@ -20,8 +21,11 @@ public abstract class AbstractOAuth2UserService {
     private final UserService userService;
     private final UserRepository userRepository;
     private final Function<ProviderUserRequest, ProviderUser> providerUserConverter;
+    private final SelfCertification certification;
 
-
+    public void selfCertificate(ProviderUser providerUser){
+        certification.checkCertification(providerUser);
+    }
     protected ProviderUser providerUser(ProviderUserRequest providerUserRequest) {
         return providerUserConverter.apply(providerUserRequest);
     }
