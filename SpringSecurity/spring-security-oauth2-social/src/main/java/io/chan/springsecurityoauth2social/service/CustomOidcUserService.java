@@ -1,7 +1,6 @@
 package io.chan.springsecurityoauth2social.service;
 
-import io.chan.springsecurityoauth2social.converters.ProviderUserConverter;
-import io.chan.springsecurityoauth2social.converters.ProviderUserRequest;
+import io.chan.converters.ProviderUserRequest;
 import io.chan.springsecurityoauth2social.model.ProviderUser;
 import io.chan.springsecurityoauth2social.repository.UserRepository;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
@@ -12,6 +11,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
+import java.util.function.Function;
+
 @Service
 public class CustomOidcUserService extends AbstractOAuth2UserService implements OAuth2UserService<OidcUserRequest, OidcUser> {
 
@@ -21,7 +22,7 @@ public class CustomOidcUserService extends AbstractOAuth2UserService implements 
             UserService userService,
             UserRepository userRepository,
             OidcUserService oidcUserService,
-            ProviderUserConverter<ProviderUserRequest, ProviderUser> providerUserConverter) {
+            Function<ProviderUserRequest, ProviderUser> providerUserConverter) {
         super(userService, userRepository, providerUserConverter);
         this.oidcUserService = oidcUserService;
     }

@@ -1,12 +1,13 @@
 package io.chan.springsecurityoauth2social.service;
 
-import io.chan.springsecurityoauth2social.converters.ProviderUserConverter;
-import io.chan.springsecurityoauth2social.converters.ProviderUserRequest;
+import io.chan.converters.ProviderUserRequest;
 import io.chan.springsecurityoauth2social.model.ProviderUser;
 import io.chan.springsecurityoauth2social.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.function.Function;
 
 /**
  * OAuth2와 관련된 서비스의 공통 기능을 구현한 추상 클래스
@@ -18,11 +19,11 @@ public abstract class AbstractOAuth2UserService {
 
     private final UserService userService;
     private final UserRepository userRepository;
-    private final ProviderUserConverter<ProviderUserRequest, ProviderUser> providerUserConverter;
+    private final Function<ProviderUserRequest, ProviderUser> providerUserConverter;
 
 
     protected ProviderUser providerUser(ProviderUserRequest providerUserRequest) {
-        return providerUserConverter.converter(providerUserRequest);
+        return providerUserConverter.apply(providerUserRequest);
     }
 
     protected void register(ProviderUser providerUser) {

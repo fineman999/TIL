@@ -1,5 +1,6 @@
-package io.chan.springsecurityoauth2social.converters;
+package io.chan.enums;
 
+import io.chan.functions.TriFunction;
 import io.chan.springsecurityoauth2social.model.Attributes;
 import io.chan.springsecurityoauth2social.model.ProviderUser;
 import io.chan.springsecurityoauth2social.model.social.GoogleUser;

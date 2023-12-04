@@ -1,7 +1,6 @@
 package io.chan.springsecurityoauth2social.service;
 
-import io.chan.springsecurityoauth2social.converters.ProviderUserConverter;
-import io.chan.springsecurityoauth2social.converters.ProviderUserRequest;
+import io.chan.converters.ProviderUserRequest;
 import io.chan.springsecurityoauth2social.model.ProviderUser;
 import io.chan.springsecurityoauth2social.repository.UserRepository;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -11,6 +10,8 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+
+import java.util.function.Function;
 
 /**
  * @link OAuth2UserService
@@ -38,7 +39,7 @@ public class CustomOAuth2UserService extends AbstractOAuth2UserService implement
     public CustomOAuth2UserService(
             UserService userService, UserRepository userRepository,
             DefaultOAuth2UserService defaultOAuth2UserService,
-            ProviderUserConverter<ProviderUserRequest, ProviderUser> providerUserConverter
+            Function<ProviderUserRequest, ProviderUser> providerUserConverter
     ) {
         super(userService, userRepository, providerUserConverter);
         this.defaultOAuth2UserService = defaultOAuth2UserService;

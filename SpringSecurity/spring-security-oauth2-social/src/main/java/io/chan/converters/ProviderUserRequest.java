@@ -1,4 +1,4 @@
-package io.chan.springsecurityoauth2social.converters;
+package io.chan.converters;
 
 import io.chan.springsecurityoauth2social.model.users.User;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
