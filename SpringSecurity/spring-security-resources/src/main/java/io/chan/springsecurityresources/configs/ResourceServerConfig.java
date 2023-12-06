@@ -1,16 +1,14 @@
 package io.chan.springsecurityresources.configs;
 
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.RSAKey;
 import io.chan.springsecurityresources.filter.authentication.JwtAuthenticationFilter;
-import io.chan.springsecurityresources.filter.authorization.JwtAuthorizationRsaFilter;
+import io.chan.springsecurityresources.filter.authorization.JwtAuthorizationRsaPublicKeyFilter;
+import io.chan.springsecurityresources.signature.RsaPublicKeySecuritySigner;
 import io.chan.springsecurityresources.signature.RsaSecuritySigner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -42,7 +41,15 @@ public class ResourceServerConfig {
 
     // 비대칭키 암호화를 위한 빈 등록
     private final RSAKey rsaKey;
-    private final RsaSecuritySigner rsaSecuritySigner;
+
+    // 스프링 시큐리티에서 제공하는 비대칭키 암호화를 위한 빈 등록
+//    private final RsaSecuritySigner rsaSecuritySigner;
+
+    // 비대칭키 암호화를 위한 빈 등록 - 직접 구현한 빈 등록
+    private final RsaPublicKeySecuritySigner rsaSecuritySigner;
+
+    // public key를 사용하는 JwtDecoder
+    private final JwtDecoder jwtDecoder;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -76,9 +83,9 @@ public class ResourceServerConfig {
 
 
         // jwt 토큰을 검증하기 위한 필터 추가 - jwtDecoder를 사용하는 필터
-        http.oauth2ResourceServer((oauth2) -> oauth2
-                .jwt(Customizer.withDefaults())
-        );
+//        http.oauth2ResourceServer((oauth2) -> oauth2
+//                .jwt(Customizer.withDefaults())
+//        );
 
         // 비 대칭키를 사용하는 필터 추가
 //        http.addFilterBefore(jwtAuthorizationRsaFilter(rsaKey), UsernamePasswordAuthenticationFilter.class);
@@ -87,7 +94,15 @@ public class ResourceServerConfig {
         // jwt 토큰을 검증하기 위한 필터 추가 - 직접 구현한 필터
 //        http.addFilterBefore(jwtAuthenticationMacFilter(octetSequenceKey), UsernamePasswordAuthenticationFilter.class);
 
+        // public key를 사용하는 필터 추가 - 직접 구현한 필터
+        http.addFilterBefore(jwtAuthorizationRsaPublicKeyFilter(), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
+    }
+
+    @Bean
+    public JwtAuthorizationRsaPublicKeyFilter jwtAuthorizationRsaPublicKeyFilter() {
+        return new JwtAuthorizationRsaPublicKeyFilter(jwtDecoder);
     }
 
 
@@ -98,10 +113,10 @@ public class ResourceServerConfig {
 //    }
 
     // Rsa 방식으로 검증하기 위한 필터 추가 - 직접 구현한 필터
-    @Bean
-    public JwtAuthorizationRsaFilter jwtAuthorizationRsaFilter(RSAKey rsaKey) throws JOSEException {
-        return new JwtAuthorizationRsaFilter(new RSASSAVerifier(rsaKey));
-    }
+//    @Bean
+//    public JwtAuthorizationRsaFilter jwtAuthorizationRsaFilter(RSAKey rsaKey) throws JOSEException {
+//        return new JwtAuthorizationRsaFilter(new RSASSAVerifier(rsaKey));
+//    }
 
     // AuthenticationManager를 주입받기 위한 설정
     // AuthenticationConfiguration에서 제공하는 메서드를 사용하여 AuthenticationManager를 주입받는다.

@@ -35,21 +35,25 @@ public abstract class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String header = request.getHeader(AUTHORIZATION);
-        if (Objects.isNull(header) || !header.startsWith(BEARER_SPACE)) {
+
+        if (tokenResolve(request)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = header.replace(BEARER_SPACE, BEARER_REPLACEMENT);
+        String token = getToken(request);
 
         try {
 
             // 서명된 JWT를 파싱한다. - 서명 검증
             SignedJWT signedJWT = getSignedJWT(token);
 
+            JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
+            String username = jwtClaimsSet.getStringClaim(CLAIM_USERNAME);
+            List<String> authorities = jwtClaimsSet.getStringListClaim(CLAIM_AUTHORITIES);
+
             // JWT에서 UserDetails를 추출한다. - 유저 정보 추출
-            UserDetails userDetails = getUserDetails(signedJWT);
+            UserDetails userDetails = getUserDetails(username, authorities);
 
             // SecurityContext에 인증된 사용자 정보를 저장한다.
             setSecurityContextAuthentication(userDetails);
@@ -62,22 +66,7 @@ public abstract class JwtAuthorizationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private void setSecurityContextAuthentication(UserDetails userDetails) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                userDetails,
-                null,
-                userDetails.getAuthorities()
-        );
-
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-    }
-
-    private UserDetails getUserDetails(SignedJWT signedJWT) throws ParseException {
-        JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
-        String username = jwtClaimsSet.getStringClaim(CLAIM_USERNAME);
-        List<String> authorities = jwtClaimsSet.getStringListClaim(CLAIM_AUTHORITIES);
-
-
+    protected UserDetails getUserDetails(String username, List<String> authorities) {
         if (Objects.isNull(username)) {
             throw new RuntimeException("username is null");
         }
@@ -87,9 +76,28 @@ public abstract class JwtAuthorizationFilter extends OncePerRequestFilter {
                 .toList();
 
         return User.withUsername(username)
-            .password(UUID.randomUUID().toString())
-            .authorities(newAuthorities)
-            .build();
+                .password(UUID.randomUUID().toString())
+                .authorities(newAuthorities)
+                .build();
+    }
+
+    protected String getToken(HttpServletRequest request) {
+        return request.getHeader(AUTHORIZATION).replace(BEARER_SPACE, BEARER_REPLACEMENT);
+    }
+
+    protected boolean tokenResolve(HttpServletRequest request) {
+        String header = request.getHeader(AUTHORIZATION);
+        return Objects.isNull(header) || !header.startsWith(BEARER_SPACE);
+    }
+
+    protected void setSecurityContextAuthentication(UserDetails userDetails) {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                userDetails.getAuthorities()
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
 
     private SignedJWT getSignedJWT(String token) throws ParseException, JOSEException {
