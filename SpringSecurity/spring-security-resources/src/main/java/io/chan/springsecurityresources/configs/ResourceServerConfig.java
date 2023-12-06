@@ -1,14 +1,15 @@
 package io.chan.springsecurityresources.configs;
 
-import com.nimbusds.jose.jwk.OctetSequenceKey;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.crypto.RSASSAVerifier;
+import com.nimbusds.jose.jwk.RSAKey;
 import io.chan.springsecurityresources.filter.authentication.JwtAuthenticationFilter;
-import io.chan.springsecurityresources.signature.MacSecuritySigner;
+import io.chan.springsecurityresources.filter.authorization.JwtAuthorizationRsaFilter;
+import io.chan.springsecurityresources.signature.RsaSecuritySigner;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -29,13 +30,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class ResourceServerConfig {
 
     // oauth2ResourceServer와 관련된 설정을 제공하는 클래스
-    private final OAuth2ResourceServerProperties oAuth2ResourceServerProperties;
+//    private final OAuth2ResourceServerProperties oAuth2ResourceServerProperties;
 
     // AuthenticationManager를 주입받기 위한 설정
     private final AuthenticationConfiguration authenticationConfiguration;
 
-    private final MacSecuritySigner macSecuritySigner;
-    private final OctetSequenceKey octetSequenceKey;
+    // 대칭키 암호화를 위한 빈 등록
+//    private final MacSecuritySigner macSecuritySigner;
+//    private final OctetSequenceKey octetSequenceKey;
+
+    // 비대칭키 암호화를 위한 빈 등록
+    private final RSAKey rsaKey;
+    private final RsaSecuritySigner rsaSecuritySigner;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -65,14 +71,19 @@ public class ResourceServerConfig {
         http.userDetailsService(userDetailsService());
 
         // jwt 토큰을 검증하기 위한 필터 추가
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        http.addFilterBefore(jwtAuthenticationFilter(macSecuritySigner, octetSequenceKey), UsernamePasswordAuthenticationFilter.class);
 
 
+        // 비 대칭키를 사용하는 필터 추가
+        http.addFilterBefore(jwtAuthorizationRsaFilter(rsaKey), UsernamePasswordAuthenticationFilter.class);
+
+
+        // 대칭키를 사용하는 필터 추가
         // jwt 토큰을 검증하기 위한 필터 추가 - jwtDecoder를 사용하는 필터
-        http.oauth2ResourceServer((oauth2) -> oauth2
-                .jwt(Customizer.withDefaults())
-        );
+//        http.oauth2ResourceServer((oauth2) -> oauth2
+//                .jwt(Customizer.withDefaults())
+//        );
 
         // jwt 토큰을 검증하기 위한 필터 추가 - 직접 구현한 필터
 //        http.addFilterBefore(jwtAuthenticationMacFilter(octetSequenceKey), UsernamePasswordAuthenticationFilter.class);
@@ -81,11 +92,17 @@ public class ResourceServerConfig {
     }
 
 
-    // jwt 토큰을 검증하기 위한 필터 추가 - 직접 구현한 필터
+    // Mac 방식으로  검증하기 위한 필터 추가 - 직접 구현한 필터
 //    @Bean
 //    public JwtAuthorizationMacFilter jwtAuthenticationMacFilter(OctetSequenceKey octetSequenceKey) {
 //        return new JwtAuthorizationMacFilter(octetSequenceKey);
 //    }
+
+    // Rsa 방식으로 검증하기 위한 필터 추가 - 직접 구현한 필터
+    @Bean
+    public JwtAuthorizationRsaFilter jwtAuthorizationRsaFilter(RSAKey rsaKey) throws JOSEException {
+        return new JwtAuthorizationRsaFilter(new RSASSAVerifier(rsaKey));
+    }
 
     // AuthenticationManager를 주입받기 위한 설정
     // AuthenticationConfiguration에서 제공하는 메서드를 사용하여 AuthenticationManager를 주입받는다.
@@ -96,10 +113,10 @@ public class ResourceServerConfig {
 
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter(MacSecuritySigner macSecuritySigner, OctetSequenceKey octetSequenceKey) throws Exception {
+    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(
-                macSecuritySigner,
-                octetSequenceKey
+                rsaSecuritySigner,
+                rsaKey
         );
         //  authenticationManager()는 WebSecurityConfigurerAdapter에서 제공하는 메서드이므로
         // AuthenticationManager를 주입받아야 한다.

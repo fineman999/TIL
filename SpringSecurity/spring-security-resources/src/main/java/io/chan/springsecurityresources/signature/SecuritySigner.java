@@ -3,7 +3,7 @@ package io.chan.springsecurityresources.signature;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
@@ -18,7 +18,7 @@ import static io.chan.springsecurityresources.utils.JwtUtils.*;
 public abstract class SecuritySigner {
 
 
-    protected String getJwtTokenInternal(MACSigner jwsSigner, UserDetails userDetails, JWK jwk) throws JOSEException {
+    protected String getJwtTokenInternal(JWSSigner jwsSigner, UserDetails userDetails, JWK jwk) throws JOSEException {
         JWSHeader jwsHeader = new JWSHeader.Builder((JWSAlgorithm) jwk.getAlgorithm())
                 .keyID(jwk.getKeyID())
                 .build();
