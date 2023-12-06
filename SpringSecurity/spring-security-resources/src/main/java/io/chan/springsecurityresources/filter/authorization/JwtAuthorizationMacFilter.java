@@ -24,7 +24,6 @@ import java.util.UUID;
 
 import static io.chan.springsecurityresources.utils.JwtUtils.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-
 public class JwtAuthorizationMacFilter extends OncePerRequestFilter {
 
     private final OctetSequenceKey jwt;

@@ -2,13 +2,13 @@ package io.chan.springsecurityresources.configs;
 
 import com.nimbusds.jose.jwk.OctetSequenceKey;
 import io.chan.springsecurityresources.filter.authentication.JwtAuthenticationFilter;
-import io.chan.springsecurityresources.filter.authorization.JwtAuthorizationMacFilter;
 import io.chan.springsecurityresources.signature.MacSecuritySigner;
-import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -29,7 +29,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class ResourceServerConfig {
 
     // oauth2ResourceServer와 관련된 설정을 제공하는 클래스
-//    private final OAuth2ResourceServerProperties oAuth2ResourceServerProperties;
+    private final OAuth2ResourceServerProperties oAuth2ResourceServerProperties;
 
     // AuthenticationManager를 주입받기 위한 설정
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -67,10 +67,25 @@ public class ResourceServerConfig {
         // jwt 토큰을 검증하기 위한 필터 추가
 
         http.addFilterBefore(jwtAuthenticationFilter(macSecuritySigner, octetSequenceKey), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(jwtAuthenticationMacFilter(octetSequenceKey), UsernamePasswordAuthenticationFilter.class);
+
+
+        // jwt 토큰을 검증하기 위한 필터 추가 - jwtDecoder를 사용하는 필터
+        http.oauth2ResourceServer((oauth2) -> oauth2
+                .jwt(Customizer.withDefaults())
+        );
+
+        // jwt 토큰을 검증하기 위한 필터 추가 - 직접 구현한 필터
+//        http.addFilterBefore(jwtAuthenticationMacFilter(octetSequenceKey), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
+
+    // jwt 토큰을 검증하기 위한 필터 추가 - 직접 구현한 필터
+//    @Bean
+//    public JwtAuthorizationMacFilter jwtAuthenticationMacFilter(OctetSequenceKey octetSequenceKey) {
+//        return new JwtAuthorizationMacFilter(octetSequenceKey);
+//    }
 
     // AuthenticationManager를 주입받기 위한 설정
     // AuthenticationConfiguration에서 제공하는 메서드를 사용하여 AuthenticationManager를 주입받는다.
@@ -79,10 +94,6 @@ public class ResourceServerConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    @Bean
-    public JwtAuthorizationMacFilter jwtAuthenticationMacFilter(OctetSequenceKey octetSequenceKey) {
-        return new JwtAuthorizationMacFilter(octetSequenceKey);
-    }
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter(MacSecuritySigner macSecuritySigner, OctetSequenceKey octetSequenceKey) throws Exception {
