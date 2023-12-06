@@ -1,21 +1,22 @@
 package io.chan.springsecurityresources.configs;
 
+import com.nimbusds.jose.jwk.OctetSequenceKey;
 import io.chan.springsecurityresources.filter.authentication.JwtAuthenticationFilter;
+import io.chan.springsecurityresources.filter.authorization.JwtAuthorizationMacFilter;
+import io.chan.springsecurityresources.signature.MacSecuritySigner;
 import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -33,6 +34,9 @@ public class ResourceServerConfig {
     // AuthenticationManager를 주입받기 위한 설정
     private final AuthenticationConfiguration authenticationConfiguration;
 
+    private final MacSecuritySigner macSecuritySigner;
+    private final OctetSequenceKey octetSequenceKey;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -41,6 +45,14 @@ public class ResourceServerConfig {
         // jwt 를 사용할 경우에는 대부분 세션은 사용하지 않기 때문에 csrf 기능은 비활성화 하는 것이 맞다.
         // 다만  jwt 를 쿠키에 저장해서 보안처리를 할 경우에는 csrf 에 취약한 부분이 발생하기 때문에 고려해야 하는 것은 맞다.
         http.csrf(AbstractHttpConfigurer::disable);
+
+        // 세션 생성 정책 설정
+        // 세션을 사용하지 않기 때문에 세션 생성 정책을 STATELESS 로 설정한다.
+        http.sessionManagement(sessionManagement ->
+            sessionManagement
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        );
+
 
         http
             .authorizeHttpRequests(authorizeHttpRequests ->
@@ -53,7 +65,9 @@ public class ResourceServerConfig {
         http.userDetailsService(userDetailsService());
 
         // jwt 토큰을 검증하기 위한 필터 추가
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        http.addFilterBefore(jwtAuthenticationFilter(macSecuritySigner, octetSequenceKey), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationMacFilter(octetSequenceKey), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -66,8 +80,16 @@ public class ResourceServerConfig {
     }
 
     @Bean
-    public Filter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter();
+    public JwtAuthorizationMacFilter jwtAuthenticationMacFilter(OctetSequenceKey octetSequenceKey) {
+        return new JwtAuthorizationMacFilter(octetSequenceKey);
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(MacSecuritySigner macSecuritySigner, OctetSequenceKey octetSequenceKey) throws Exception {
+        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(
+                macSecuritySigner,
+                octetSequenceKey
+        );
         //  authenticationManager()는 WebSecurityConfigurerAdapter에서 제공하는 메서드이므로
         // AuthenticationManager를 주입받아야 한다.
         jwtAuthenticationFilter.setAuthenticationManager(authenticationManager());
