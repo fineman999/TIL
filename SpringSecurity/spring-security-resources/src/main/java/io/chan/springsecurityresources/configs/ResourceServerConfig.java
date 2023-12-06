@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -74,16 +75,14 @@ public class ResourceServerConfig {
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
 
+        // jwt 토큰을 검증하기 위한 필터 추가 - jwtDecoder를 사용하는 필터
+        http.oauth2ResourceServer((oauth2) -> oauth2
+                .jwt(Customizer.withDefaults())
+        );
 
         // 비 대칭키를 사용하는 필터 추가
-        http.addFilterBefore(jwtAuthorizationRsaFilter(rsaKey), UsernamePasswordAuthenticationFilter.class);
+//        http.addFilterBefore(jwtAuthorizationRsaFilter(rsaKey), UsernamePasswordAuthenticationFilter.class);
 
-
-        // 대칭키를 사용하는 필터 추가
-        // jwt 토큰을 검증하기 위한 필터 추가 - jwtDecoder를 사용하는 필터
-//        http.oauth2ResourceServer((oauth2) -> oauth2
-//                .jwt(Customizer.withDefaults())
-//        );
 
         // jwt 토큰을 검증하기 위한 필터 추가 - 직접 구현한 필터
 //        http.addFilterBefore(jwtAuthenticationMacFilter(octetSequenceKey), UsernamePasswordAuthenticationFilter.class);
