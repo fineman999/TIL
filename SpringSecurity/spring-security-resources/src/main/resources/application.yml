@@ -1,11 +1,11 @@
 server:
   port: 8081
-oauth2:
-  resource:
-    key-store: classpath:certs/apiKey.jks
-    key-store-password: pass1234
-    key-password: pass1234
-    key-alias: apiKey
+#oauth2:
+#  resource:
+#    key-store: classpath:certs/apiKey.jks
+#    key-store-password: pass1234
+#    key-password: pass1234
+#    key-alias: apiKey
 
 spring:
   security:
