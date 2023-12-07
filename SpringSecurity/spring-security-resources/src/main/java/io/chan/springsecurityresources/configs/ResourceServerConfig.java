@@ -73,6 +73,7 @@ public class ResourceServerConfig {
             .authorizeHttpRequests(authorizeHttpRequests ->
                 authorizeHttpRequests
                     .requestMatchers("/").permitAll()
+                    .requestMatchers("/photos/1").hasAuthority("SCOPE_photo")
                     .anyRequest().authenticated()
             );
 
