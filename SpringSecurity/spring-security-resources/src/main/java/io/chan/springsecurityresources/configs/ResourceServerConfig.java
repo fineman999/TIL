@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -78,14 +79,14 @@ public class ResourceServerConfig {
         // 로그인 정보를 얻기 위한 설정
         http.userDetailsService(userDetailsService());
 
-        // jwt 토큰을 검증하기 위한 필터 추가
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+//        // jwt 토큰을 검증하기 위한 필터 추가
+//        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
 
-        // jwt 토큰을 검증하기 위한 필터 추가 - jwtDecoder를 사용하는 필터
-//        http.oauth2ResourceServer((oauth2) -> oauth2
-//                .jwt(Customizer.withDefaults())
-//        );
+        // jwt 토큰을 검증하기 위한 필터 추가 - jwtDecoder를 사용하는 필터 또는 jwkSetUri를 사용하는 필터 추가
+        http.oauth2ResourceServer((oauth2) -> oauth2
+                .jwt(Customizer.withDefaults())
+        );
 
         // 비 대칭키를 사용하는 필터 추가
 //        http.addFilterBefore(jwtAuthorizationRsaFilter(rsaKey), UsernamePasswordAuthenticationFilter.class);
@@ -95,15 +96,20 @@ public class ResourceServerConfig {
 //        http.addFilterBefore(jwtAuthenticationMacFilter(octetSequenceKey), UsernamePasswordAuthenticationFilter.class);
 
         // public key를 사용하는 필터 추가 - 직접 구현한 필터
-        http.addFilterBefore(jwtAuthorizationRsaPublicKeyFilter(), UsernamePasswordAuthenticationFilter.class);
+//        http.addFilterBefore(jwtAuthorizationRsaPublicKeyFilter(), UsernamePasswordAuthenticationFilter.class);
+
+
 
         return http.build();
     }
 
-    @Bean
-    public JwtAuthorizationRsaPublicKeyFilter jwtAuthorizationRsaPublicKeyFilter() {
-        return new JwtAuthorizationRsaPublicKeyFilter(jwtDecoder);
-    }
+    /*
+    jwkSetUri를 사용하면 주석 처리
+     */
+//    @Bean
+//    public JwtAuthorizationRsaPublicKeyFilter jwtAuthorizationRsaPublicKeyFilter() {
+//        return new JwtAuthorizationRsaPublicKeyFilter(jwtDecoder);
+//    }
 
 
     // Mac 방식으로  검증하기 위한 필터 추가 - 직접 구현한 필터
@@ -126,17 +132,20 @@ public class ResourceServerConfig {
     }
 
 
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(
-                rsaSecuritySigner,
-                rsaKey
-        );
-        //  authenticationManager()는 WebSecurityConfigurerAdapter에서 제공하는 메서드이므로
-        // AuthenticationManager를 주입받아야 한다.
-        jwtAuthenticationFilter.setAuthenticationManager(authenticationManager());
-        return jwtAuthenticationFilter;
-    }
+    /**
+     * jwkSetUri를 사용하면 주석 처리
+     */
+//    @Bean
+//    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
+//        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(
+//                rsaSecuritySigner,
+//                rsaKey
+//        );
+//        //  authenticationManager()는 WebSecurityConfigurerAdapter에서 제공하는 메서드이므로
+//        // AuthenticationManager를 주입받아야 한다.
+//        jwtAuthenticationFilter.setAuthenticationManager(authenticationManager());
+//        return jwtAuthenticationFilter;
+//    }
 
     @Bean
     public UserDetailsService userDetailsService() {

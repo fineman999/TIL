@@ -10,6 +10,7 @@ import io.chan.springsecurityresources.signature.MacSecuritySigner;
 import io.chan.springsecurityresources.signature.RsaPublicKeySecuritySigner;
 import io.chan.springsecurityresources.signature.RsaSecuritySigner;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,6 +63,7 @@ public class SignatureConfig {
     }
 
     @Bean
+    @ConditionalOnProperty(prefix = "oauth2.resource", name = "key-store")
     public RsaPublicKeySecuritySigner rsaPublicKeySecuritySigner() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
         KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
 

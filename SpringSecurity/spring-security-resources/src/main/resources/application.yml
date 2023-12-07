@@ -12,10 +12,10 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jws-algorithms: RS256 # jwtDecoder 설정에 사용할 알고리즘
-          public-key-location: classpath:certs/publicKey.txt # jwtDecoder 설정에 사용할 Public key 파일 위치
+#          jws-algorithms: RS256 # jwtDecoder 설정에 사용할 알고리즘
+#          public-key-location: classpath:certs/publicKey.txt # jwtDecoder 설정에 사용할 Public key 파일 위치
 #          issuer-uri: http://localhost:8080/realms/oauth2 # 서비스 제공자 위치
-#          jwk-set-uri: http://localhost:8080/realms/oauth2/protocol/openid-connect/certs
+          jwk-set-uri: http://localhost:8080/realms/oauth2/protocol/openid-connect/certs # 서비스 제공자의 JWK Set URI에서 모든 정보가져오기
 #          jws-algorithms: RSA256 # OAuth 2.0 JWS 서명 알고리즘
 #          audiences: http://localhost:8081 # 수신자 위치
 #          public-key-location: classpath:publickey.txt # OAuth 2.0 JWS 검증을 위한 Public key 파일 위치

@@ -11,8 +11,7 @@ public class IndexController {
 
     @GetMapping("/")
     public String index(
-    ) {
-        return "index";
+    ) {return "index";
     }
 
     @GetMapping("/api/user")
