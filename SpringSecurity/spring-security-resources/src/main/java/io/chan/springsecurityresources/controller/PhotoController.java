@@ -15,4 +15,16 @@ public class PhotoController {
                 .photoDescription("Description of Photo 1")
                 .build();
     }
+
+    @GetMapping("/photos/3")
+    public Photo getPhoto3() {
+        return Photo.builder()
+                .userId("user1")
+                .photoId("1")
+                .photoTitle("Photo 1")
+                .photoDescription("Description of Photo 1")
+                .build();
+    }
+
+
 }

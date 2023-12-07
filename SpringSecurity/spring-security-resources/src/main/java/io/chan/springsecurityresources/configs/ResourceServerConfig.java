@@ -1,6 +1,7 @@
 package io.chan.springsecurityresources.configs;
 
 import com.nimbusds.jose.jwk.RSAKey;
+import io.chan.springsecurityresources.converter.CustomRoleConvert;
 import io.chan.springsecurityresources.filter.authentication.JwtAuthenticationFilter;
 import io.chan.springsecurityresources.filter.authorization.JwtAuthorizationRsaPublicKeyFilter;
 import io.chan.springsecurityresources.signature.RsaPublicKeySecuritySigner;
@@ -21,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -73,7 +75,8 @@ public class ResourceServerConfig {
             .authorizeHttpRequests(authorizeHttpRequests ->
                 authorizeHttpRequests
                     .requestMatchers("/").permitAll()
-                    .requestMatchers("/photos/1").hasAuthority("SCOPE_photo")
+                    .requestMatchers("/photos/1").hasAuthority("ROLE_photo")
+                    .requestMatchers("/photos/3").hasAuthority("ROLE_default_role")
                     .anyRequest().authenticated()
             );
 
@@ -86,7 +89,10 @@ public class ResourceServerConfig {
 
         // jwt 토큰을 검증하기 위한 필터 추가 - jwtDecoder를 사용하는 필터 또는 jwkSetUri를 사용하는 필터 추가
         http.oauth2ResourceServer((oauth2) -> oauth2
-                .jwt(Customizer.withDefaults())
+                .jwt(jwtConfigurer ->
+                    jwtConfigurer
+                        .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                    )
         );
 
         // 비 대칭키를 사용하는 필터 추가
@@ -102,6 +108,13 @@ public class ResourceServerConfig {
 
 
         return http.build();
+    }
+
+    // 커스텀 권한 설정
+    private JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new CustomRoleConvert());
+        return jwtAuthenticationConverter;
     }
 
     /*
