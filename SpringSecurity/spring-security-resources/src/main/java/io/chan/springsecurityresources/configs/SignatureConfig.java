@@ -14,7 +14,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -53,7 +57,7 @@ public class SignatureConfig {
     public RSAKey rsaKey() throws JOSEException {
         return new RSAKeyGenerator(2048)
                 .keyID("rsa-key")
-                .algorithm(JWSAlgorithm.RS512)
+                .algorithm(JWSAlgorithm.RS256)
                 .generate();
     }
 
@@ -74,6 +78,17 @@ public class SignatureConfig {
         Certificate certificate = keystore.getCertificate(alias);
         PublicKey publicKey = certificate.getPublicKey();
         KeyPair keyPair = new KeyPair(publicKey, (PrivateKey) key);
+
+        String path = "/Users/witch/server/TIL/SpringSecurity/spring-security-resources/src/main/resources/certs";
+        File file = new File(path + "/publicKey.txt");
+        if (!file.exists()) {
+                String publicStr = java.util.Base64.getMimeEncoder().encodeToString(publicKey.getEncoded());
+                publicStr = "-----BEGIN PUBLIC KEY-----\r\n" + publicStr + "\r\n-----END PUBLIC KEY-----";
+
+                OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.defaultCharset());
+                writer.write(publicStr);
+                writer.close();
+        }
         return new RsaPublicKeySecuritySigner(keyPair.getPrivate());
 
     }

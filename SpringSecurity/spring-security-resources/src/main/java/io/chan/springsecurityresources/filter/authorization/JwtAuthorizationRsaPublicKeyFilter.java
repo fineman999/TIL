@@ -1,11 +1,9 @@
 package io.chan.springsecurityresources.filter.authorization;
 
-import com.nimbusds.jose.JWSVerifier;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -48,5 +46,7 @@ public class JwtAuthorizationRsaPublicKeyFilter extends JwtAuthorizationFilter {
             // SecurityContext에 인증된 사용자 정보를 저장한다.
             setSecurityContextAuthentication(userDetails);
         }
+
+        filterChain.doFilter(request, response);
     }
 }
