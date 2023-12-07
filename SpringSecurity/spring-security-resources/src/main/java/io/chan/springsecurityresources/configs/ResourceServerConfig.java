@@ -7,6 +7,7 @@ import io.chan.springsecurityresources.filter.authorization.JwtAuthorizationRsaP
 import io.chan.springsecurityresources.signature.RsaPublicKeySecuritySigner;
 import io.chan.springsecurityresources.signature.RsaSecuritySigner;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +24,8 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.introspection.NimbusOpaqueTokenIntrospector;
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -33,7 +36,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class ResourceServerConfig {
 
     // oauth2ResourceServer와 관련된 설정을 제공하는 클래스
-//    private final OAuth2ResourceServerProperties oAuth2ResourceServerProperties;
+    private final OAuth2ResourceServerProperties oAuth2ResourceServerProperties;
 
     // AuthenticationManager를 주입받기 위한 설정
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -43,16 +46,16 @@ public class ResourceServerConfig {
 //    private final OctetSequenceKey octetSequenceKey;
 
     // 비대칭키 암호화를 위한 빈 등록
-    private final RSAKey rsaKey;
+//    private final RSAKey rsaKey;
 
     // 스프링 시큐리티에서 제공하는 비대칭키 암호화를 위한 빈 등록
 //    private final RsaSecuritySigner rsaSecuritySigner;
 
     // 비대칭키 암호화를 위한 빈 등록 - 직접 구현한 빈 등록
-    private final RsaPublicKeySecuritySigner rsaSecuritySigner;
+//    private final RsaPublicKeySecuritySigner rsaSecuritySigner;
 
     // public key를 사용하는 JwtDecoder
-    private final JwtDecoder jwtDecoder;
+//    private final JwtDecoder jwtDecoder;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -88,11 +91,17 @@ public class ResourceServerConfig {
 
 
         // jwt 토큰을 검증하기 위한 필터 추가 - jwtDecoder를 사용하는 필터 또는 jwkSetUri를 사용하는 필터 추가
-        http.oauth2ResourceServer((oauth2) -> oauth2
-                .jwt(jwtConfigurer ->
-                    jwtConfigurer
-                        .jwtAuthenticationConverter(jwtAuthenticationConverter())
-                    )
+//        http.oauth2ResourceServer((oauth2) -> oauth2
+//                .jwt(jwtConfigurer ->
+//                    jwtConfigurer
+//                        .jwtAuthenticationConverter(jwtAuthenticationConverter())
+//                    )
+//        );
+
+        http.oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
+            .opaqueToken(opaqueToken -> opaqueToken
+                .introspector(opaqueTokenIntrospector(oAuth2ResourceServerProperties))
+            )
         );
 
         // 비 대칭키를 사용하는 필터 추가
@@ -108,6 +117,19 @@ public class ResourceServerConfig {
 
 
         return http.build();
+    }
+
+
+    @Bean
+    public OpaqueTokenIntrospector opaqueTokenIntrospector(
+            OAuth2ResourceServerProperties properties
+    ) {
+        OAuth2ResourceServerProperties.Opaquetoken opaquetoken = properties.getOpaquetoken();
+        return new NimbusOpaqueTokenIntrospector(
+                opaquetoken.getIntrospectionUri(),
+                opaquetoken.getClientId(),
+                opaquetoken.getClientSecret()
+        );
     }
 
     // 커스텀 권한 설정

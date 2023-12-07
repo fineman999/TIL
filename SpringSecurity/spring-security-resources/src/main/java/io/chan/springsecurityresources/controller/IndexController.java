@@ -4,19 +4,30 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URISyntaxException;
+import java.util.Map;
 
 @Slf4j
 @RestController
 public class IndexController {
 
     @GetMapping("/")
-    public String index(
-    ) {return "index";
+    public OpaqueDto index(
+            Authentication authentication
+    ) {
+        BearerTokenAuthentication tokenAuthentication = (BearerTokenAuthentication) authentication;
+        Map<String, Object> tokenAttributes = tokenAuthentication.getTokenAttributes();
+        boolean active = (boolean) tokenAttributes.get("active");
+        return OpaqueDto.builder()
+                .active(active)
+                .authentication(authentication)
+                .principal(authentication.getPrincipal())
+                .build();
     }
 
     @GetMapping("/api/user")
@@ -31,6 +42,8 @@ public class IndexController {
         String scope = (String) jwtAuthenticationToken.getTokenAttributes().get("scope");
 
         String sub1 = principal.getClaimAsString("sub");
+
+
 
         // RestTemplate을 사용하여 외부 Server  엔드포인트에 접근한다.
 //        RestTemplate restTemplate = new RestTemplate();
