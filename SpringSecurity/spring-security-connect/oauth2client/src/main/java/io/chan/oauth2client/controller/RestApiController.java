@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClient;
 
@@ -28,13 +29,15 @@ public class RestApiController {
     }
 
     @GetMapping("/photos")
-    public List<Photo> getPhotos(AccessToken accessToken) {
+    public List<Photo> getPhotos(
+           AccessToken token
+    ) {
         String url = "http://localhost:8082/photos";
 
         ResponseEntity<List<Photo>> response = restClient.get()
                 .uri(url)
                 .headers(httpHeaders -> httpHeaders
-                        .add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken.accessToken()))
+                        .add(HttpHeaders.AUTHORIZATION, "Bearer " + token.token()))
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
 
