@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -32,14 +33,18 @@ public class OAuth2ResourceServer {
     public CorsConfigurationSource corsConfigurationSource() {
         return httpServletRequest -> {
             CorsConfiguration corsConfiguration = new CorsConfiguration();
-
-            corsConfiguration.addAllowedOriginPattern("*");
+            corsConfiguration.addAllowedOrigin("*");
             corsConfiguration.addAllowedMethod("*");
             corsConfiguration.addAllowedHeader("*");
-//            corsConfiguration.setAllowCredentials(true);
+            corsConfiguration.setMaxAge(3600L);
             UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
             source.registerCorsConfiguration("/**", corsConfiguration);
             return corsConfiguration;
         };
+    }
+
+    @Bean
+    public RestClient restClient() {
+        return RestClient.create();
     }
 }

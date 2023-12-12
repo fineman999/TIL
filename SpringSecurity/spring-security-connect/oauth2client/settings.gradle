@@ -1,1 +1,3 @@
 rootProject.name = 'oauth2client'
+include ':sharedObject'
+project(':sharedObject').projectDir = new File(settingsDir, '../sharedObject')
