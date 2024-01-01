@@ -61,4 +61,10 @@ class SecurityConfigTest {
                 .andExpect(status().isUnauthorized());
     }
 
+    @WithMockUser(username = "chan")
+    @Test
+    void resourceWhenNameChanThenAuthorized() throws Exception {
+        this.mvc.perform(get("/resource/chan"))
+                .andExpect(status().isOk());
+    }
 }
