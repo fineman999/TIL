@@ -15,7 +15,7 @@ class ProductApiTest extends ApiTest {
 
     @Test
     void 상품_등록() {
-        final AddProductRequest request = 상품등록요청_생성();
+        final var request = 상품등록요청_생성();
 
         final var response = 상품등록요청(request);
 
