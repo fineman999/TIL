@@ -22,4 +22,20 @@ class ProductApiTest extends ApiTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
+    @Test
+    void 상품_조회() {
+        // 상품 등록
+        ProductSteps.상품등록요청(ProductSteps.상품등록요청_생성());
+        final long productId = 1L;
+
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/products/{productId}", productId)
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().jsonPath().getString("name")).isEqualTo("상품명");
+    }
+
 }
