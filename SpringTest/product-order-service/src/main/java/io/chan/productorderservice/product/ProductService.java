@@ -2,6 +2,7 @@ package io.chan.productorderservice.product;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -38,8 +39,11 @@ class ProductService {
         return ResponseEntity.ok(getProductResponse);
     }
 
+    @Transactional
     public void updateProduct(final Long productId, final UpdateProductRequest request) {
         final Product product = productPort.getById(productId);
         product.update(request.name(), request.price(), request.discountPolicy());
+
+        productPort.save(product);
     }
 }
