@@ -1,0 +1,6 @@
+apple:
+  production-url: https://buy.itunes.apple.com/verifyReceipt
+  sandbox-url:  https://sandbox.itunes.apple.com/verifyReceipt
+
+server:
+  port: 8081
