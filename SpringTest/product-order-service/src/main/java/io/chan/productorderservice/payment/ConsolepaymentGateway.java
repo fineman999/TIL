@@ -1,5 +1,8 @@
 package io.chan.productorderservice.payment;
 
+import org.springframework.stereotype.Component;
+
+@Component
 class ConsolepaymentGateway implements PaymentGateway {
     @Override
     public void execute(final int price, final String cardNumber) {

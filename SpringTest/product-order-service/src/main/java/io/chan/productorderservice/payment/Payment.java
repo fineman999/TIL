@@ -1,13 +1,26 @@
 package io.chan.productorderservice.payment;
 
 import io.chan.productorderservice.order.Order;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.util.Assert;
 
-class Payment {
+@Entity
+@Table(name = "payments")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+public class Payment {
 
-    private final Order order;
-    private final String cardNumber;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private Order order;
+
+    private String cardNumber;
 
     public Payment(final Order order, final String cardNumber) {
         this.order = order;
@@ -15,20 +28,7 @@ class Payment {
         Assert.notNull(order, "주문은 필수입니다.");
         Assert.hasText(cardNumber, "카드 번호는 필수입니다.");
     }
-
-    public void assignId(final long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
     public int getPrice() {
         return order.getTotalPrice();
-    }
-
-    public String getCardNumber() {
-        return cardNumber;
     }
 }
