@@ -1,7 +1,10 @@
-package io.chan.productorderservice.payment;
+package io.chan.productorderservice.payment.adapter;
 
-import io.chan.productorderservice.order.Order;
-import io.chan.productorderservice.order.OrderRepository;
+import io.chan.productorderservice.order.domain.Order;
+import io.chan.productorderservice.order.adapter.OrderRepository;
+
+import io.chan.productorderservice.payment.application.port.PaymentPort;
+import io.chan.productorderservice.payment.domain.Payment;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,7 +1,9 @@
-package io.chan.productorderservice.order;
+package io.chan.productorderservice.order.adapter;
 
-import io.chan.productorderservice.product.Product;
-import io.chan.productorderservice.product.ProductRepository;
+import io.chan.productorderservice.order.application.port.OrderPort;
+import io.chan.productorderservice.order.domain.Order;
+import io.chan.productorderservice.product.domain.Product;
+import io.chan.productorderservice.product.adapter.ProductRepository;
 import org.springframework.stereotype.Component;
 
 @Component

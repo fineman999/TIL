@@ -1,6 +1,7 @@
 package io.chan.productorderservice.product;
 
 import io.chan.productorderservice.ApiTest;
+import io.chan.productorderservice.product.adapter.ProductRepository;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;

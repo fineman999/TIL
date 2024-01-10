@@ -1,9 +1,10 @@
-package io.chan.productorderservice.product;
+package io.chan.productorderservice.product.application.service;
 
+import io.chan.productorderservice.product.domain.DiscountPolicy;
 import org.springframework.util.Assert;
 
-record UpdateProductRequest(String name, int price, DiscountPolicy discountPolicy) {
-    UpdateProductRequest(final String name, final int price, final DiscountPolicy discountPolicy) {
+public record UpdateProductRequest(String name, int price, DiscountPolicy discountPolicy) {
+    public UpdateProductRequest(final String name, final int price, final DiscountPolicy discountPolicy) {
         this.name = name;
         this.price = price;
         this.discountPolicy = discountPolicy;

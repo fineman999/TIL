@@ -1,4 +1,4 @@
-package io.chan.productorderservice.payment;
+package io.chan.productorderservice.payment.adapter;
 
 interface PaymentGateway {
 

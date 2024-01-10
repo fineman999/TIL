@@ -1,6 +1,6 @@
-package io.chan.productorderservice.payment;
+package io.chan.productorderservice.payment.domain;
 
-import io.chan.productorderservice.order.Order;
+import io.chan.productorderservice.order.domain.Order;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

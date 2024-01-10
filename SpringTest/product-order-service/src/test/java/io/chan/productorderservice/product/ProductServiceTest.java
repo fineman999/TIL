@@ -1,5 +1,8 @@
 package io.chan.productorderservice.product;
 
+import io.chan.productorderservice.product.application.service.GetProductResponse;
+import io.chan.productorderservice.product.application.service.ProductService;
+import io.chan.productorderservice.product.application.service.UpdateProductRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

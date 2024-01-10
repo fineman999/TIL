@@ -1,12 +1,11 @@
 package io.chan.productorderservice.order;
 
-import io.chan.productorderservice.product.DiscountPolicy;
-import io.chan.productorderservice.product.Product;
-import org.assertj.core.api.Assertions;
+import io.chan.productorderservice.order.domain.Order;
+import io.chan.productorderservice.product.domain.DiscountPolicy;
+import io.chan.productorderservice.product.domain.Product;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class OrderTest {
 

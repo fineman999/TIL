@@ -1,6 +1,8 @@
-package io.chan.productorderservice.order;
+package io.chan.productorderservice.order.application.service;
 
-import io.chan.productorderservice.product.Product;
+import io.chan.productorderservice.order.application.port.OrderPort;
+import io.chan.productorderservice.order.domain.Order;
+import io.chan.productorderservice.product.domain.Product;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;

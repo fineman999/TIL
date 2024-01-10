@@ -2,6 +2,7 @@ package io.chan.productorderservice.payment;
 
 import io.chan.productorderservice.ApiTest;
 import io.chan.productorderservice.order.OrderSteps;
+import io.chan.productorderservice.payment.application.service.PaymentRequest;
 import io.chan.productorderservice.product.ProductSteps;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;

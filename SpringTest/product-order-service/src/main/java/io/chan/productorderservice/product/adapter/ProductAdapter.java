@@ -1,5 +1,7 @@
-package io.chan.productorderservice.product;
+package io.chan.productorderservice.product.adapter;
 
+import io.chan.productorderservice.product.application.port.ProductPort;
+import io.chan.productorderservice.product.domain.Product;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

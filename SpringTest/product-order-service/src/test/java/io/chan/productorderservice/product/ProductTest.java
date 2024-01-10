@@ -1,5 +1,7 @@
 package io.chan.productorderservice.product;
 
+import io.chan.productorderservice.product.domain.DiscountPolicy;
+import io.chan.productorderservice.product.domain.Product;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

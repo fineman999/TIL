@@ -1,4 +1,4 @@
-package io.chan.productorderservice.product;
+package io.chan.productorderservice.product.domain;
 
 public enum DiscountPolicy {
     NONE {
@@ -14,5 +14,5 @@ public enum DiscountPolicy {
         }
     };
 
-    abstract int applyDiscount(final int price);
+    public abstract int applyDiscount(final int price);
 }

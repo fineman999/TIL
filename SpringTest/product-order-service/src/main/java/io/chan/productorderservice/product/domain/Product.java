@@ -1,4 +1,4 @@
-package io.chan.productorderservice.product;
+package io.chan.productorderservice.product.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

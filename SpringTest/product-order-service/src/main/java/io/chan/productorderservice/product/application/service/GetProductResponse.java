@@ -1,8 +1,9 @@
-package io.chan.productorderservice.product;
+package io.chan.productorderservice.product.application.service;
 
+import io.chan.productorderservice.product.domain.DiscountPolicy;
 import org.springframework.util.Assert;
 
-record GetProductResponse(
+public record GetProductResponse(
         long id,
         String name,
         int price,

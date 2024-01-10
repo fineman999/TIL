@@ -1,5 +1,8 @@
 package io.chan.productorderservice.product;
 
+import io.chan.productorderservice.product.application.service.AddProductRequest;
+import io.chan.productorderservice.product.application.service.UpdateProductRequest;
+import io.chan.productorderservice.product.domain.DiscountPolicy;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;

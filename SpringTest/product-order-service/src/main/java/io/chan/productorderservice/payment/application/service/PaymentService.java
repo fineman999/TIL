@@ -1,6 +1,8 @@
-package io.chan.productorderservice.payment;
+package io.chan.productorderservice.payment.application.service;
 
-import io.chan.productorderservice.order.Order;
+import io.chan.productorderservice.order.domain.Order;
+import io.chan.productorderservice.payment.application.port.PaymentPort;
+import io.chan.productorderservice.payment.domain.Payment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
