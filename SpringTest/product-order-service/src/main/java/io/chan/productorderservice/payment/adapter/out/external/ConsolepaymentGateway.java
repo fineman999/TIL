@@ -1,4 +1,4 @@
-package io.chan.productorderservice.payment.adapter;
+package io.chan.productorderservice.payment.adapter.out.external;
 
 import org.springframework.stereotype.Component;
 

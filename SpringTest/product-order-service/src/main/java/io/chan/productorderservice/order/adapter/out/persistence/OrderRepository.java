@@ -1,4 +1,4 @@
-package io.chan.productorderservice.order.adapter;
+package io.chan.productorderservice.order.adapter.out.persistence;
 
 import io.chan.productorderservice.order.domain.Order;
 import org.springframework.data.jpa.repository.JpaRepository;

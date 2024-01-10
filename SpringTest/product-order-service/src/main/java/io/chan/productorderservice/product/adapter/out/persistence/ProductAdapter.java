@@ -1,4 +1,4 @@
-package io.chan.productorderservice.product.adapter;
+package io.chan.productorderservice.product.adapter.out.persistence;
 
 import io.chan.productorderservice.product.application.port.ProductPort;
 import io.chan.productorderservice.product.domain.Product;

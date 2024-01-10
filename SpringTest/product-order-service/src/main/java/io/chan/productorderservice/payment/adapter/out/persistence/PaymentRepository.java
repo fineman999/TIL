@@ -1,4 +1,4 @@
-package io.chan.productorderservice.payment.adapter;
+package io.chan.productorderservice.payment.adapter.out.persistence;
 
 import io.chan.productorderservice.payment.domain.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;

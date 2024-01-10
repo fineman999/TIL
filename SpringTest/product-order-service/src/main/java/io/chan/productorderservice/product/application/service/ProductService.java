@@ -2,13 +2,10 @@ package io.chan.productorderservice.product.application.service;
 
 import io.chan.productorderservice.product.application.port.ProductPort;
 import io.chan.productorderservice.product.domain.Product;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/products")
+@Service
 public class ProductService {
 
     private final ProductPort productPort;
@@ -17,40 +14,35 @@ public class ProductService {
         this.productPort = productPort;
     }
 
-    @PostMapping
-    public ResponseEntity<Void> addProduct(
-            @RequestBody final AddProductRequest request
+    @Transactional
+    public void addProduct(
+            final AddProductRequest request
     ) {
         final Product product = new Product(request.name(), request.price(), request.discountPolicy());
         productPort.save(product);
-
-        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/{productId}")
-    public ResponseEntity<GetProductResponse> getProduct(
-            @PathVariable final Long productId
+    @Transactional(readOnly = true)
+    public GetProductResponse getProduct(
+            final Long productId
     ) {
         final Product product = productPort.getById(productId);
-        final GetProductResponse getProductResponse = new GetProductResponse(
+
+        return new GetProductResponse(
                 product.getId(),
                 product.getName(),
                 product.getPrice(),
                 product.getDiscountPolicy());
-
-        return ResponseEntity.ok(getProductResponse);
     }
 
-    @PutMapping("/{productId}")
     @Transactional
-    public ResponseEntity<Void> updateProduct(
-            @PathVariable final Long productId,
-            @RequestBody final UpdateProductRequest request
+    public void updateProduct(
+         final Long productId,
+         final UpdateProductRequest request
     ) {
         final Product product = productPort.getById(productId);
         product.update(request.name(), request.price(), request.discountPolicy());
 
         productPort.save(product);
-        return ResponseEntity.ok().build();
     }
 }

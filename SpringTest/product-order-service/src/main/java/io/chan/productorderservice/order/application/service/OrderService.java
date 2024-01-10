@@ -3,16 +3,10 @@ package io.chan.productorderservice.order.application.service;
 import io.chan.productorderservice.order.application.port.OrderPort;
 import io.chan.productorderservice.order.domain.Order;
 import io.chan.productorderservice.product.domain.Product;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequestMapping("/orders")
+@Service
 public class OrderService {
     private final OrderPort orderPort;
 
@@ -20,15 +14,13 @@ public class OrderService {
         this.orderPort = orderPort;
     }
 
-    @PostMapping
     @Transactional
-    public ResponseEntity<Void> createOrder(
-            @RequestBody final CreateOrderRequest request
+    public void createOrder(
+            final CreateOrderRequest request
     ) {
         final Product product = orderPort.getProductById(request.productId());
         final Order order = new Order(product, request.quantity());
 
         orderPort.save(order);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

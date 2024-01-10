@@ -3,10 +3,10 @@ package io.chan.productorderservice.product;
 import io.chan.productorderservice.product.application.service.GetProductResponse;
 import io.chan.productorderservice.product.application.service.ProductService;
 import io.chan.productorderservice.product.application.service.UpdateProductRequest;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,7 +17,8 @@ public class ProductServiceTest {
     private ProductService productService;
 
     @Test
-    void 상품수정() {
+    @DisplayName("상품 수정")
+    void modifyProduct() {
         productService.addProduct(ProductSteps.상품등록요청_생성());
         final Long productId = 1L;
         final UpdateProductRequest request = ProductSteps.상품수정요청();
@@ -25,10 +26,9 @@ public class ProductServiceTest {
 
         productService.updateProduct(productId, request);
 
-        final ResponseEntity<GetProductResponse> response = productService.getProduct(productId);
-        final GetProductResponse body = response.getBody();
-        assertThat(body.name()).isEqualTo("상품 수정");
-        assertThat(body.price()).isEqualTo(2000);
+        GetProductResponse product = productService.getProduct(productId);
+        assertThat(product.name()).isEqualTo("상품 수정");
+        assertThat(product.price()).isEqualTo(2000);
 
     }
 

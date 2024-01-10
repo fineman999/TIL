@@ -5,15 +5,11 @@ import io.chan.productorderservice.payment.application.port.PaymentPort;
 import io.chan.productorderservice.payment.domain.Payment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequestMapping("/payments")
-class PaymentService {
+@Service
+public class PaymentService {
 
     private final PaymentPort paymentPort;
 
@@ -21,10 +17,9 @@ class PaymentService {
         this.paymentPort = paymentPort;
     }
 
-    @PostMapping
     @Transactional
     public ResponseEntity<Void> payment(
-            @RequestBody final PaymentRequest request
+            final PaymentRequest request
     ) {
         final Order order = paymentPort.getOrder(request.orderId());
 
