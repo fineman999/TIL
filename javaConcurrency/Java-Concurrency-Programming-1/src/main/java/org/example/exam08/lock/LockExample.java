@@ -1,4 +1,4 @@
-package org.example.exam08;
+package org.example.exam08.lock;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
