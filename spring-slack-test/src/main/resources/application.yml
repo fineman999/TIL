@@ -1,0 +1,4 @@
+slack:
+  token: {slack token}
+  channel:
+    monitor: '#spring-test'
