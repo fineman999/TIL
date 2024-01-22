@@ -3,6 +3,7 @@ package io.chan.appleinapptest.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.chan.appleinapptest.UserReceiptRequest;
 import io.chan.appleinapptest.model.AppStoreResponse;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,16 +12,29 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
 @Component
 public class AppleUtils {
 
     private final Logger logger = LoggerFactory.getLogger(AppleUtils.class);
 
     @Value("${apple.production-url}")
-    private String APPLE_PRODUCTION_URL;
+    private String appleProductionUrl;
 
     @Value("${apple.sandbox-url}")
-    private String APPLE_SANDBOX_URL;
+    private String appleSandboxUrl;
+
+    @Value("${apple.issuer-id}")
+    private String issuerId;
+
+    @Value("${apple.key-id}")
+    private String keyId;
+
+    @Value("${apple.bundle-id}")
+    private String bundleId;
+
+    @Value("${apple.apple-id}")
+    private Long appleId;
 
     /**
      * App에서 전달받은 receipt-data를 Apple에 유효성 확인 요청
@@ -34,12 +48,12 @@ public class AppleUtils {
         Map<String, String> appStoreRequest = new HashMap<>();
         appStoreRequest.put("receipt-data", userReceipt.receiptData());
 
-        AppStoreResponse appStoreResponse = WebClientUtils.doPost(APPLE_PRODUCTION_URL, appStoreRequest);
+        AppStoreResponse appStoreResponse = WebClientUtils.doPost(appleProductionUrl, appStoreRequest);
 
 
         int statusCode = appStoreResponse.getStatus();
         if (statusCode == 21007) {
-            appStoreResponse = WebClientUtils.doPost(APPLE_SANDBOX_URL, appStoreRequest);
+            appStoreResponse = WebClientUtils.doPost(appleSandboxUrl, appStoreRequest);
         } else if (statusCode != 0) {
             verifyStatusCode(statusCode);
         }

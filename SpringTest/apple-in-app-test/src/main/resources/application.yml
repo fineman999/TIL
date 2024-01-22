@@ -1,6 +1,16 @@
 apple:
   production-url: https://buy.itunes.apple.com/verifyReceipt
   sandbox-url:  https://sandbox.itunes.apple.com/verifyReceipt
+  issuer-id: {your-issuer-id}
+  key-id: {your-key-id}
+  bundle-id: {your-bundle-id}
+  apple-id: {your-apple-id}
+  service:
+    encoded-key: classpath:SubscriptionKey_3GYYW88PA7.p8
+    apple-inc-root-certificate: classpath:AppleIncRootCertificate.cer
+    apple-computer-root-certificate: classpath:AppleComputerRootCertificate.cer
+    apple-root-ca-g2: classpath:AppleRootCA-G2.cer
+    apple-root-ca-g3: classpath:AppleRootCA-G3.cer
 
 server:
   port: 8081
