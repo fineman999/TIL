@@ -15,7 +15,7 @@ public class CyclicBarrierExample {
             new Thread(new Worker(i, numbers, barrier, partialSum)).start();
         }
     }
-
+ 
     private static class BarrierAction implements Runnable {
         private final int[] partialSum1;
 
