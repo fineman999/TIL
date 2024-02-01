@@ -3,7 +3,6 @@ package org.example.exam10.executeService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 
 public class AwaitTerminationExample {
     public static void main(String[] args) {
