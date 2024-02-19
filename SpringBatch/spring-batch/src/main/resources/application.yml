@@ -8,3 +8,5 @@ spring:
       table-prefix: BATCH_
   profiles:
     include: mysql
+server:
+  port: 8081
