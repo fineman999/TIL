@@ -5,7 +5,9 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -45,6 +47,13 @@ public class JobRepositoryConfiguration {
                         return RepeatStatus.FINISHED;
                     }
                 }, transactionManager)
+                .build();
+    }
+    @Bean
+    public Flow flow1(Step step1, Step step2) {
+        return new FlowBuilder<Flow>("flow1")
+                .start(step1)
+                .next(step2)
                 .build();
     }
 }

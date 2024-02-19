@@ -2,8 +2,9 @@ spring:
   batch:
     job:
       enabled: true
-      name: executionContextJob
+      name: ${job.name:NONE}
     jdbc:
       initialize-schema: never
+      table-prefix: BATCH_
   profiles:
     include: mysql
