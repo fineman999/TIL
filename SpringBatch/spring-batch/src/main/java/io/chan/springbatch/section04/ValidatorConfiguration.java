@@ -21,6 +21,8 @@ public class ValidatorConfiguration {
                 .start(testStep1)
                 .next(testStep2)
                 .next(testStep3)
+                .preventRestart()
+                .incrementer(new CustomJobParametersIncrementer())
 //                .validator(new CustomJobParametersValidator())
                 .validator(new DefaultJobParametersValidator(new String[]{"name", "date"}, new String[]{"count"}))
                 .build();
