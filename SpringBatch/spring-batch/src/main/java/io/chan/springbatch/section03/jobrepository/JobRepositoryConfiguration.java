@@ -23,7 +23,7 @@ public class JobRepositoryConfiguration {
     private final JobExecutionListener jobExecutionListener;
 
     @Bean
-    public Job BatchJob(JobRepository jobRepository, Step step1, Step step2) {
+    public Job batchJob(JobRepository jobRepository, Step step1, Step step2) {
         return new JobBuilder("BatchJob", jobRepository)
                 .start(step1)
                 .next(step2)
@@ -40,7 +40,7 @@ public class JobRepositoryConfiguration {
 
     @Bean
     public Step step1(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        return new StepBuilder("step1")
+        return new StepBuilder("step1", jobRepository)
                 .tasklet(new Tasklet() {
                     @Override
                     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
