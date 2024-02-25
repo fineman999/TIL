@@ -47,24 +47,4 @@ public class ExitStatusConfiguration {
                 .listener(new PassCheckingListener())
                 .build();
     }
-
-    @Bean
-    public Step step3(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        return new StepBuilder("step3", jobRepository)
-                .tasklet((contribution, chunkContext) -> {
-                    System.out.println("Step 3 was executed!");
-                    return RepeatStatus.FINISHED;
-                }, transactionManager)
-                .build();
-    }
-
-    @Bean
-    public Step step4(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        return new StepBuilder("step4", jobRepository)
-                .tasklet((contribution, chunkContext) -> {
-                    System.out.println("Step 4 was executed!");
-                    return RepeatStatus.FINISHED;
-                }, transactionManager)
-                .build();
-    }
 }
