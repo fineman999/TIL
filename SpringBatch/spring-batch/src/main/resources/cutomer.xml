@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<customers>
+    <customer>
+        <id>1</id>
+        <name>John Doe</name>
+        <age>25</age>
+    </customer>
+    <customer>
+        <id>2</id>
+        <name>Jane Doe</name>
+        <age>30</age>
+    </customer>
+    <customer>
+        <id>3</id>
+        <name>Jim Doe</name>
+        <age>35</age>
+    </customer>
+</customers>
