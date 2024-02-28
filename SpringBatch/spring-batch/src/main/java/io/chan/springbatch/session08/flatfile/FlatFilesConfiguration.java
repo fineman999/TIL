@@ -88,6 +88,7 @@ public class FlatFilesConfiguration {
                 .targetType(Customer.class)
                 .linesToSkip(1)
                 .fixedLength()
+                .strict(false) // 열 길이가 다를 경우 예외를 던지지 않고 무시
                 .addColumns(new Range(1, 5)) // name 길이 설정
                 .addColumns(new Range(6, 9)) // year 길이 설정
                 .addColumns(new Range(10, 11)) // age 길이 설정
