@@ -18,9 +18,11 @@ import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.batch.item.file.transform.Range;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.util.ArrayList;
@@ -65,16 +67,32 @@ public class FlatFilesConfiguration {
 //    }
 
     // FlatFileItemReader 빌더를 사용하여 ItemReader 빈을 생성
+//    @Bean
+//    public ItemReader<? extends Customer> itemReader() {
+//       return new FlatFileItemReaderBuilder<Customer>()
+//               .name("flatFileItemReader")
+//               .resource(new ClassPathResource("/customers.txt"))
+//               .fieldSetMapper(new BeanWrapperFieldSetMapper<>()).targetType(Customer.class) // BeanWrapperFieldSetMapper 를 사용하여 필드 매핑
+//               .linesToSkip(1)
+//               .delimited().delimiter(",") // 구분자 설정
+//               .names("name", "age", "year")
+//               .build();
+//    }
+
     @Bean
     public ItemReader<? extends Customer> itemReader() {
-       return new FlatFileItemReaderBuilder<Customer>()
-               .name("flatFileItemReader")
-               .resource(new ClassPathResource("/customers.txt"))
-               .fieldSetMapper(new BeanWrapperFieldSetMapper<>()).targetType(Customer.class) // BeanWrapperFieldSetMapper 를 사용하여 필드 매핑
-               .linesToSkip(1)
-               .delimited().delimiter(",") // 구분자 설정
-               .names("name", "age", "year")
-               .build();
+        return new FlatFileItemReaderBuilder<Customer>()
+                .name("flatFileItemReader")
+                .resource(new FileSystemResource("src/main/resources/customer.txt"))
+                .fieldSetMapper(new BeanWrapperFieldSetMapper<>())
+                .targetType(Customer.class)
+                .linesToSkip(1)
+                .fixedLength()
+                .addColumns(new Range(1, 5)) // name 길이 설정
+                .addColumns(new Range(6, 9)) // year 길이 설정
+                .addColumns(new Range(10, 11)) // age 길이 설정
+                .names("name", "year", "age")
+                .build();
     }
 
     @Bean
