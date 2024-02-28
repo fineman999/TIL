@@ -15,6 +15,8 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemStreamWriter;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
+import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
+import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
@@ -47,19 +49,32 @@ public class FlatFilesConfiguration {
                 .build();
     }
 
+//    @Bean
+//    public ItemReader<? extends Customer> itemReader() {
+//        FlatFileItemReader<Customer> itemReader = new FlatFileItemReader<>();
+//        itemReader.setResource(new ClassPathResource("/customers.txt"));
+//
+//        DefaultLineMapper<Customer> lineMapper = new DefaultLineMapper<>();
+//        lineMapper.setLineTokenizer(new DelimitedLineTokenizer());
+//        lineMapper.setFieldSetMapper(new CustomerFiledSetMapper());
+//
+//        itemReader.setLineMapper(lineMapper);
+//        itemReader.setLinesToSkip(1);
+//        return itemReader;
+//
+//    }
+
+    // FlatFileItemReader 빌더를 사용하여 ItemReader 빈을 생성
     @Bean
     public ItemReader<? extends Customer> itemReader() {
-        FlatFileItemReader<Customer> itemReader = new FlatFileItemReader<>();
-        itemReader.setResource(new ClassPathResource("/customers.txt"));
-
-        DefaultLineMapper<Customer> lineMapper = new DefaultLineMapper<>();
-        lineMapper.setLineTokenizer(new DelimitedLineTokenizer());
-        lineMapper.setFieldSetMapper(new CustomerFiledSetMapper());
-
-        itemReader.setLineMapper(lineMapper);
-        itemReader.setLinesToSkip(1);
-        return itemReader;
-
+       return new FlatFileItemReaderBuilder<Customer>()
+               .name("flatFileItemReader")
+               .resource(new ClassPathResource("/customers.txt"))
+               .fieldSetMapper(new BeanWrapperFieldSetMapper<>()).targetType(Customer.class) // BeanWrapperFieldSetMapper 를 사용하여 필드 매핑
+               .linesToSkip(1)
+               .delimited().delimiter(",") // 구분자 설정
+               .names("name", "age", "year")
+               .build();
     }
 
     @Bean
