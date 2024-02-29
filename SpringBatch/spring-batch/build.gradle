@@ -18,6 +18,7 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-batch'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	// https://mvnrepository.com/artifact/com.thoughtworks.xstream/xstream
 	implementation 'com.thoughtworks.xstream:xstream:1.4.20'
 	// https://mvnrepository.com/artifact/org.springframework/spring-oxm
