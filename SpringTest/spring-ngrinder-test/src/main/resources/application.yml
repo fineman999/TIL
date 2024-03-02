@@ -12,6 +12,8 @@ spring:
       hibernate:
         show_sql: true
     open-in-view: true
+  profiles:
+    include: cache
 logging:
   level:
     org:

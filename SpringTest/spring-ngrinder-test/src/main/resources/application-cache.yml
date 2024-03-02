@@ -1,0 +1,8 @@
+spring:
+  data:
+    redis:
+      host: ${REDIS.HOST}
+      port: 6379
+      password: ${REDIS.PASSWORD}
+  cache:
+    type: redis
