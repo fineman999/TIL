@@ -5,7 +5,7 @@ import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 
 @Getter
 @Entity
@@ -15,21 +15,21 @@ public class Notice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 30)
+    @Column
     private String title;
 
-    @Column(length = 100)
+    @Column
     private String content;
 
-    @Column(length = 30)
+    @Column
     private String who;
 
     @CreatedDate
     @Column(nullable = false)
-    private Timestamp createDate;
+    private ZonedDateTime createDate;
 
     @LastModifiedDate
     @Column(nullable = false)
-    private Timestamp updateDate;
+    private ZonedDateTime updateDate;
 
 }
