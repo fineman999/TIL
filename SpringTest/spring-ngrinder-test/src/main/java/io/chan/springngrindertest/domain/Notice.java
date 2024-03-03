@@ -9,7 +9,10 @@ import java.time.ZonedDateTime;
 
 @Getter
 @Entity
-@Table
+@Table(indexes = {
+        @Index(name = "idx_notice_who", columnList = "who"),
+        @Index(name = "idx_notice_createDate", columnList = "createDate")
+})
 public class Notice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
