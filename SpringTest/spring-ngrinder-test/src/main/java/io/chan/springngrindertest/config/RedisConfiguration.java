@@ -44,8 +44,8 @@ public class RedisConfiguration {
 
         Map<String, RedisCacheConfiguration> redisCacheConfigMap = new HashMap<>();
 
-        redisCacheConfigMap.put(CacheUtils.NOTICE_FIND_ALL, redisCacheConfiguration.entryTtl(Duration.ofMinutes(10L)));
-        redisCacheConfigMap.put(CacheUtils.NOTICE_FIND_BY_PAGE, redisCacheConfiguration.entryTtl(Duration.ofMinutes(10L)));
+        redisCacheConfigMap.put(CacheUtils.NOTICE_FIND_ALL, redisCacheConfiguration.entryTtl(Duration.ofSeconds(20L)));
+        redisCacheConfigMap.put(CacheUtils.NOTICE_FIND_BY_PAGE, redisCacheConfiguration.entryTtl(Duration.ofSeconds(20L)));
 
         return RedisCacheManager
                 .RedisCacheManagerBuilder

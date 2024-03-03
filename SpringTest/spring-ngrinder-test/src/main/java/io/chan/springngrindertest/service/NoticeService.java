@@ -24,7 +24,11 @@ public class NoticeService {
         return noticeRepository.findAll();
     }
 
-    @Cacheable(value = CacheUtils.NOTICE_FIND_BY_PAGE,keyGenerator = "pageKeyGenerator", condition = "#pageable.pageNumber <= 5")
+    @Cacheable(
+            value = CacheUtils.NOTICE_FIND_BY_PAGE,
+            keyGenerator = "pageKeyGenerator",
+            condition = "#pageable.pageNumber <= 5",
+            unless = "#result.totalElements == 0")
     @Transactional(readOnly = true)
     public Page<Notice> findByPage(final Pageable pageable) {
         final Page<Notice> noticePage = noticeRepository.findAll(pageable);
