@@ -4,6 +4,8 @@ package io.chan.springngrindertest.controller;
 import io.chan.springngrindertest.domain.Notice;
 import io.chan.springngrindertest.service.NoticeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +24,15 @@ public class NoticeController {
     @GetMapping
     public ResponseEntity<Object> findAll() {
         List<Notice> notices = noticeService.getAllNotices();
+        return new ResponseEntity<>(notices, HttpStatus.OK);
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<Object> findByPage(
+            Pageable pageable
+            ) {
+
+        final Page<Notice> notices = noticeService.findByPage(pageable);
         return new ResponseEntity<>(notices, HttpStatus.OK);
     }
 }

@@ -4,5 +4,9 @@ spring:
       host: ${REDIS.HOST}
       port: 6379
       password: ${REDIS.PASSWORD}
+      lettuce:
+        shutdown-timeout: 2000 # ms
+      connect-timeout: 5000 # ms
+      timeout: 5000 # ms
   cache:
     type: redis
