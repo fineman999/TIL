@@ -1,6 +1,7 @@
 package io.chan.springngrindertest.service;
 
 import io.chan.springngrindertest.config.CacheUtils;
+import io.chan.springngrindertest.config.CustomPageImpl;
 import io.chan.springngrindertest.domain.Notice;
 import io.chan.springngrindertest.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +24,10 @@ public class NoticeService {
         return noticeRepository.findAll();
     }
 
-    @Cacheable(value = CacheUtils.NOTICE_FIND_BY_PAGE, condition = "#pageable.pageNumber() <= 5")
+    @Cacheable(value = CacheUtils.NOTICE_FIND_BY_PAGE,keyGenerator = "pageKeyGenerator", condition = "#pageable.pageNumber <= 5")
     @Transactional(readOnly = true)
     public Page<Notice> findByPage(final Pageable pageable) {
-        return noticeRepository.findAll(pageable);
+        final Page<Notice> noticePage = noticeRepository.findAll(pageable);
+        return new CustomPageImpl<>(noticePage);
     }
 }
