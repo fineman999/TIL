@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -35,4 +36,14 @@ public class NoticeController {
         final Page<Notice> notices = noticeService.findByPage(pageable);
         return new ResponseEntity<>(notices, HttpStatus.OK);
     }
+
+    @GetMapping("/dates")
+    public ResponseEntity<Object> findNoticesByDates(@RequestParam("startDate") String startDate,
+                                                     @RequestParam("endDate") String endDate) {
+        List<Notice> notices = noticeService.findNoticesByDates(
+                new NoticesByDatesDto(startDate, endDate)
+        );
+        return new ResponseEntity<>(notices, HttpStatus.OK);
+    }
+
 }
