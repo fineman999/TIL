@@ -1,5 +1,6 @@
-package io.chan.springbatch.session09.flatfile;
+package io.chan.springbatch.session09.flatfile.delimited;
 
+import io.chan.springbatch.session09.flatfile.Customer;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
