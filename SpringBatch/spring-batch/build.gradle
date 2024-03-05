@@ -23,6 +23,8 @@ dependencies {
 	implementation 'com.thoughtworks.xstream:xstream:1.4.20'
 	// https://mvnrepository.com/artifact/org.springframework/spring-oxm
 	implementation 'org.springframework:spring-oxm'
+// https://mvnrepository.com/artifact/org.modelmapper/modelmapper
+	implementation 'org.modelmapper:modelmapper:3.2.0'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.batch:spring-batch-test'

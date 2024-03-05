@@ -1,16 +1,19 @@
-package io.chan.springbatch.session09.db.jdbc;
+package io.chan.springbatch.session09.db.jpa;
 
-import io.chan.springbatch.session09.flatfile.Customer;
+import jakarta.persistence.EntityManagerFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.Order;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
+import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
 import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,13 +26,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class JdbcBatchConfiguration {
+@RequiredArgsConstructor
+public class JpaBatchConfiguration {
     private final int chunkSize = 10;
     private final DataSource dataSource;
+    private final EntityManagerFactory entityManagerFactory;
 
-    public JdbcBatchConfiguration(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
 
     @Bean
     public Job writeJob(JobRepository jobRepository, Step chunkStep1, Step chunkStep2) {
@@ -42,28 +44,34 @@ public class JdbcBatchConfiguration {
     @Bean
     public Step writeStep1(JobRepository jobRepository, PlatformTransactionManager transactionManager) throws Exception {
         return new StepBuilder("writeStep1", jobRepository)
-                .<Customer, Customer>chunk(chunkSize, transactionManager)
+                .<Customer, Customer2>chunk(chunkSize, transactionManager)
                 .reader(customItemReader())
+                .processor(customItemProcessor())
                 .writer(customItemWriter())
                 .build();
     }
 
     @Bean
-    public ItemWriter<? super Customer> customItemWriter() {
-       return new JdbcBatchItemWriterBuilder<Customer>()
-                .dataSource(dataSource)
-                .sql("insert into customer2 values (:id, :name, :age)")
-                .beanMapped()
+    public ItemProcessor<? super Customer, ? extends Customer2> customItemProcessor() {
+        return new CustomItemProcessor();
+    }
+
+    @Bean
+    public ItemWriter<? super Customer2> customItemWriter() {
+       return new JpaItemWriterBuilder<Customer2>()
+               .usePersist(true)
+                .entityManagerFactory(entityManagerFactory)
                 .build();
     }
 
     @Bean
     public Marshaller customerMarshaller() {
         Map<String, Class<?>> aliases = new HashMap<>();
-        aliases.put("customer", Customer.class);
+        aliases.put("customer2", Customer2.class);
         aliases.put("id",Long.class);
-        aliases.put("name",String.class);
-        aliases.put("age",Integer.class);
+        aliases.put("first_name",String.class);
+        aliases.put("last_name",String.class);
+        aliases.put("birthdate",String.class);
 
         XStreamMarshaller marshaller = new XStreamMarshaller();
         marshaller.setAliases(aliases);
@@ -77,15 +85,16 @@ public class JdbcBatchConfiguration {
         itemReader.setDataSource(dataSource);
         itemReader.setFetchSize(chunkSize);
         itemReader.setRowMapper((resultSet, i) -> new Customer(
-                resultSet.getInt("id"),
-                resultSet.getString("name"),
-                resultSet.getInt("age")
+                resultSet.getLong("id"),
+                resultSet.getString("first_name"),
+                resultSet.getString("last_name"),
+                resultSet.getString("birthdate")
         ));
 
         MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
-        queryProvider.setSelectClause("id, name, age");
+        queryProvider.setSelectClause("id, first_name, last_name, birthdate");
         queryProvider.setFromClause("from customer");
-        queryProvider.setWhereClause("where age >= 40");
+        queryProvider.setWhereClause("where birthdate >= '1990-01-01'");
 
         HashMap<String, Order> hashMap = new HashMap<>(1);
 
