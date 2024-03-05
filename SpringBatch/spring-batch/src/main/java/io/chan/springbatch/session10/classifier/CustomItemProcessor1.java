@@ -1,0 +1,11 @@
+package io.chan.springbatch.session10.classifier;
+
+import org.springframework.batch.item.ItemProcessor;
+
+public class CustomItemProcessor1 implements ItemProcessor<ProcessorInfo, ProcessorInfo> {
+    @Override
+    public ProcessorInfo process(ProcessorInfo item) throws Exception {
+        System.out.println("Processing: " + item);
+        return null;
+    }
+}
