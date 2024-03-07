@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+    open-in-view: true
+  profiles:
+    include: cache
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug

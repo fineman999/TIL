@@ -53,7 +53,7 @@ public class SendService {
                 CompletableFuture.runAsync(() -> sendLog(notice.getTitle()), customThreadPool)
                         .exceptionally(throwable -> {
                             log.error("Exception occurred: " + throwable.getMessage());
-                            // 이슈 발생을 담당자가 인지 할수 있도록 추가적인 코드가 필요
+                            // 이슈 발생을 담당자가 인지 할수 있도록 추가적인 코드가 필요 - 알림 전송
                             return null;
                         })
         );
