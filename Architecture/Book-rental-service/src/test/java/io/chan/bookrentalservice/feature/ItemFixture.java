@@ -1,4 +1,4 @@
-package io.chan.bookrentalservice.domain.model.feature;
+package io.chan.bookrentalservice.feature;
 
 import io.chan.bookrentalservice.domain.model.vo.Item;
 
