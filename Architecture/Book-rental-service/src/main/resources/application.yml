@@ -1,4 +1,9 @@
 spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  application:
+    name: rental-service
   datasource:
     url: ${MYSQL_URL}
     username: ${MYSQL_USERNAME}
@@ -18,3 +23,5 @@ logging:
     org:
       hibernate:
         SQL: debug
+server:
+  port: 8081
