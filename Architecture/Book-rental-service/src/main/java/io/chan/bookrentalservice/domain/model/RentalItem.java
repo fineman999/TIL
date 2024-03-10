@@ -1,6 +1,8 @@
 package io.chan.bookrentalservice.domain.model;
 
 import io.chan.bookrentalservice.domain.model.vo.Item;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,11 +14,13 @@ import java.time.Period;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Embeddable
 public class RentalItem {
     private static final int RETURN_DAYS = 14;
+    @Embedded
     private Item item;
     private LocalDateTime rentDateTime;
-    private LocalDateTime returnDateTime;
+    private LocalDateTime expireDateTime;
     private boolean overdue;
 
 
@@ -35,13 +39,13 @@ public class RentalItem {
 
     public int calculateOverDueDays(final LocalDateTime returnDate) {
         if (this.compareToDate(returnDate)) {
-            return Period.between(this.returnDateTime.toLocalDate(), returnDate.toLocalDate()).getDays();
+            return Period.between(this.expireDateTime.toLocalDate(), returnDate.toLocalDate()).getDays();
         }
         return 0;
     }
 
     private boolean compareToDate(final LocalDateTime returnDate) {
-        return returnDateTime.isBefore(returnDate);
+        return expireDateTime.isBefore(returnDate);
     }
 
     public void setOverdue(final boolean valid) {

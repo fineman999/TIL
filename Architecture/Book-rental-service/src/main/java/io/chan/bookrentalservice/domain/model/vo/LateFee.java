@@ -1,16 +1,19 @@
 package io.chan.bookrentalservice.domain.model.vo;
 
+import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@Embeddable
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class LateFee {
-    private final Long point;
-    private static final Long  LATE_FEE_POINT = 10L;
     public static final LateFee LATE_FEE_ZERO = new LateFee(0L);
-
+    private static final Long  LATE_FEE_POINT = 10L;
+    private Long point;
     public LateFee addPoint(Long point) {
         return new LateFee(this.point + point);
     }

@@ -19,7 +19,7 @@ public record RentItemOutputDTO(
                 .itemTitle(rentalItem.getItem().getTitle())
                 .rentDate(rentalItem.getRentDateTime())
                 .overdue(rentalItem.isOverdue())
-                .returnDate(rentalItem.getReturnDateTime())
+                .returnDate(rentalItem.getExpireDateTime())
                 .build();
     }
 }

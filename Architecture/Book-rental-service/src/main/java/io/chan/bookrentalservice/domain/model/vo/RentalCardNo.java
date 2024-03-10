@@ -1,20 +1,21 @@
 package io.chan.bookrentalservice.domain.model.vo;
 
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import jakarta.persistence.Embeddable;
+import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
+@Embeddable
 @EqualsAndHashCode
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class RentalCardNo {
-    private final String no;
+public class RentalCardNo implements Serializable {
 
+    private String no;
     public static RentalCardNo createRentalCardNo(
             UUID uuid,
             LocalDateTime dateTime

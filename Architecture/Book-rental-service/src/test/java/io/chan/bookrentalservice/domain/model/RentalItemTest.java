@@ -23,6 +23,6 @@ class RentalItemTest {
 
         // then
         assertThat(rentalItem.getRentDateTime()).isEqualTo("2021-07-01T00:00:00");
-        assertThat(rentalItem.getReturnDateTime()).isEqualTo("2021-07-15T00:00:00");
+        assertThat(rentalItem.getExpireDateTime()).isEqualTo("2021-07-15T00:00:00");
     }
 }
