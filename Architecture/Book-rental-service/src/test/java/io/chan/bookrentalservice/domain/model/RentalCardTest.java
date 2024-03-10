@@ -1,10 +1,10 @@
 package io.chan.bookrentalservice.domain.model;
 
 import io.chan.bookrentalservice.domain.model.vo.IDName;
-import io.chan.bookrentalservice.domain.model.vo.LateFee;
-import io.chan.bookrentalservice.domain.model.vo.RentStatus;
-import io.chan.bookrentalservice.domain.model.vo.RentalCardNo;
-import io.chan.bookrentalservice.feature.*;
+import io.chan.bookrentalservice.feature.IDNameFixture;
+import io.chan.bookrentalservice.feature.RentalCardFixture;
+import io.chan.bookrentalservice.feature.RentalItemFixture;
+import io.chan.bookrentalservice.feature.ReturnItemFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
