@@ -31,7 +31,7 @@ public record RentalCardOutputDTO(
         Assert.notNull(totalOverdueCnt, "totalOverdueCnt must not be null");
     }
 
-    public static RentalCardOutputDTO mapToDto(
+    public static RentalCardOutputDTO from(
             RentalCard rentalCard
     ) {
         return RentalCardOutputDTO.builder()

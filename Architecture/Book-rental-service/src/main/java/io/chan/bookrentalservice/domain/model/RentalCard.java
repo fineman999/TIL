@@ -40,11 +40,10 @@ public class RentalCard {
         );
     }
 
-    public RentalCard rentItem(Item item) {
+    public void rentItem(Item item) {
         checkRentalAvailable();
         final RentalItem rentalItem = RentalItem.createRentalItem(item, LocalDateTime.now());
         addRentItem(rentalItem);
-        return this;
     }
 
     // 반납시 연체료를 계산한다.

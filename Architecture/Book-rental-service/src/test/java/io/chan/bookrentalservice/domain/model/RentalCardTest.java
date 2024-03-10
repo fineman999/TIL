@@ -31,7 +31,7 @@ class RentalCardTest {
         final Item item = ItemFixture.createItem();
 
         RentalCard rentalCard = RentalCardFixture.createRentalCard();
-        rentalCard = rentalCard.rentItem(item);
+        rentalCard.rentItem(item);
 
         assertThat(rentalCard.rentalItemCount()).isEqualTo(1);
     }
@@ -42,7 +42,7 @@ class RentalCardTest {
         final Item item = ItemFixture.createItem();
 
         RentalCard rentalCard = RentalCardFixture.createRentalCard();
-        rentalCard = rentalCard.rentItem(item);
+        rentalCard.rentItem(item);
         LocalDateTime now = LocalDateTime.now();
         rentalCard = rentalCard.returnItem(item, now);
 
