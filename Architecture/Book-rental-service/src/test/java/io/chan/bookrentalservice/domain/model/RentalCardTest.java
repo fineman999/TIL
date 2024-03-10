@@ -1,12 +1,12 @@
 package io.chan.bookrentalservice.domain.model;
 
 import io.chan.bookrentalservice.domain.model.vo.IDName;
-import io.chan.bookrentalservice.feature.IDNameFixture;
-import io.chan.bookrentalservice.feature.RentalCardFixture;
-import io.chan.bookrentalservice.feature.RentalItemFixture;
-import io.chan.bookrentalservice.feature.ReturnItemFixture;
+import io.chan.bookrentalservice.domain.model.vo.Item;
+import io.chan.bookrentalservice.feature.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,45 +25,27 @@ class RentalCardTest {
         assertThat(rentalCard).isNotNull();
     }
 
-    @DisplayName("RentItem을 추가하면, RentItem의 개수가 증가한다")
+    @DisplayName("대여를 하면 RentItem의 개수가 증가한다")
     @Test
-    void addRentItem() {
-        // given
-        final RentalCard rentalCard = RentalCardFixture.createRentalCard();
-        final RentalItem rentalItem = RentalItemFixture.createRentalItem();
-        rentalCard.addRentItem(rentalItem);
+    void rentItem() {
+        final Item item = ItemFixture.createItem();
+
+        RentalCard rentalCard = RentalCardFixture.createRentalCard();
+        rentalCard = rentalCard.rentItem(item);
+
         assertThat(rentalCard.rentalItemCount()).isEqualTo(1);
     }
 
-    @DisplayName("RentItem을 삭제하면, RentItem의 개수가 감소한다")
+    @DisplayName("반납을 하면 RentItem의 개수가 감소한다")
     @Test
-    void removeRentItem() {
-        // given
-        final RentalCard rentalCard = RentalCardFixture.createRentalCard();
-        final RentalItem rentalItem = RentalItemFixture.createRentalItem();
-        rentalCard.addRentItem(rentalItem);
-        rentalCard.removeRentItem(rentalItem);
+    void returnItem() {
+        final Item item = ItemFixture.createItem();
+
+        RentalCard rentalCard = RentalCardFixture.createRentalCard();
+        rentalCard = rentalCard.rentItem(item);
+        LocalDateTime now = LocalDateTime.now();
+        rentalCard = rentalCard.returnItem(item, now);
+
         assertThat(rentalCard.rentalItemCount()).isZero();
-    }
-
-@DisplayName("ReturnItem을 추가하면, ReturnItem의 개수가 증가한다")
-    @Test
-    void addReturnItem() {
-        // given
-        final RentalCard rentalCard = RentalCardFixture.createRentalCard();
-        final ReturnItem returnItem = ReturnItemFixture.createReturnItem();
-        rentalCard.addReturnItem(returnItem);
-        assertThat(rentalCard.returnItemCount()).isEqualTo(1);
-    }
-
-    @DisplayName("ReturnItem을 삭제하면, ReturnItem의 개수가 감소한다")
-    @Test
-    void removeReturnItem() {
-        // given
-        final RentalCard rentalCard = RentalCardFixture.createRentalCard();
-        final ReturnItem returnItem = ReturnItemFixture.createReturnItem();
-        rentalCard.addReturnItem(returnItem);
-        rentalCard.removeReturnItem(returnItem);
-        assertThat(rentalCard.returnItemCount()).isZero();
     }
 }

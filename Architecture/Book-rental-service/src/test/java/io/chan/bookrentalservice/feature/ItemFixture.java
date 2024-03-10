@@ -8,4 +8,8 @@ public class ItemFixture {
         final String title = "노인과 바다";
         return Item.createItem(no, title);
     }
+
+    public static Item create(Long no, String title) {
+        return Item.createItem(no, title);
+    }
 }
