@@ -88,6 +88,18 @@ public class RentalCard {
         return this.lateFee.getPoint();
     }
 
+    public Long totalRentalCnt() {
+        return (long) rentalItems.size();
+    }
+
+    public Long totalReturnCnt() {
+        return (long) returnItems.size();
+    }
+
+    public Long totalOverdueCnt() {
+        return rentalItems.stream().filter(RentalItem::isOverdue).count();
+    }
+
     // 1권이라도 연체되면 사용자는 대여 불가 상태가 된다.
     // 1인당 5권 이내로 지정한다.
     private void checkRentalAvailable() {
