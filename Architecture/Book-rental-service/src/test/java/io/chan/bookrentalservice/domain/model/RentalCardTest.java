@@ -15,18 +15,11 @@ class RentalCardTest {
     @DisplayName("RentCard를 생성한다")
     @Test
     void createRentalCard() {
-        // given
-        final RentalCardNo rentalCardNo = RentalCardNoFixture.createRentalCardNo();
         final IDName member = IDNameFixture.createIDName();
-        final RentStatus rentAvailable = RentStatus.RENT_AVAILABLE;
-        final LateFee lateFee = LateFeeFixture.createLateFee();
 
 
         final RentalCard rentalCard = RentalCard.createRentalCard(
-                rentalCardNo,
-                member,
-                rentAvailable,
-                lateFee
+                member
         );
         // then
         assertThat(rentalCard).isNotNull();

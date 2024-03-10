@@ -9,8 +9,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -24,16 +26,20 @@ public class RentalCard {
     private LateFee lateFee;
 
     public static RentalCard createRentalCard(
-            RentalCardNo rentalCardNo,
-            IDName member,
-            RentStatus rentStatus,
-            LateFee lateFee
+            IDName creator
     ) {
+
+        final RentalCardNo cardNo = RentalCardNo.createRentalCardNo(
+                UUID.randomUUID(),
+                LocalDateTime.now()
+        );
+        final LateFee lateFee = LateFee.createLateFee(0L);
+        final RentStatus rentStatus = RentStatus.RENT_AVAILABLE;
         return new RentalCard(
                 new ArrayList<>(),
                 new ArrayList<>(),
-                rentalCardNo,
-                member,
+                cardNo,
+                creator,
                 rentStatus,
                 lateFee
         );

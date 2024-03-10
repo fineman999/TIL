@@ -23,4 +23,5 @@ public class LateFee {
     public static LateFee createLateFee(Long point) {
         return new LateFee(point);
     }
+
 }
