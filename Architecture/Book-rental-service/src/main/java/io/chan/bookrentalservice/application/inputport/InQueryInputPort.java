@@ -11,35 +11,38 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class InQueryInputPort implements InQueryUseCase {
+    private static final String RENTAL_CARD_NOT_FOUND = "Rental card not found";
     private final RentalCardOutputPort rentalCardOutputPort;
 
     @Override
-    public Optional<RentalCardOutputDTO> getRentalCard(final UserInputDTO userInputDTO) {
+    public RentalCardOutputDTO getRentalCard(final UserInputDTO userInputDTO) {
         return rentalCardOutputPort.loadRentalCard(userInputDTO.id())
-                .map(RentalCardOutputDTO::from);
+                .map(RentalCardOutputDTO::from)
+                .orElseThrow(() -> new IllegalArgumentException(RENTAL_CARD_NOT_FOUND));
     }
 
     @Override
-    public Optional<List<RentItemOutputDTO>> getAllRentItem(final UserInputDTO userInputDTO) {
+    public List<RentItemOutputDTO> getAllRentItem(final UserInputDTO userInputDTO) {
         return rentalCardOutputPort.loadRentalCard(userInputDTO.id())
                 .map(loadCard -> loadCard.getRentalItems()
                     .stream()
                     .map(RentItemOutputDTO::from)
-                    .toList());
+                    .toList())
+                .orElseThrow(() -> new IllegalArgumentException(RENTAL_CARD_NOT_FOUND));
     }
 
     @Override
-    public Optional<List<ReturnItemOutputDTO>> getAllReturnItem(final UserInputDTO userInputDTO) {
+    public List<ReturnItemOutputDTO> getAllReturnItem(final UserInputDTO userInputDTO) {
         return rentalCardOutputPort.loadRentalCard(userInputDTO.id())
                 .map(loadCard -> loadCard.getReturnItems()
                     .stream()
                     .map(ReturnItemOutputDTO::from)
-                    .toList());
+                    .toList())
+                .orElseThrow(() -> new IllegalArgumentException(RENTAL_CARD_NOT_FOUND));
     }
 }
