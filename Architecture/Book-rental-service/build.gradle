@@ -37,6 +37,7 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
     testImplementation 'io.rest-assured:rest-assured'
+    testImplementation 'io.rest-assured:spring-mock-mvc'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
