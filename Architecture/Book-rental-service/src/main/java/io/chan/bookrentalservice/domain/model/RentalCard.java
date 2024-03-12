@@ -18,6 +18,8 @@ public class RentalCard {
     private RentalCardNo rentalCardNo;
     @Embedded
     private IDName member;
+    @Enumerated(EnumType.STRING)
+    @Column
     private RentStatus rentStatus;
     @Embedded
     private LateFee lateFee;

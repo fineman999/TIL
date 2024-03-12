@@ -1,5 +1,7 @@
 package io.chan.bookrentalservice.setup;
 
+import io.chan.bookrentalservice.domain.model.vo.RentalCardNo;
+import io.chan.bookrentalservice.feature.RentalCardNoFixture;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -51,7 +53,12 @@ public class DBInitializer {
     }
 
     private void insertInitialData() {
-        log.info("Inserting initial data");
+        final RentalCardNo rentalCardNo = RentalCardNoFixture.createRentalCardNo();
+
+        entityManager.createNativeQuery(
+                "INSERT INTO rental_card (point, id, name, rent_status,no) VALUES (0, 'id-test', '황천길', 'RENT_AVAILABLE', :no)")
+                .setParameter("no", rentalCardNo.getNo())
+                .executeUpdate();
     }
 
     private void setForeignKeyCheck(int mode) {

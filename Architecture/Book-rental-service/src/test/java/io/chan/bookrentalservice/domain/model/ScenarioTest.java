@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * 4. 도서2 반납 연체료 계산됨
  * 5. 정지해제처리 포인트로 연체료 삭감
  */
-class RentalTest {
+class ScenarioTest {
 
     @DisplayName("테스트 시나리오")
     @Test

@@ -30,5 +30,6 @@ public abstract class Testcontainers {
         registry.add("spring.datasource.username", () -> MYSQL_USERNAME);
         registry.add("spring.datasource.password", () -> MYSQL_PASSWORD);
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
+        registry.add("spring.jpa.show-sql", () -> "true");
     }
 }
