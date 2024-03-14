@@ -1,0 +1,27 @@
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  application:
+    name: rental-service
+  datasource:
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+    open-in-view: true
+  profiles:
+    include: cache
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+server:
+  port: 8082
