@@ -1,22 +1,39 @@
 package io.chan.bookservice.domain.model;
 
 import io.chan.bookservice.domain.vo.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
+@Table
 public class Book {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long no;
+
+    @Column(nullable = false)
     private String title;
+
+    @Embedded
     private BookDescription description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Classification classification;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private BookStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private BookLocation location;
 
 

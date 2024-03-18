@@ -1,11 +1,15 @@
 package io.chan.bookservice.domain.vo;
 
+import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Embeddable
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BookDescription {
     private String description;
     private String author;
