@@ -1,6 +1,7 @@
-package io.chan.springbatch.session12.async;
+package io.chan.springbatch.session12.multi;
 
 import io.chan.springbatch.session12.Customer;
+import io.chan.springbatch.session12.async.StopWatchJobListener;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
@@ -11,7 +12,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.integration.async.AsyncItemProcessor;
 import org.springframework.batch.integration.async.AsyncItemWriter;
-import org.springframework.batch.item.*;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.Order;
@@ -21,6 +22,8 @@ import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
@@ -28,7 +31,7 @@ import java.util.Map;
 
 @Configuration
 @RequiredArgsConstructor
-public class AsyncConfiguration {
+public class MultiThreadStepConfiguration {
     private final int chunkSize = 10;
     private final DataSource dataSource;
     private final EntityManagerFactory entityManagerFactory;
@@ -48,9 +51,23 @@ public class AsyncConfiguration {
         return new StepBuilder("writeStep1", jobRepository)
                 .<Customer, Customer>chunk(chunkSize, transactionManager)
                 .reader(pagingItemReader())
+                .listener(new CustomItemReadListener())
                 .processor(customItemProcessor())
+                .listener(new CustomItemProcessListener())
                 .writer(customItemWriter())
+                .listener(new CustomItemWriteListener())
+                .taskExecutor(taskExecutor())
                 .build();
+    }
+
+    @Bean
+    public TaskExecutor taskExecutor() {
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setCorePoolSize(10);
+        taskExecutor.setMaxPoolSize(20);
+        taskExecutor.setQueueCapacity(10);
+        taskExecutor.setThreadNamePrefix("spring_batch");
+        return taskExecutor;
     }
 
     @Bean

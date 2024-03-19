@@ -1,4 +1,4 @@
-package io.chan.springbatch.session12.async;
+package io.chan.springbatch.session12;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
