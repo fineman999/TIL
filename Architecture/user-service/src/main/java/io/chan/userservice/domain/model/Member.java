@@ -31,4 +31,12 @@ public class Member {
                 List.of(Authority.create(UserRole.USER)),
                 Point.createZero());
     }
+
+    public void savePoint(Long value) {
+        this.point = this.point.add(value);
+    }
+
+    public void usePoint(Long value) {
+        this.point = this.point.subtract(value);
+    }
 }
