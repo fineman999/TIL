@@ -1,4 +1,4 @@
-package io.chan.springbatch.session12.async;
+package io.chan.springbatch.session12;
 
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;

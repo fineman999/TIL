@@ -1,7 +1,7 @@
 package io.chan.springbatch.session12.multi;
 
 import io.chan.springbatch.session12.Customer;
-import io.chan.springbatch.session12.async.StopWatchJobListener;
+import io.chan.springbatch.session12.StopWatchJobListener;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
