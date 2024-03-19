@@ -1,15 +1,21 @@
 package io.chan.userservice.domain.vo;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  *  validation를 체크하는 비즈 로직을 추가할 수 있다.
  */
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Embeddable
 public class Email {
+    @Column(name = "email")
     private String value;
 
     public static Email create(String email) {
