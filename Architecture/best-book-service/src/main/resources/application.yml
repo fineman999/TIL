@@ -1,0 +1,22 @@
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  application:
+    name: best-book-service
+
+  profiles:
+    include: cache
+  data:
+    mongodb:
+      # MongoDB 서버 주소
+      uri: mongodb://localhost:27017
+      # 데이터베이스 이름
+      database: my-database
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+server:
+  port: 8081
