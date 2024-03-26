@@ -1,5 +1,8 @@
 package io.chan.bookrentalservice.domain.model;
 
+import io.chan.bookrentalservice.domain.model.event.ItemRented;
+import io.chan.bookrentalservice.domain.model.event.ItemReturned;
+import io.chan.bookrentalservice.domain.model.event.OverdueCleared;
 import io.chan.bookrentalservice.domain.model.vo.*;
 import jakarta.persistence.*;
 import lombok.*;
@@ -140,6 +143,20 @@ public class RentalCard {
     public int rentalItemCount() {
         return rentalItems.size();
     }
+
+    public static ItemRented createItemRentedEvent(IDName idName, Item item, long
+            point){
+        return ItemRented.of(idName,item,point);
+    }
+    public static ItemReturned createItemReturnEvent(IDName idName,Item item,long
+            point){
+        return new ItemReturned(idName,item,point);
+    }
+    public static OverdueCleared createOverdueClearedEvent(IDName idName, long point)
+    {
+        return OverdueCleared.of(idName,point);
+    }
+
 
     @Override
     public String toString() {
