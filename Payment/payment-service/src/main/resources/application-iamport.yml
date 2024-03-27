@@ -1,0 +1,4 @@
+iamport:
+  api:
+    key: {API_KEY}
+    secret: {API_SECRET}
