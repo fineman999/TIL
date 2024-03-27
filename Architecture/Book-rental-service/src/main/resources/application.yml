@@ -18,6 +18,9 @@ spring:
     open-in-view: true
   profiles:
     include: cache
+  config:
+    activate:
+      on-profile: kafka
 logging:
   level:
     org:
