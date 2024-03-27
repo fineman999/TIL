@@ -13,4 +13,11 @@ public class MemberAdapter implements MemberOutputPort {
     public void saveMember(Member member) {
         memberJpaRepository.save(member);
     }
+
+    @Override
+    public Member getMemberById(Long memberId) {
+        return memberJpaRepository.findById(memberId).orElseThrow(
+                () -> new IllegalArgumentException("Member not found")
+        );
+    }
 }

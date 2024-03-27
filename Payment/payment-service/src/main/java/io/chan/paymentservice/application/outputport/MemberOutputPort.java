@@ -4,4 +4,6 @@ import io.chan.paymentservice.domain.Member;
 
 public interface MemberOutputPort {
     void saveMember(Member member);
+
+    Member getMemberById(Long memberId);
 }
