@@ -10,9 +10,9 @@ public interface OrderJpaRepository extends JpaRepository<Order, Long> {
     @Query("select o from Order o " +
             "join fetch o.payment p " +
             "join fetch o.member m where o.orderUid = :orderUId")
-    Optional<Order> findOrderAndPaymentAndMember(String orderUId);
+    Optional<Order> findOrderAndPaymentAndMemberByOrderUid(String orderUId);
 
     @Query("select o from Order o " +
             "join fetch o.payment p where o.orderUid = :orderUId")
-    Optional<Order> findOrderAndPayment(String orderUId);
+    Optional<Order> findOrderAndPaymentByOrderUid(String orderUId);
 }

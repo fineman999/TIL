@@ -1,11 +1,9 @@
 package io.chan.paymentservice.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+@Getter
 @Builder
 @Entity
 @Table(name = "orders")
