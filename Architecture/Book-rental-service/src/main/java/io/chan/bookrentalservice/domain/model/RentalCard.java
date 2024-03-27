@@ -144,12 +144,10 @@ public class RentalCard {
         return rentalItems.size();
     }
 
-    public static ItemRented createItemRentedEvent(IDName idName, Item item, long
-            point){
+    public static ItemRented createItemRentedEvent(IDName idName, Item item, long point){
         return ItemRented.of(idName,item,point);
     }
-    public static ItemReturned createItemReturnEvent(IDName idName,Item item,long
-            point){
+    public static ItemReturned createItemReturnEvent(IDName idName,Item item,long point){
         return new ItemReturned(idName,item,point);
     }
     public static OverdueCleared createOverdueClearedEvent(IDName idName, long point)
