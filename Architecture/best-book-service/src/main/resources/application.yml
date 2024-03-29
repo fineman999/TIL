@@ -20,3 +20,11 @@ logging:
         SQL: debug
 server:
   port: 8081
+
+custom:
+    kafka:
+      consumers:
+        topic1:
+          name: rental_rent
+        group-id: book
+
