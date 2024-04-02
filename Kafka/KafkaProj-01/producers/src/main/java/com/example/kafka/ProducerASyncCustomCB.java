@@ -1,7 +1,6 @@
 package com.example.kafka;
 
 import java.util.Properties;
-import java.util.logging.Logger;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.IntegerSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
