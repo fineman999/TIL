@@ -16,7 +16,7 @@ public class ConsumerWakeup {
 
   public static void main(String[] args) {
 
-    String topicName = "simple-topic";
+    String topicName = "pizza-topic";
     Properties props = new Properties();
     props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
     props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "group_01");
@@ -24,10 +24,10 @@ public class ConsumerWakeup {
         ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
     props.setProperty(
         ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+    //    props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
     try (KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(props)) {
       kafkaConsumer.subscribe(List.of(topicName));
-
 
       final Thread mainThread = Thread.currentThread();
       Runtime.getRuntime()
@@ -47,23 +47,22 @@ public class ConsumerWakeup {
 
       while (true) {
         final ConsumerRecords<String, String> consumerRecords =
-                kafkaConsumer.poll(Duration.ofMillis(1000));
+            kafkaConsumer.poll(Duration.ofMillis(1000));
         consumerRecords.forEach(
-                record -> {
-                  logger.info(
-                          "key: "
-                                  + record.key()
-                                  + " value: "
-                                  + record.value()
-                                  + " partition: "
-                                  + record.partition()
-                                  + " offset: "
-                                  + record.offset());
-                });
+            record -> {
+              logger.info(
+                  "key: "
+                      + record.key()
+                      + " partition: "
+                      + record.partition()
+                      + " offset: "
+                      + record.offset()
+                      + " value: "
+                      + record.value());
+            });
       }
     } catch (WakeupException e) {
       logger.error("Wake up the consumer");
     }
-
   }
 }

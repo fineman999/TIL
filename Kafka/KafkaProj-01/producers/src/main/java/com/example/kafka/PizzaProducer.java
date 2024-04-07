@@ -105,14 +105,14 @@ public class PizzaProducer {
     props.setProperty(
         ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 //    props.setProperty(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, "6");
-    props.setProperty(ProducerConfig.ACKS_CONFIG, "all");
-    props.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
+//    props.setProperty(ProducerConfig.ACKS_CONFIG, "all");
+//    props.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
 //    props.setProperty(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, "50000");
 //    props.setProperty(ProducerConfig.ACKS_CONFIG, "0"); // acks=0 -> 동기로 보내면 offset을 가져오지 못한다.파티션은 메타데이터 기반으로 알고있기 때문에 받음
 //    props.setProperty(ProducerConfig.BATCH_SIZE_CONFIG, "16384"); // 16KB
 //    props.setProperty(ProducerConfig.LINGER_MS_CONFIG, "1"); // 1ms
 
     KafkaProducer<String, String> producer = new KafkaProducer<>(props);
-    sendPizzaMessage(producer, topicName, -1, 1000, 0, 0, false);
+    sendPizzaMessage(producer, topicName, -1, 500, 0, 0, true);
   }
 }
