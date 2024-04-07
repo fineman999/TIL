@@ -113,6 +113,6 @@ public class PizzaProducer {
 //    props.setProperty(ProducerConfig.LINGER_MS_CONFIG, "1"); // 1ms
 
     KafkaProducer<String, String> producer = new KafkaProducer<>(props);
-    sendPizzaMessage(producer, topicName, -1, 500, 0, 0, true);
+    sendPizzaMessage(producer, topicName, -1, 1000, 0, 0, true);
   }
 }
