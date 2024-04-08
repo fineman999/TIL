@@ -3,9 +3,8 @@ package com.example.kafka;
 import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+
+import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
@@ -24,6 +23,8 @@ public class ConsumerMTopicRebalance {
     props.setProperty(
         ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
     props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "group-mtopic");
+//    props.setProperty(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG, RoundRobinAssignor.class.getName());
+    props.setProperty(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG, CooperativeStickyAssignor.class.getName());
 
     try (KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(props)) {
       kafkaConsumer.subscribe(List.of("topic-p3-t1", "topic-p3-t2"));
