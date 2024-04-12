@@ -1,11 +1,14 @@
 package com.practice.kafka.event;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
 public class FileEventHandler implements EventHandler {
@@ -67,5 +70,22 @@ public class FileEventHandler implements EventHandler {
                 recordMetadata.timestamp());
           }
         });
+  }
+
+  public static void main(String[] args){
+    String topicName = "file-topic";
+    Properties props = new Properties();
+    props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+    props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+    props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+
+    try (KafkaProducer<String, String> producer = new KafkaProducer<>(props)) {
+      FileEventHandler fileEventHandler = new FileEventHandler(producer, topicName, true);
+      MessageEvent messageEvent = new MessageEvent("key00001", "this is a message");
+      fileEventHandler.onMessage(messageEvent);
+    } catch (Exception e) {
+      logger.error(e.getMessage());
+    }
+
   }
 }
