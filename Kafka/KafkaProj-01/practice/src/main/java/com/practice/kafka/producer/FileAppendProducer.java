@@ -31,7 +31,7 @@ public class FileAppendProducer {
           "/Users/chanpark/MyCode/TIL/Kafka/KafkaProj-01/practice/src/main/resources/pizza_append.txt";
       File file = new File(filePath);
       EventHandler eventHandler = new FileEventHandler(producer, topicName, false);
-      FileEventSource fileEventSource = new FileEventSource(file, 1000, eventHandler);
+      FileEventSource fileEventSource = new FileEventSource(file, 100, eventHandler);
       Thread thread = new Thread(fileEventSource);
       thread.start();
 
