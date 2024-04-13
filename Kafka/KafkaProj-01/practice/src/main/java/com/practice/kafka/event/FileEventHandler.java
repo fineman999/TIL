@@ -38,7 +38,8 @@ public class FileEventHandler implements EventHandler {
 
   private void sendMessageSync(
       final KafkaProducer<String, String> producer,
-      final ProducerRecord<String, String> producerRecord) throws ExecutionException, InterruptedException {
+      final ProducerRecord<String, String> producerRecord)
+      throws ExecutionException, InterruptedException {
     final RecordMetadata recordMetadata = producer.send(producerRecord).get();
     logger.info(
         "\n ###### Record metadata received ###### \n"
@@ -72,12 +73,13 @@ public class FileEventHandler implements EventHandler {
         });
   }
 
-  public static void main(String[] args){
+  public static void main(String[] args) {
     String topicName = "file-topic";
     Properties props = new Properties();
     props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
     props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-    props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+    props.setProperty(
+        ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
     try (KafkaProducer<String, String> producer = new KafkaProducer<>(props)) {
       FileEventHandler fileEventHandler = new FileEventHandler(producer, topicName, true);
@@ -86,6 +88,5 @@ public class FileEventHandler implements EventHandler {
     } catch (Exception e) {
       logger.error(e.getMessage());
     }
-
   }
 }
