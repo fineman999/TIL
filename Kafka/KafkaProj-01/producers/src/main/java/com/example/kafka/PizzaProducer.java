@@ -97,10 +97,11 @@ public class PizzaProducer {
 
   public static void main(String[] args) {
 
-    String topicName = "pizza-topic";
+    String topicName = "pizza-topic-p3r3";
 
     Properties props = new Properties();
-    props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+    // 브로커들의 리스트 메타 정보를 가져오는 역할
+    props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092, localhost:9093, localhost:9094");
     props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
     props.setProperty(
         ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
