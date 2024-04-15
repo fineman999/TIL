@@ -1,0 +1,41 @@
+directive @specifiedBy(url: String!) on SCALAR
+scalar DateTime
+@specifiedBy(url: "https://scalars.graphql.org/andimarek/date-time.html")
+
+
+type Music {
+    id : ID! # '!' means required
+    artist : String
+    genre : Genre
+    createdDate : String
+    releaseDate : DateTime
+}
+
+# Query는 데이터를 가져오는데 사용되는 타입
+# REST API에서 GET과 같은 역할
+type Query {
+    musics : [Music]
+    getMusicById(id : ID!) : Music
+}
+
+# Mutation은 데이터를 변경하는데 사용되는 타입
+# REST API에서 POST, PUT, DELETE와 같은 역할
+type Mutation {
+    createMusic(musicInputDto: MusicInput) : Music
+    updateMusic(id : ID!, artist : String, genre : Genre) : Music
+    deleteMusic(id : ID!) : Boolean
+}
+
+enum Genre {
+    POP
+    DANCE
+    HIPHOP
+    BALLAD
+    ROCK
+}
+
+input MusicInput {
+    artist : String!
+    genre : Genre!
+    releaseDate : DateTime
+}
