@@ -1,5 +1,6 @@
 package io.chan.graphqlservice.service;
 
+import io.chan.graphqlservice.controller.dto.AlbumOutputDto;
 import io.chan.graphqlservice.controller.dto.MusicInputDto;
 import io.chan.graphqlservice.controller.dto.MusicOutputDto;
 import io.chan.graphqlservice.domain.Music;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,5 +27,9 @@ public class MusicService {
 
     public MusicOutputDto createMusic(MusicInputDto musicInputDto) {
         return createMusic(musicInputDto.artist(), musicInputDto.genre(), musicInputDto.releaseDate());
+    }
+
+    public List<MusicOutputDto> getMusicList(AlbumOutputDto albumOutputDto, Long id) {
+throw new UnsupportedOperationException("Not implemented yet");
     }
 }

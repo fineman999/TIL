@@ -31,6 +31,10 @@ public class Music {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "album_id")
+    private Album album;
+
     public static Music save(String artist, String genre, ZonedDateTime releaseDate) {
         return Music.builder()
             .artist(artist)

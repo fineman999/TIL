@@ -1,0 +1,21 @@
+type Album {
+    id: ID!
+    name: String!
+    releaseDate: DateTime
+    musicList: [Music!]!
+}
+
+input AlbumInput {
+    name: String!
+    releaseDate: DateTime!
+    musicList: [MusicInput!]!
+}
+
+extend type Query {
+    albums: [Album]
+    getAlbumById(id: ID!): Album
+}
+
+extend type Mutation {
+    createAlbum(albumInput: AlbumInput): Album
+}
