@@ -29,6 +29,7 @@ public class OrderModel implements Serializable {
     this.orderTime = orderTime;
   }
 
+  public OrderModel() {}
   public String getOrderId() {
     return orderId;
   }

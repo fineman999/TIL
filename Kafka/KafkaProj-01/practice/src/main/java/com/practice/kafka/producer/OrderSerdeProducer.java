@@ -13,8 +13,8 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OrderSendProducer {
-  private static final Logger logger = LoggerFactory.getLogger(OrderSendProducer.class.getName());
+public class OrderSerdeProducer {
+  private static final Logger logger = LoggerFactory.getLogger(OrderSerdeProducer.class.getName());
 
   public static void main(String[] args) {
 
