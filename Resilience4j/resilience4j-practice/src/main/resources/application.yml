@@ -35,9 +35,9 @@ resilience4j.circuitbreaker:
 
       eventConsumerBufferSize: 10                               # actuator를 위한 이벤트 버퍼 사이즈
 
-      recordExceptions:
+      recordExceptions: # CircuitBreaker가 실패로 간주할 예외
         - io.chan.resilience4jpractice.exception.RecordException
-      ignoreExceptions:
+      ignoreExceptions: # CircuitBreaker가 무시할 예외 - 그래도 fallback 메소드를 호출한다.
         - io.chan.resilience4jpractice.exception.IgnoreException
   instances:
     simpleCircuitBreakerConfig:
