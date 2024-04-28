@@ -1,0 +1,45 @@
+syntax = "proto3";
+option go_package = "/auth";
+
+// 필드명에 대해서 고유한 번호를 부여해야 한다.
+// 중복 불가
+message AuthData {
+  string name = 1;
+  string token = 2;
+  int64 createDate = 3;
+  int64 expireDate = 4;
+}
+
+message Verify {
+  ResponseType status = 1;
+  AuthData auth = 2;
+}
+
+enum ResponseType {
+  SUCCESS = 0;
+  FAILED = 1;
+  EXPIRED_DATE = 2;
+}
+
+// 서비스에서 사용할 메시지 정의
+// 서비스에서 사용할 메시지를 정의할 때는 request와 response를 정의해야 한다.
+message CreateTokenReq {
+  AuthData auth = 1;
+}
+
+message CreateTokenRes {
+  AuthData auth = 1;
+}
+
+message VerifyTokenReq {
+  string token = 1;
+}
+
+message VerifyTokenRes {
+  Verify verify = 1;
+}
+
+service AuthService {
+  rpc CreateAuth(CreateTokenReq) returns (CreateTokenRes);
+  rpc VerifyAuth(VerifyTokenReq) returns (VerifyTokenRes);
+}
