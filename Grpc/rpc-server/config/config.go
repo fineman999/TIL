@@ -6,6 +6,9 @@ import (
 )
 
 type Config struct {
+	Paseto struct {
+		Key string
+	}
 }
 
 func NewClient(path string) *Config {
