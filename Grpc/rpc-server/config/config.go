@@ -14,7 +14,12 @@ func NewClient(path string) *Config {
 	if file, err := os.Open(path); err != nil {
 		panic(err)
 	} else {
-		defer file.Close()
+		defer func(file *os.File) {
+			err := file.Close()
+			if err != nil {
+				panic(err)
+			}
+		}(file)
 
 		if err = toml.NewDecoder(file).Decode(c); err != nil {
 			panic(err)
