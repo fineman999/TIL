@@ -14,7 +14,7 @@ type Config struct {
 	}
 }
 
-func NewClient(path string) *Config {
+func NewConfig(path string) *Config {
 	c := new(Config)
 
 	if file, err := os.Open(path); err != nil {

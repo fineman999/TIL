@@ -4,6 +4,7 @@ import (
 	"flag"
 	"rpc-server/cmd"
 	"rpc-server/config"
+	"rpc-server/gRPC/server"
 )
 
 // flag 패키지는 Go 언어에서 커맨드라인 인자를 처리하는데 사용
@@ -14,6 +15,12 @@ var configFlag = flag.String("config", "./config.toml", "config path")
 
 func main() {
 	flag.Parse()
-	config.NewClient(*configFlag)
-	cmd.NewApp(config.NewClient(*configFlag))
+
+	cfg := config.NewConfig(*configFlag)
+
+	err := server.NewGRPCServer(cfg)
+	if err != nil {
+		panic(err)
+	}
+	cmd.NewApp(cfg)
 }
