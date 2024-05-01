@@ -1,5 +1,6 @@
 package io.chan.productservice.setup;
 
+import io.chan.productservice.domain.Stock;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -50,7 +51,9 @@ public class DBInitializer {
     }
 
     private void insertInitialData() {
-        log.info("Inserting initial data");
+        final Stock stock = Stock.builder().productId(1L).quantity(100L).build();
+        entityManager.persist(stock);
+        entityManager.flush();
     }
 
     private void setForeignKeyCheck(int mode) {

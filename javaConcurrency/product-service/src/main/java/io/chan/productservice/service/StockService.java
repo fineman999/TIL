@@ -6,11 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-//@Transactional
 @RequiredArgsConstructor
 public class StockService {
   private final StockRepository stockRepository;
 
+  @Transactional
   public void decrease(Long id, Long quantity) {
     stockRepository
         .findById(id)
@@ -24,6 +24,14 @@ public class StockService {
   }
 
   public synchronized void synchronizedDecrease(Long id, Long quantity) {
-    decrease(id, quantity);
+      stockRepository
+              .findById(id)
+              .map(
+                      stock -> {
+                          stock.decrease(quantity);
+                          return stockRepository.save(stock);
+                      })
+              .orElseThrow(() -> new RuntimeException
+                      ("Stock not found"));
   }
 }
