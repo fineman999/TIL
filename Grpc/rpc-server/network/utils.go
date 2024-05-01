@@ -15,7 +15,7 @@ func (n *Network) verifyLogin() gin.HandlerFunc {
 			return
 		}
 		if _, err := n.gRPCClient.VerifyAuth(token); err != nil {
-			g.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			g.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error(), "message": "Unauthorized"})
 			return
 		}
 

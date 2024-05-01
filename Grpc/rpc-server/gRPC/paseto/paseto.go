@@ -25,10 +25,10 @@ func (m *PasetoMaker) CreateToken(a *auth.AuthData) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return m.Pt.Encrypt(m.Key, a, randomBytes)
+	return m.Pt.Encrypt(m.Key, &a, nil)
 }
 
 func (m *PasetoMaker) VerifyToken(token string) error {
-	var a *auth.AuthData
-	return m.Pt.Decrypt(token, m.Key, a, nil)
+	var a auth.AuthData
+	return m.Pt.Decrypt(token, m.Key, &a, nil)
 }

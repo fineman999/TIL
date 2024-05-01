@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
@@ -50,13 +51,21 @@ func (g *GRPCServer) VerifyAuth(_ context.Context, req *auth.VerifyTokenReq) (*a
 
 	res := &auth.VerifyTokenRes{Verify: &auth.Verify{}}
 
-	if authData, ok := g.tokenVerifyMap[token]; ok {
+	authData, ok := g.tokenVerifyMap[token]
+	if !ok {
 		res.Verify.Status = auth.ResponseType_FAILED
-	} else if authData.ExpireDate < time.Now().Unix() {
-		res.Verify.Status = auth.ResponseType_EXPIRED_DATE
-	} else {
-		res.Verify.Status = auth.ResponseType_SUCCESS
+		return res, errors.New("token not found")
 	}
 
+	if err := g.pasetoMaker.VerifyToken(token); err != nil {
+		return nil, errors.New("failed to verify token")
+	}
+
+	if authData.ExpireDate < time.Now().Unix() {
+		res.Verify.Status = auth.ResponseType_EXPIRED_DATE
+		return res, errors.New("token expired")
+	}
+
+	res.Verify.Status = auth.ResponseType_SUCCESS
 	return res, nil
 }
