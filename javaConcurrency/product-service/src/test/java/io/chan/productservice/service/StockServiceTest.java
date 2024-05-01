@@ -64,4 +64,30 @@ class StockServiceTest extends AcceptanceTest {
     // 이때 공유 자원을 1 감소하게 되면 동시에 다른 쓰레드는 변경하지 않은 값을 읽었기 때문에 이전 값에다가 1을 빼서 저장하게 된다.
     assertThat(stock.getQuantity()).isEqualTo(0L);
   }
+
+    @Test
+    @DisplayName("동시에 100개의 재고를 감소시킨다. - synchronized")
+    void synchronizedDecrease100() throws InterruptedException {
+        int threadCount = 100;
+        // 32개의 쓰레드 풀을 생성한다.
+        final ExecutorService executorService = Executors.newFixedThreadPool(32);
+        // 100개의 쓰레드가 모두 종료될 때까지 대기한다. - 다른 쓰레드가 종료될 때까지 대기한다.
+        final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+
+        for (int i = 0; i < threadCount; i++) {
+            executorService.execute(
+                    () -> {
+                        try {
+                            stockService.synchronizedDecrease(1L, 1L);
+                        } finally {
+                            countDownLatch.countDown();
+                        }
+                    });
+        }
+        countDownLatch.await();
+
+        final Stock stock = stockRepository.findById(1L).get();
+        // 100개의 재고를 감소시켰으므로 0이 되어야 한다.
+        assertThat(stock.getQuantity()).isEqualTo(0L);
+    }
 }

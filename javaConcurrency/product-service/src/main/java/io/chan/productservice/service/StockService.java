@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+//@Transactional
 @RequiredArgsConstructor
 public class StockService {
   private final StockRepository stockRepository;
@@ -21,5 +21,9 @@ public class StockService {
             })
         .orElseThrow(() -> new RuntimeException
                 ("Stock not found"));
+  }
+
+  public synchronized void synchronizedDecrease(Long id, Long quantity) {
+    decrease(id, quantity);
   }
 }
