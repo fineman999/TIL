@@ -26,10 +26,7 @@ func NewGRPCClient(cfg *config.Config) (*GRPCClient, error) {
 		c.authClient = auth.NewAuthServiceClient(client)
 		c.pasetoMaker = paseto.NewPasetoMaker(cfg)
 
-		err := client.Close()
-		if err != nil {
-			panic(err)
-		}
+		//defer client.Close()
 	}
 	return c, nil
 }
