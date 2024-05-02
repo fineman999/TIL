@@ -1,6 +1,6 @@
 package io.chan.productservice.transaction;
 
-import io.chan.productservice.service.StockService;
+import io.chan.productservice.service.StockBasicService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TransactionService {
 
-    private final StockService stockService;
+    private final StockBasicService stockService;
 
     // 문제 발생
     //

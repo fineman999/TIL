@@ -13,9 +13,9 @@ import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class StockServiceTest extends AcceptanceTest {
+class StockBasicServiceTest extends AcceptanceTest {
 
-  @Autowired private StockService stockService;
+  @Autowired private StockBasicService stockService;
 
   @Autowired private StockRepository stockRepository;
 
