@@ -1,11 +1,9 @@
 package io.chan.productservice.repository;
 
 import io.chan.productservice.domain.Stock;
-import io.micrometer.observation.ObservationFilter;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -22,5 +20,9 @@ public class StockRepository {
 
     public void saveAndFlush(final Stock stock) {
         stockJpaRepository.saveAndFlush(stock);
+    }
+
+    public Optional<Stock> findByIdWithPessimisticLock(final Long id) {
+        return stockJpaRepository.findByIdWithPessimisticLock(id);
     }
 }
