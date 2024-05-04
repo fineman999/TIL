@@ -5,10 +5,11 @@ spring:
   application:
     name: product-service
   datasource:
-    url: ${MYSQL_URL:jdbc:mysql://localhost:3306/store?useSSL=false&serverTimezone=UTC&useUnicode=true&character_set_server=utf8mb4=utf8mb4&8useSSL=false&allowPublicKeyRetrieval=true}
-    username: ${MYSQL_USERNAME:root}
-    password: ${MYSQL_PASSWORD:my-secret-pw}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    main:
+      url: ${MYSQL_URL:jdbc:mysql://localhost:3306/store?useSSL=false&serverTimezone=UTC&useUnicode=true&character_set_server=utf8mb4=utf8mb4&8useSSL=false&allowPublicKeyRetrieval=true}
+      username: ${MYSQL_USERNAME:root}
+      password: ${MYSQL_PASSWORD:my-secret-pw}
+      driver-class-name: com.mysql.cj.jdbc.Driver
     lock:
       url: ${MYSQL_URL:jdbc:mysql://localhost:3306/store?useSSL=false&serverTimezone=UTC&useUnicode=true&character_set_server=utf8mb4=utf8mb4&8useSSL=false&allowPublicKeyRetrieval=true}
       username: ${MYSQL_USERNAME:root}

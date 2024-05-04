@@ -12,24 +12,39 @@ import javax.sql.DataSource;
 @Configuration
 public class DataSourceConfiguration {
 
-    @ConfigurationProperties(prefix = "spring.datasource.lock")
-    @Bean
-    public DataSourceProperties lockDataSourceProperties() {
-        return new DataSourceProperties();
-    }
+  @Primary
+  @ConfigurationProperties(prefix = "spring.datasource.main")
+  @Bean
+  public DataSourceProperties mainDataSourceProperties() {
+    return new DataSourceProperties();
+  }
 
-    @ConfigurationProperties(prefix = "spring.datasource.lock.hikari")
-    @Bean
-    public DataSource lockDatasource() {
-        return lockDataSourceProperties()
-                .initializeDataSourceBuilder()
-                .type(HikariDataSource.class)
-                .build();
-    }
+  @Primary
+  @Bean
+  public DataSource mainDatasource() {
+    return mainDataSourceProperties()
+        .initializeDataSourceBuilder()
+        .type(HikariDataSource.class)
+        .build();
+  }
 
-    @Bean
-    public LockRepository lockRepository() {
-        return new LockRepository(lockDatasource());
-    }
+  @ConfigurationProperties(prefix = "spring.datasource.lock")
+  @Bean
+  public DataSourceProperties lockDataSourceProperties() {
+    return new DataSourceProperties();
+  }
 
+  @ConfigurationProperties(prefix = "spring.datasource.lock.hikari")
+  @Bean
+  public DataSource lockDatasource() {
+    return lockDataSourceProperties()
+        .initializeDataSourceBuilder()
+        .type(HikariDataSource.class)
+        .build();
+  }
+
+  @Bean
+  public LockRepository lockRepository() {
+    return new LockRepository(lockDatasource());
+  }
 }
