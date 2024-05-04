@@ -1,4 +1,4 @@
-package io.chan.productservice.aop;
+package io.chan.productservice.aop.optimistic;
 
 import jakarta.persistence.OptimisticLockException;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -20,7 +20,7 @@ public class OptimisticLockAspect {
 
 
 
-    @Pointcut("@annotation(Retry)")
+    @Pointcut("@annotation(io.chan.productservice.aop.optimistic.Retry)")
     public void retryAnnotation() {
     }
 

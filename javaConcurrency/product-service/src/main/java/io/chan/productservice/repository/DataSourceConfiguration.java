@@ -1,6 +1,7 @@
 package io.chan.productservice.repository;
 
 import com.zaxxer.hikari.HikariDataSource;
+import io.chan.productservice.aop.named.NamedLockAspect;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +45,12 @@ public class DataSourceConfiguration {
   }
 
   @Bean
-  public LockRepository lockRepository() {
-    return new LockRepository(lockDatasource());
+  public NamedLockRepository lockRepository() {
+    return new NamedLockRepository(lockDatasource());
+  }
+
+  @Bean
+  public NamedLockAspect namedLockAspect() {
+    return new NamedLockAspect(lockDatasource());
   }
 }

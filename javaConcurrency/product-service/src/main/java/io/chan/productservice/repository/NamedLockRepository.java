@@ -1,6 +1,5 @@
 package io.chan.productservice.repository;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -15,20 +14,15 @@ import java.util.function.Supplier;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class LockRepository {
+public class NamedLockRepository {
   private static final String GET_LOCK = "SELECT GET_LOCK(?, ?)";
   private static final String RELEASE_LOCK = "SELECT RELEASE_LOCK(?)";
   private static final String EXCEPTION_MESSAGE = "LOCK 을 수행하는 중에 오류가 발생하였습니다.";
   private final DataSource lockDataSource;
 
   public <T> void executeWithLock(String userLockName, int timeoutSeconds, Supplier<T> supplier) {
-    if (lockDataSource instanceof final HikariDataSource hikariDataSource) {
-        log.info("HikariCP pool name: {}", hikariDataSource.getPoolName());
-        log.info("HikariCP max pool size: {}", hikariDataSource.getMaximumPoolSize());
-        log.info("HikariCP connection timeout: {}", hikariDataSource.getConnectionTimeout());
-        log.info("HikariCP max lifetime: {}", hikariDataSource.getMaxLifetime());
-    }
     try (Connection connection = lockDataSource.getConnection()) {
+      log.info("dataSource={}", lockDataSource);
       try {
         log.info(
             "start getLock={}, timeoutSeconds={}, connection={}",
@@ -53,12 +47,12 @@ public class LockRepository {
     }
   }
 
-  private void getLock(Connection connection, String userLockName, int timeoutseconds)
+  private void getLock(Connection connection, String userLockName, int timeoutSeconds)
       throws SQLException {
 
     try (PreparedStatement preparedStatement = connection.prepareStatement(GET_LOCK)) {
       preparedStatement.setString(1, userLockName);
-      preparedStatement.setInt(2, timeoutseconds);
+      preparedStatement.setInt(2, timeoutSeconds);
 
       checkResultSet(userLockName, preparedStatement, "GetLock_");
     }

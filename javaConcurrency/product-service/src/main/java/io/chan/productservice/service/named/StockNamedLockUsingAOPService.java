@@ -1,5 +1,6 @@
 package io.chan.productservice.service.named;
 
+import io.chan.productservice.aop.named.NamedLock;
 import io.chan.productservice.domain.Stock;
 import io.chan.productservice.repository.StockRepository;
 import io.chan.productservice.service.StockService;
@@ -13,10 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class StockNamedLockService implements StockService {
+public class StockNamedLockUsingAOPService implements StockService {
   private final StockRepository stockRepository;
   private final DataSource dataSource;
 
+  @NamedLock(prefix = "stock_")
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   @Override
   public void decrease(final Long id, final Long quantity) {

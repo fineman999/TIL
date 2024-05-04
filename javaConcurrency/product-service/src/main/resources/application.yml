@@ -18,7 +18,7 @@ spring:
       hikari:
         maximum-pool-size: 40
         max-lifetime: 60000
-        connection-timeout: 10000 # 10초
+        connection-timeout: 5000 # 5초
         pool-name: HikariCPLock  # HikariCP의 pool 이름
 logging:
   level:
