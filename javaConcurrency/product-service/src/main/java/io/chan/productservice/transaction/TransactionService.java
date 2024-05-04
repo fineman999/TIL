@@ -1,6 +1,6 @@
 package io.chan.productservice.transaction;
 
-import io.chan.productservice.service.StockBasicService;
+import io.chan.productservice.service.synchronize.StockBasicService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -2,6 +2,8 @@ package io.chan.productservice.service;
 
 import io.chan.productservice.domain.Stock;
 import io.chan.productservice.repository.StockRepository;
+import io.chan.productservice.service.synchronize.StockBasicService;
+import io.chan.productservice.service.synchronize.StockThreadSafeService;
 import io.chan.productservice.setup.AcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

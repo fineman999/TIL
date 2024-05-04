@@ -1,6 +1,6 @@
 package io.chan.productservice.facade;
 
-import io.chan.productservice.service.StockOptimisticLockService;
+import io.chan.productservice.service.optimistic.StockOptimisticLockService;
 import io.chan.productservice.service.StockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

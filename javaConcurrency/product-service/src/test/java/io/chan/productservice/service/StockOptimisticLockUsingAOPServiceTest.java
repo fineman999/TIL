@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.chan.productservice.domain.Stock;
 import io.chan.productservice.repository.StockRepository;
+import io.chan.productservice.service.optimistic.StockOptimisticLockUsingAOPService;
 import io.chan.productservice.setup.AcceptanceTest;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;

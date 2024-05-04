@@ -1,11 +1,12 @@
-package io.chan.productservice.service;
+package io.chan.productservice.service.synchronize;
 
+import io.chan.productservice.service.StockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class StockThreadSafeService implements StockService{
+public class StockThreadSafeService implements StockService {
     private final StockBasicService stockService;
 
     @Override
