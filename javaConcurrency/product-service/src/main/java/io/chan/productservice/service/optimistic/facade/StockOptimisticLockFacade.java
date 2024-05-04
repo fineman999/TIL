@@ -1,4 +1,4 @@
-package io.chan.productservice.facade;
+package io.chan.productservice.service.optimistic.facade;
 
 import io.chan.productservice.service.optimistic.StockOptimisticLockService;
 import io.chan.productservice.service.StockService;

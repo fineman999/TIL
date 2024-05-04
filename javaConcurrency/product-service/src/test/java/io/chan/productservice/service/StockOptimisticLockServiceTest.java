@@ -1,10 +1,9 @@
 package io.chan.productservice.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import io.chan.productservice.domain.Stock;
-import io.chan.productservice.facade.StockOptimisticLockFacade;
+import io.chan.productservice.service.optimistic.facade.StockOptimisticLockFacade;
 import io.chan.productservice.repository.StockRepository;
 import io.chan.productservice.setup.AcceptanceTest;
 import java.util.concurrent.CountDownLatch;
