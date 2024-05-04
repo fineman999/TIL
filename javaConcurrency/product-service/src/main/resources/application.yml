@@ -18,3 +18,16 @@ logging:
           descriptor:
             sql:
               BasicBinder: TRACE
+
+resilience4j.retry:
+  configs:
+    default:
+      maxAttempts: 1000 # 최대 1000번까지 재시도
+      waitDuration: 10 # 10ms
+      retry-exceptions: # 재시도할 예외 만약 지정하지 않으면 모든 예외를 재시도
+        - jakarta.persistence.OptimisticLockException
+        - org.springframework.orm.ObjectOptimisticLockingFailureException
+        - org.hibernate.StaleObjectStateException
+  instances:
+    optimisticLockRetryConfig: # 인스턴스 이름
+      baseConfig: default # resilience4j.retry.configs.default를 사용
