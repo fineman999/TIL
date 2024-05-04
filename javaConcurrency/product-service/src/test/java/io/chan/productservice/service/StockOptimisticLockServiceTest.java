@@ -1,8 +1,10 @@
 package io.chan.productservice.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.chan.productservice.domain.Stock;
+import io.chan.productservice.facade.StockOptimisticLockFacade;
 import io.chan.productservice.repository.StockRepository;
 import io.chan.productservice.setup.AcceptanceTest;
 import java.util.concurrent.CountDownLatch;
@@ -12,14 +14,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class StockPessimisticLockServiceTest extends AcceptanceTest {
+class StockOptimisticLockServiceTest extends AcceptanceTest {
 
-  @Autowired private StockPessimisticLockService stockService;
+  @Autowired private StockOptimisticLockFacade stockService;
   @Autowired private StockRepository stockRepository;
 
   @Test
-  @DisplayName("pessimistic lock을 이용하여 재고를 감소시킨다.")
-  void decrease() {
+  @DisplayName("optimistic lock을 이용하여 재고를 감소시킨다.")
+  void decrease() throws InterruptedException {
     stockService.decrease(1L, 1L);
     final Stock stock = stockRepository.findById(1L).get();
     // 재고가 1 감소했으므로 99가 되어야 한다.
@@ -27,7 +29,7 @@ class StockPessimisticLockServiceTest extends AcceptanceTest {
   }
 
   @Test
-  @DisplayName("동시에 100개의 재고를 감소시킨다. - pessimistic lock")
+  @DisplayName("동시에 100개의 재고를 감소시킨다. - optimistic lock")
   void decrease100() throws InterruptedException {
     int threadCount = 100;
     // 32개의 쓰레드 풀을 생성한다.
@@ -38,13 +40,15 @@ class StockPessimisticLockServiceTest extends AcceptanceTest {
 
     for (int i = 0; i < threadCount; i++) {
       executorService.execute(
-          () -> {
-            try {
-              stockService.decrease(1L, 1L);
-            } finally {
-              countDownLatch.countDown();
-            }
-          });
+              () -> {
+                try {
+                  stockService.decrease(1L, 1L);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                } finally {
+                  countDownLatch.countDown();
+                }
+              });
     }
     countDownLatch.await();
 

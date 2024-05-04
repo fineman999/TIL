@@ -1,9 +1,6 @@
 package io.chan.productservice.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -18,6 +15,9 @@ public class Stock {
     private Long id;
     private Long productId;
     private Long quantity;
+
+    @Version
+    private Long version;
 
     public static Stock of(Long productId, Long quantity) {
         return Stock.builder()

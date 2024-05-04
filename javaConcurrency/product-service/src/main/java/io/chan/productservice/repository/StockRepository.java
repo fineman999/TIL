@@ -25,4 +25,8 @@ public class StockRepository {
     public Optional<Stock> findByIdWithPessimisticLock(final Long id) {
         return stockJpaRepository.findByIdWithPessimisticLock(id);
     }
+
+    public Optional<Stock> findByIdWithOptimisticLock(final Long id) {
+        return stockJpaRepository.findByIdWithOptimisticLock(id);
+    }
 }
