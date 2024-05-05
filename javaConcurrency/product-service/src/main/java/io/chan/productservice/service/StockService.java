@@ -2,5 +2,5 @@ package io.chan.productservice.service;
 
 
 public interface StockService {
-    void decrease(Long id, Long quantity) throws InterruptedException;
+    void decrease(Long id, Long quantity);
 }

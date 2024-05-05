@@ -2,14 +2,16 @@ package io.chan.productservice.setup;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 public abstract class Testcontainers {
     private static final String MYSQL_USERNAME = "test";
     private static final String MYSQL_PASSWORD = "1234";
 
     public static MySQLContainer<?> mysqlContainer = createContainer();
-
+    public static GenericContainer<?> redisContainer = createRedisContainer();
 
     private static MySQLContainer<?> createContainer() {
         @SuppressWarnings("resource")
@@ -22,6 +24,15 @@ public abstract class Testcontainers {
         container.start();
         return container;
     }
+    private static GenericContainer<?> createRedisContainer() {
+        @SuppressWarnings("resource")
+        GenericContainer<?> redisContainer = new GenericContainer<>(
+                DockerImageName.parse("redis:7.0.8-alpine"))
+                .withExposedPorts(6379)
+                .withReuse(true);
+        redisContainer.start();
+        return redisContainer;
+    }
 
     @DynamicPropertySource
     private static void configureProperties(final DynamicPropertyRegistry registry) {
@@ -30,5 +41,8 @@ public abstract class Testcontainers {
         registry.add("spring.datasource.password", () -> MYSQL_PASSWORD);
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
         registry.add("spring.jpa.show-sql", () -> "true");
+
+        registry.add("spring.redis.host", redisContainer::getHost);
+        registry.add("spring.data.redis.port", () -> redisContainer.getMappedPort(6379).toString());
     }
 }

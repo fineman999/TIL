@@ -1,26 +1,25 @@
-package io.chan.productservice.service;
-
-import static org.assertj.core.api.Assertions.assertThat;
+package io.chan.productservice.service.redis.letture;
 
 import io.chan.productservice.domain.Stock;
-import io.chan.productservice.service.optimistic.facade.StockOptimisticLockFacade;
 import io.chan.productservice.repository.StockRepository;
 import io.chan.productservice.setup.AcceptanceTest;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class StockOptimisticLockServiceTest extends AcceptanceTest {
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-  @Autowired private StockOptimisticLockFacade stockService;
+import static org.assertj.core.api.Assertions.assertThat;
+
+class StockLettuceLockFacadeTest extends AcceptanceTest {
+  @Autowired private StockLettuceLockFacade stockService;
   @Autowired private StockRepository stockRepository;
 
   @Test
-  @DisplayName("optimistic lock을 이용하여 재고를 감소시킨다.")
-  void decrease() throws InterruptedException {
+  @DisplayName("named lock을 이용하여 재고를 감소시킨다.")
+  void decrease() {
     stockService.decrease(1L, 1L);
     final Stock stock = stockRepository.findById(1L).get();
     // 재고가 1 감소했으므로 99가 되어야 한다.
@@ -28,7 +27,7 @@ class StockOptimisticLockServiceTest extends AcceptanceTest {
   }
 
   @Test
-  @DisplayName("동시에 100개의 재고를 감소시킨다. - optimistic lock")
+  @DisplayName("동시에 100개의 재고를 감소시킨다. - named lock")
   void decrease100() throws InterruptedException {
     int threadCount = 100;
     // 32개의 쓰레드 풀을 생성한다.

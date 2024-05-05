@@ -11,7 +11,7 @@ public class StockOptimisticLockFacade implements StockService {
     private final StockOptimisticLockService stockOptimisticLockService;
 
     @Override
-    public void decrease(final Long id, final Long quantity) throws InterruptedException {
+    public void decrease(final Long id, final Long quantity) {
         while (true) {
             try {
                 stockOptimisticLockService.decrease(id, quantity);
@@ -21,7 +21,11 @@ public class StockOptimisticLockFacade implements StockService {
                     break;
                 }
                 // retry
-                Thread.sleep(50);
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         }
     }
