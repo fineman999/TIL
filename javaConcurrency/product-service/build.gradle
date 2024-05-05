@@ -6,6 +6,7 @@ plugins {
 
 ext {
     resilience4jVersion = '2.2.0'
+    redissonVersion = '3.29.0'
 }
 
 group = 'io.chan'
@@ -30,6 +31,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation "org.redisson:redisson-spring-boot-starter:${redissonVersion}"
+
     implementation "io.github.resilience4j:resilience4j-spring-boot3:${resilience4jVersion}"
     implementation "io.github.resilience4j:resilience4j-all:${resilience4jVersion}"
 

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class StockNamedLockFacade implements StockService {
   private static final int LOCK_TIMEOUT = 1000;
-  private static final String LOCK_PREFIX = "stock_";
+  private static final String LOCK_PREFIX = "test_";
   private final NamedLockRepository namedLockRepository;
   private final StockNamedLockService stockService;
 

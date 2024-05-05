@@ -1,4 +1,4 @@
-package io.chan.productservice.service.redis.letture;
+package io.chan.productservice.service.redis.redisson;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,12 +12,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class StockLettuceLockFacadeTest extends AcceptanceTest {
-  @Autowired private StockLettuceLockFacade stockService;
+class StockRedissonLockFacadeTest extends AcceptanceTest {
+  @Autowired private StockRedissonLockFacade stockService;
   @Autowired private StockRepository stockRepository;
 
   @Test
-  @DisplayName("redis spin lock을 이용하여 재고를 감소시킨다.")
+  @DisplayName("redisson lock을 이용하여 재고를 감소시킨다.")
   void decrease() {
     stockService.decrease(1L, 1L);
     final Stock stock = stockRepository.findById(1L).get();
@@ -26,7 +26,7 @@ class StockLettuceLockFacadeTest extends AcceptanceTest {
   }
 
   @Test
-  @DisplayName("동시에 100개의 재고를 감소시킨다. - redis spin lock")
+  @DisplayName("동시에 100개의 재고를 감소시킨다. - redisson lock")
   void decrease100() throws InterruptedException {
     int threadCount = 100;
     // 32개의 쓰레드 풀을 생성한다.

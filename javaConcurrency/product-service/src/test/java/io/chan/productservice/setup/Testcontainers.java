@@ -29,6 +29,7 @@ public abstract class Testcontainers {
         GenericContainer<?> redisContainer = new GenericContainer<>(
                 DockerImageName.parse("redis:7.0.8-alpine"))
                 .withExposedPorts(6379)
+                .withCommand("redis-server", "--requirepass password")
                 .withReuse(true);
         redisContainer.start();
         return redisContainer;
@@ -42,7 +43,9 @@ public abstract class Testcontainers {
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
         registry.add("spring.jpa.show-sql", () -> "true");
 
-        registry.add("spring.redis.host", redisContainer::getHost);
+        registry.add("spring.data.redis.host", redisContainer::getHost);
         registry.add("spring.data.redis.port", () -> redisContainer.getMappedPort(6379).toString());
+        registry.add("spring.data.redis.password", () -> "password");
+        registry.add("spring.data.redis.repositories.enabled", () -> "false");
     }
 }
