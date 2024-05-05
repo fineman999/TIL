@@ -24,6 +24,7 @@ public class StockRedissonLockFacade implements StockService {
   public void decrease(final Long id, final Long quantity) {
     final RLock lock = redissonClient.getLock(LOCK_PREFIX + id);
     try {
+      // 락 획득을 시도한다(15초 동안 대기, 1초 동안 유지)
       final boolean available = lock.tryLock(WAIT_TIME, LEASE_TIME, TimeUnit.SECONDS);
       if (!available) {
         throw new LockTimeoutException("Failed to acquire lock");
