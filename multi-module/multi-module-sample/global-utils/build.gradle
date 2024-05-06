@@ -1,0 +1,7 @@
+dependencies {
+    // complieOnly를 사용하면 컴파일 시에만 의존성을 추가하고 런타임 시에는 추가하지 않는다.
+    // 그래서 클래스 패스에서는 의존성이 추가되지만 런타임 시에는 추가되지 않는다.
+    // runtimeOnly를 사용하면 런타임 시에만 의존성을 추가하고 컴파일 시에는 추가하지 않는다.
+    // 그래서 클래스 패스에서는 의존성이 추가되지 않아서 컴파일 시에는 추가되지 않는다.
+    implementation 'org.apache.commons:commons-lang3'
+}
