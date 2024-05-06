@@ -1,3 +1,19 @@
+pluginManagement {
+    def springBootVersion = gradle.startParameter.projectProperties['springBootVersion'] ?: '3.2.5'
+    def springDependencyManagementVersion = gradle.startParameter.projectProperties['springManagementVersion'] ?: '1.1.4'
+
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id == 'org.springframework.boot') {
+                useVersion(springBootVersion as String)
+            }
+            if (requested.id.id == 'io.spring.dependency-management') {
+                useVersion(springDependencyManagementVersion as String)
+            }
+        }
+    }
+}
+
 rootProject.name = 'hello-spring'
 include 'hello-spring-api'
-
+include 'support:logging'

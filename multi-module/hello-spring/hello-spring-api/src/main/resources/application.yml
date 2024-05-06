@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: hello-spring-api
+  config:
+    import:
+      - logging.yml
+  profiles:
+    active: local
+    group:
+      local:
+        - local
+      dev:
+        - dev
+      prod:
+        - prod
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+server:
+  shutdown: graceful

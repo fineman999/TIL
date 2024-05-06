@@ -1,0 +1,7 @@
+spring:
+  sleuth:
+    trace-id128: true # 기본적으로는 64비트 추적 ID가 생성되지만, 128비트 추적 ID를 생성하도록 설정
+    sampler:
+      probability: 1.0 # 100% 추적
+logging:
+  config: classpath:logback/logback-${spring.profiles.active}.xml

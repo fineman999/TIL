@@ -1,16 +1,19 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.5' apply false
-    id 'io.spring.dependency-management' version '1.1.4' apply false
+    id 'org.springframework.boot' apply false
+    id 'io.spring.dependency-management' apply false
 }
+
+def projectGroup = project.findProperty('projectGroup') ?: 'com.example'
+def applicationVersion = project.findProperty('applicationVersion') ?: '0.0.1-SNAPSHOT'
+def javaVersion = project.findProperty('javaVersion') ?: '17'
 
 java {
-    sourceCompatibility = '17'
+    sourceCompatibility = javaVersion
 }
-
 allprojects {
-    group = 'io.chan'
-    version = '0.0.1-SNAPSHOT'
+    group = projectGroup
+    version = applicationVersion
     repositories {
         mavenCentral()
     }
