@@ -15,5 +15,7 @@ pluginManagement {
 }
 
 rootProject.name = 'hello-spring'
-include 'hello-spring-api'
 include 'support:logging'
+include 'hello-spring-api'
+include 'storage:db-main'
+include 'domain'
