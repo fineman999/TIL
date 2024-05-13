@@ -13,11 +13,12 @@ import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CouponServiceTest extends AcceptanceTest {
-    @Autowired private CouponServiceImpl couponService;
+class CouponServiceUsingRedisImplTest extends AcceptanceTest {
+    @Autowired
+    private CouponServiceUsingRedisImpl couponService;
     @Autowired private CouponRepository couponRepository;
     @Test
-    @DisplayName("동시에 100 개의 쿠폰을 발급할 수 있다. - 동시성 이슈로 인해 100개 이상 발급된다. ")
+    @DisplayName("동시에 100 개의 쿠폰을 발급할 수 있다. - redis를 이용해 해결")
     void applyCoupon() throws InterruptedException {
         int threadCount = 100;
         // 32개의 쓰레드 풀을 생성한다.
@@ -40,6 +41,6 @@ class CouponServiceTest extends AcceptanceTest {
         countDownLatch.await();
         Long couponCount = couponRepository.getCouponCount();
         // 100개의 재고를 감소시켰으므로 0이 되어야 한다.
-        assertThat(couponCount).isNotEqualTo(100L);
+        assertThat(couponCount).isEqualTo(100L);
     }
 }
