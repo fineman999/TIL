@@ -2,7 +2,7 @@ package io.chan.springbatchtestservice.batch.job.file;
 
 import io.chan.springbatchtestservice.batch.domain.Product;
 import io.chan.springbatchtestservice.batch.domain.ProductVO;
-import io.chan.springbatchtestservice.batch.processor.FileItemProcessor;
+import io.chan.springbatchtestservice.batch.chunk.processor.FileItemProcessor;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
@@ -17,6 +17,7 @@ import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +32,7 @@ public class FileJobConfiguration {
   private final EntityManagerFactory entityManagerFactory;
 
   @Bean
-  public Job job(JobRepository jobRepository, Step fileStep) {
+  public Job job(JobRepository jobRepository, @Qualifier("fileStep") Step fileStep) {
     return new JobBuilder("fileJob", jobRepository).start(fileStep).build();
   }
 

@@ -1,4 +1,4 @@
-package io.chan.springbatchtestservice.batch.processor;
+package io.chan.springbatchtestservice.batch.chunk.processor;
 
 import io.chan.springbatchtestservice.batch.domain.Product;
 import io.chan.springbatchtestservice.batch.domain.ProductVO;

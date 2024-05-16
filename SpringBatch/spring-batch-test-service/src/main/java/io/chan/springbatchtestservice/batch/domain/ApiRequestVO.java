@@ -1,11 +1,8 @@
 package io.chan.springbatchtestservice.batch.domain;
 
 import lombok.Builder;
-
 @Builder
-public record ProductVO(
+public record ApiRequestVO(
         Long id,
-        String name,
-        int price,
-        String type
+        ProductVO productVO
 ) {}
