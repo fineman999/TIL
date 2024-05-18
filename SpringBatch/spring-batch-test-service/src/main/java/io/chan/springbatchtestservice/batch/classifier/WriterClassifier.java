@@ -23,7 +23,7 @@ public class WriterClassifier<C, T> implements Classifier<C, T> {
   @Override
   public T classify(final C classifiable) {
     if (classifiable instanceof final ApiRequestVO apiRequestVO) {
-      return (T) writerMap.get(apiRequestVO.productVO().type());
+      return (T) writerMap.get(apiRequestVO.productVO().getType());
     }
     throw new IllegalArgumentException("Unknown type: " + classifiable);
   }

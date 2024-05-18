@@ -25,7 +25,7 @@ public class ProcessorClassifier<C, T> implements Classifier<C, T> {
   @Override
   public T classify(final C classifiable) {
     if (classifiable instanceof final ProductVO productVO) {
-        return (T) processorMap.get(productVO.type());
+      return (T) processorMap.get(productVO.getType());
     }
     throw new IllegalArgumentException("Unknown type: " + classifiable);
   }

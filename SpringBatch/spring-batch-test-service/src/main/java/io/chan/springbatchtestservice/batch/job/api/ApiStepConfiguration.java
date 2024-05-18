@@ -1,17 +1,22 @@
 package io.chan.springbatchtestservice.batch.job.api;
 
+import io.chan.springbatchtestservice.batch.chunk.processor.ApiItemProcessorA;
+import io.chan.springbatchtestservice.batch.chunk.processor.ApiItemProcessorB;
+import io.chan.springbatchtestservice.batch.chunk.processor.ApiItemProcessorC;
 import io.chan.springbatchtestservice.batch.chunk.writer.ApiItemWriterA;
 import io.chan.springbatchtestservice.batch.chunk.writer.ApiItemWriterB;
 import io.chan.springbatchtestservice.batch.chunk.writer.ApiItemWriterC;
 import io.chan.springbatchtestservice.batch.classifier.ProcessorClassifier;
 import io.chan.springbatchtestservice.batch.classifier.WriterClassifier;
 import io.chan.springbatchtestservice.batch.domain.ApiRequestVO;
-import io.chan.springbatchtestservice.batch.domain.Product;
 import io.chan.springbatchtestservice.batch.domain.ProductVO;
 import io.chan.springbatchtestservice.batch.partition.ProductPartitioner;
-import io.chan.springbatchtestservice.batch.chunk.processor.ApiItemProcessorA;
-import io.chan.springbatchtestservice.batch.chunk.processor.ApiItemProcessorB;
-import io.chan.springbatchtestservice.batch.chunk.processor.ApiItemProcessorC;
+import io.chan.springbatchtestservice.service.ApiServiceA;
+import io.chan.springbatchtestservice.service.ApiServiceB;
+import io.chan.springbatchtestservice.service.ApiServiceC;
+import java.util.HashMap;
+import java.util.Map;
+import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -35,14 +40,14 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import javax.sql.DataSource;
-import java.util.Map;
-
 @Configuration
 @RequiredArgsConstructor
 public class ApiStepConfiguration {
   private final DataSource dataSource;
   private static final int chunkSize = 10;
+  private final ApiServiceA apiServiceA;
+  private final ApiServiceB apiServiceB;
+  private final ApiServiceC apiServiceC;
 
   @Bean
   public Step apiMasterStep(
@@ -69,7 +74,7 @@ public class ApiStepConfiguration {
 
   @Bean
   public Step apiSlaveStep(
-      JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+      JobRepository jobRepository, PlatformTransactionManager transactionManager) throws Exception {
     return new StepBuilder("apiSlaveStep", jobRepository)
         .<ProductVO, ApiRequestVO>chunk(chunkSize, transactionManager)
         .reader(itemReader(null))
@@ -78,6 +83,7 @@ public class ApiStepConfiguration {
         .build();
   }
 
+  @StepScope
   @Bean
   public ItemProcessor<ProductVO, ApiRequestVO> itemProcessor() {
     ClassifierCompositeItemProcessor<ProductVO, ApiRequestVO> processor =
@@ -99,9 +105,9 @@ public class ApiStepConfiguration {
     ClassifierCompositeItemWriter<ApiRequestVO> writer = new ClassifierCompositeItemWriter<>();
     Map<String, ItemWriter<ApiRequestVO>> writerMap =
         Map.of(
-            "1", new ApiItemWriterA(),
-            "2", new ApiItemWriterB(),
-            "3", new ApiItemWriterC());
+            "1", new ApiItemWriterA(apiServiceA),
+            "2", new ApiItemWriterB(apiServiceB),
+            "3", new ApiItemWriterC(apiServiceC));
     WriterClassifier<ApiRequestVO, ItemWriter<? super ApiRequestVO>> classifier =
         new WriterClassifier<>(writerMap);
     writer.setClassifier(classifier);
@@ -111,20 +117,25 @@ public class ApiStepConfiguration {
   @StepScope
   @Bean
   public ItemReader<ProductVO> itemReader(
-      @Value("#{stepExecutionContext['product']}") ProductVO productVO) {
-    final JdbcPagingItemReader<ProductVO> reader = new JdbcPagingItemReader<>();
+      @Value("#{stepExecutionContext['product']}") ProductVO productVO) throws Exception {
+    JdbcPagingItemReader<ProductVO> reader = new JdbcPagingItemReader<>();
+
     reader.setDataSource(dataSource);
     reader.setPageSize(chunkSize);
     reader.setRowMapper(new BeanPropertyRowMapper<>(ProductVO.class));
 
-    final MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
-    queryProvider.setSelectClause("id, name, description, price");
+    MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
+    queryProvider.setSelectClause("id, name, price, type");
     queryProvider.setFromClause("from product");
     queryProvider.setWhereClause("where type = :type");
-    Map<String, Order> sortKeys = Map.of("id", Order.ASCENDING);
+
+    Map<String, Order> sortKeys = new HashMap<>(1);
+    sortKeys.put("id", Order.DESCENDING);
     queryProvider.setSortKeys(sortKeys);
-    reader.setParameterValues(QueryGenerator.getParameterValues("type", productVO.type()));
+
+    reader.setParameterValues(QueryGenerator.getParameterValues("type", productVO.getType()));
     reader.setQueryProvider(queryProvider);
+    reader.afterPropertiesSet();
     return reader;
   }
 

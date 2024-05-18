@@ -62,7 +62,7 @@ public class FileJobConfiguration {
         .linesToSkip(1)
         .delimited()
         .delimiter(",")
-        .names(new String[] {"id", "name", "price", "type"})
+        .names("id","name","price","type")
         .build();
   }
 

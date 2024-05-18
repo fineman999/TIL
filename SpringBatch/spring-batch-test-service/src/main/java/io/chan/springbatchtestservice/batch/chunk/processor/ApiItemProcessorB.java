@@ -8,7 +8,7 @@ public class ApiItemProcessorB implements ItemProcessor<ProductVO, ApiRequestVO>
     @Override
     public ApiRequestVO process(final ProductVO item) {
         return ApiRequestVO.builder()
-                .id(item.id())
+                .id(item.getId())
                 .productVO(item)
                 .build();
     }

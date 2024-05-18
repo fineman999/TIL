@@ -1,11 +1,19 @@
 package io.chan.springbatchtestservice.batch.domain;
 
-import lombok.Builder;
+import lombok.*;
 
+import java.io.Serial;
+import java.io.Serializable;
+
+@Getter
 @Builder
-public record ProductVO(
-        Long id,
-        String name,
-        int price,
-        String type
-) {}
+@Setter
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+public class ProductVO implements Serializable {
+  @Serial private static final long serialVersionUID = 1L;
+  private Long id;
+  private String name;
+  private int price;
+  private String type;
+}

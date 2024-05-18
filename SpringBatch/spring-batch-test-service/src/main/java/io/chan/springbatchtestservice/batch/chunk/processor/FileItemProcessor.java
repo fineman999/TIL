@@ -12,10 +12,10 @@ public class FileItemProcessor implements ItemProcessor<ProductVO, Product> {
     public Product process(@NonNull final ProductVO item) {
         log.info("convert {} to {}", item, Product.class);
         return Product.builder()
-                .id(item.id())
-                .name(item.name())
-                .price(item.price())
-                .type(item.type())
+                .id(item.getId())
+                .name(item.getName())
+                .price(item.getPrice())
+                .type(item.getType())
                 .build();
     }
 }
