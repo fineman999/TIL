@@ -32,7 +32,7 @@ public class FileJobConfiguration {
   private final EntityManagerFactory entityManagerFactory;
 
   @Bean
-  public Job job(JobRepository jobRepository, @Qualifier("fileStep") Step fileStep) {
+  public Job fileJob(JobRepository jobRepository, @Qualifier("fileStep") Step fileStep) {
     return new JobBuilder("fileJob", jobRepository).start(fileStep).build();
   }
 

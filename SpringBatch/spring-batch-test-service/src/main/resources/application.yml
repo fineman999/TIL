@@ -4,6 +4,7 @@ spring:
   batch:
     job:
       name: ${job.name:NONE}
+      enabled: false
     jdbc:
       initialize-schema: always
   datasource:
@@ -18,3 +19,9 @@ spring:
       hibernate:
         show_sql: true
     open-in-view: true
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: always
+scheduler:
+  date: 20210101
