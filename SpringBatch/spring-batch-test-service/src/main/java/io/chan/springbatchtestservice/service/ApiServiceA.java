@@ -24,6 +24,7 @@ public class ApiServiceA extends AbstractApiService {
             .uri("/api/products/1")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .body(apiInfo)
             .retrieve()
             .onStatus(
                 HttpStatusCode::is4xxClientError,
