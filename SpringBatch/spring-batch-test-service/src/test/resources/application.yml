@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: spring-batch-test-service
+  batch:
+    job:
+      name: ${job.name:NONE}
+      enabled: false
+    jdbc:
+      initialize-schema: always
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+    open-in-view: true
