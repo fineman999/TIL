@@ -10,6 +10,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
+@Data // JDBC에서는 필요 -> setter, getter, toString, equals, hashCode
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

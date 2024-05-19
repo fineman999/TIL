@@ -19,7 +19,7 @@ public abstract class JobRunner implements ApplicationRunner {
 
   @Override
   public void run(ApplicationArguments args) {
-    doRun(args, date);
+//    doRun(args, date);
   }
 
   protected abstract void doRun(ApplicationArguments args, final String date);

@@ -4,6 +4,7 @@ import io.chan.springbatchtestservice.batch.chunk.processor.FileItemProcessor;
 import io.chan.springbatchtestservice.batch.domain.Product;
 import io.chan.springbatchtestservice.batch.domain.ProductVO;
 import jakarta.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -13,7 +14,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
+import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
@@ -30,6 +31,7 @@ public class FileJobConfiguration {
   private static final int CHUNK_SIZE = 10;
 
   private final EntityManagerFactory entityManagerFactory;
+  private final DataSource dataSource;
 
   @Bean
   public Job fileJob(JobRepository jobRepository, @Qualifier("fileStep") Step fileStep) {
@@ -73,9 +75,14 @@ public class FileJobConfiguration {
 
   @Bean
   public ItemWriter<Product> fileItemWriter() {
-    return new JpaItemWriterBuilder<Product>()
-        .usePersist(true)
-        .entityManagerFactory(entityManagerFactory)
+    return new JdbcBatchItemWriterBuilder<Product>()
+        .sql("INSERT INTO product (name, price, type) VALUES (:name, :price, :type)")
+        .dataSource(dataSource)
+            .beanMapped()
         .build();
+//    return new JpaItemWriterBuilder<Product>()
+//        .usePersist(true)
+//        .entityManagerFactory(entityManagerFactory)
+//        .build();
   }
 }

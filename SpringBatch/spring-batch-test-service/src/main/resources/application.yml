@@ -29,3 +29,6 @@ scheduler:
   date: 20210102
 server:
   shutdown: graceful
+logging:
+  level:
+    org.springframework.jdbc: DEBUG # 실행 시 SQL 로그를 보기 위해 설정
