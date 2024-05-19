@@ -1,0 +1,15 @@
+### Send POST request with json body
+POST http://localhost:8080/api/jobs/fileJob/start
+Content-Type: application/json
+
+{
+  "requestDate": "20210101"
+}
+
+### Send POST request with json body
+POST http://localhost:8080/api/jobs/fileJob/stop
+Content-Type: application/json
+
+### Send POST request with json body
+POST http://localhost:8080/api/jobs/fileJob/restart
+Content-Type: application/json

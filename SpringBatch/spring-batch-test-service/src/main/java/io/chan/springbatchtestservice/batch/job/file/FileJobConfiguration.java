@@ -1,8 +1,8 @@
 package io.chan.springbatchtestservice.batch.job.file;
 
+import io.chan.springbatchtestservice.batch.chunk.processor.FileItemProcessor;
 import io.chan.springbatchtestservice.batch.domain.Product;
 import io.chan.springbatchtestservice.batch.domain.ProductVO;
-import io.chan.springbatchtestservice.batch.chunk.processor.FileItemProcessor;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;

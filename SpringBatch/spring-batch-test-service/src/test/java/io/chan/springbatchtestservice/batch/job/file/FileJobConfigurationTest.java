@@ -49,8 +49,7 @@ public class FileJobConfigurationTest extends AcceptanceTest {
   @DisplayName("파일을 읽어서 DB에 저장하는 Job - Step 테스트")
   @Test
   public void fileStepTest(
-      @Autowired @Qualifier("fileJob") Job fileJob, @Autowired @Qualifier("fileStep") Step fileStep)
-      throws Exception {
+      @Autowired @Qualifier("fileJob") Job fileJob, @Autowired @Qualifier("fileStep") Step fileStep) {
     jobLauncherTestUtils.setJob(fileJob);
     // given
     JobParameters jobParameters =
