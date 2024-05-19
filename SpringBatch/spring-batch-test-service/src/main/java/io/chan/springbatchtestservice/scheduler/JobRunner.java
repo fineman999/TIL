@@ -1,5 +1,8 @@
 package io.chan.springbatchtestservice.scheduler;
 
+import static org.quartz.JobBuilder.newJob;
+
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,18 +11,15 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-
-import static org.quartz.JobBuilder.newJob;
-
 @Component
 @RequiredArgsConstructor
 public abstract class JobRunner implements ApplicationRunner {
   @Value("${scheduler.date}")
-    private String date;
+  private String date;
+
   @Override
   public void run(ApplicationArguments args) {
-    doRun(args,date);
+    doRun(args, date);
   }
 
   protected abstract void doRun(ApplicationArguments args, final String date);

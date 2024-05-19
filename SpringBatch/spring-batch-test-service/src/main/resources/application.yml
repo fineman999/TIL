@@ -6,7 +6,7 @@ spring:
       name: ${job.name:NONE}
       enabled: false
     jdbc:
-      initialize-schema: always
+      initialize-schema: never
   datasource:
     url: ${MYSQL_URL:jdbc:mysql://localhost:3306/batch?useSSL=false&serverTimezone=UTC&useUnicode=true&character_set_server=utf8mb4=utf8mb4&8useSSL=false&allowPublicKeyRetrieval=true}
     username: ${MYSQL_USERNAME:root}
@@ -23,5 +23,9 @@ spring:
     job-store-type: jdbc
     jdbc:
       initialize-schema: always
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
 scheduler:
-  date: 20210101
+  date: 20210102
+server:
+  shutdown: graceful

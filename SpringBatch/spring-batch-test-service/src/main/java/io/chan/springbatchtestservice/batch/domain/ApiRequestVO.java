@@ -4,5 +4,6 @@ import lombok.Builder;
 @Builder
 public record ApiRequestVO(
         Long id,
-        ProductVO productVO
+        ProductVO productVO,
+        ApiResponseVO responseVO
 ) {}
