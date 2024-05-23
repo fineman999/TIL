@@ -7,6 +7,8 @@ message Storage {
     UNKNOWN = 0;
     LOCAL = 1;
     S3 = 2;
+    SSD = 3;
+    HDD = 4;
   }
   Driver driver = 1;
   Memory memory = 2;

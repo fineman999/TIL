@@ -1,0 +1,59 @@
+{
+ "id": "40798778-55c4-422f-b53d-582f2e265099",
+ "brand": "Lenovo",
+ "name": "ThinkPad P1",
+ "cpu": {
+  "brand": "Intel",
+  "name": "Core i7-8700K",
+  "number_cores": 4,
+  "number_threads": 5,
+  "min_ghz": 3.3853786858293704,
+  "max_ghz": 4.009101103436256
+ },
+ "memory": null,
+ "gpu": [
+  {
+   "brand": "AMD",
+   "name": "RX 5600 XT",
+   "min_ghz": 1.4097150293146783,
+   "max_ghz": 1.8243721578980578,
+   "memory": {
+    "value": "2",
+    "unit": "GIGABYTE"
+   }
+  }
+ ],
+ "storage": [
+  {
+   "driver": "SSD",
+   "memory": {
+    "value": "935",
+    "unit": "GIGABYTE"
+   }
+  },
+  {
+   "driver": "HDD",
+   "memory": {
+    "value": "2",
+    "unit": "TERABYTE"
+   }
+  }
+ ],
+ "screen": {
+  "size_inch": 14.656604,
+  "resolution": {
+   "width": 7200,
+   "height": 4050
+  },
+  "panel": "OLED",
+  "multitouch": false
+ },
+ "keyboard": {
+  "layout": "QWERTZ",
+  "backlit": false
+ },
+ "weight_kg": 1.328162260454167,
+ "price_usd": 2249.992511839841,
+ "release_year": 2016,
+ "updated_at": "2024-05-23T11:42:10.350518Z"
+}

@@ -22,6 +22,6 @@ message Laptop {
     string weight_lbs = 11;
   } // oneof 뜻: 둘 중 하나만 사용
   double price_usd = 12;
-  string release_year = 13;
+  uint32 release_year = 13;
   google.protobuf.Timestamp updated_at = 14;
 }
