@@ -1,0 +1,18 @@
+syntax = "proto3";
+option go_package = "./pb";
+
+import "laptop_message.proto";
+option java_package = "io.chan";
+option java_multiple_files = true;
+
+message CreateLaptopRequest {
+    Laptop laptop = 1;
+}
+
+message CreateLaptopResponse {
+    string id = 1;
+}
+
+service LaptopService {
+    rpc CreateLaptop(CreateLaptopRequest) returns (CreateLaptopResponse);
+}

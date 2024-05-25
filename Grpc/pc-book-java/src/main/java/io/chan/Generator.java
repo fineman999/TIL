@@ -4,6 +4,7 @@ import com.google.protobuf.Timestamp;
 
 import java.time.Instant;
 import java.util.Random;
+import java.util.UUID;
 
 public class Generator {
     private Random rand;
@@ -124,6 +125,7 @@ public class Generator {
 
         int releaseYear = randomInt(2015, 2021);
         return Laptop.newBuilder()
+                .setId(UUID.randomUUID().toString())
                 .setBrand(brand)
                 .setName(name)
                 .setKeyboard(NewKeyboard())
@@ -165,7 +167,7 @@ public class Generator {
     }
 
     private Screen.Panel randomScreenPanel() {
-        int pick = rand.nextInt(Screen.Panel.values().length);
+        int pick = rand.nextInt(Screen.Panel.values().length - 1);
         return Screen.Panel.values()[pick];
     }
 
@@ -206,7 +208,7 @@ public class Generator {
     }
 
     private Keyboard.Layout radomKeyboardLayout() {
-        int pick = rand.nextInt(Keyboard.Layout.values().length);
+        int pick = rand.nextInt(Keyboard.Layout.values().length - 1);
         return Keyboard.Layout.values()[pick];
     }
 }

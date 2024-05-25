@@ -19,6 +19,8 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter'
 // https://mvnrepository.com/artifact/com.google.code.gson/gson
     implementation 'com.google.code.gson:gson:2.11.0'
+// https://mvnrepository.com/artifact/io.grpc/grpc-all
+    testImplementation 'io.grpc:grpc-all:1.64.0'
 
 }
 

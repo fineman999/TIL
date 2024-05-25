@@ -2,6 +2,8 @@ package service
 
 import (
 	"errors"
+	"fmt"
+	"github.com/jinzhu/copier"
 	pb "pc-book/pb/proto"
 	"sync"
 )
@@ -32,7 +34,12 @@ func (store *InMemoryLaptopStore) Save(laptop *pb.Laptop) error {
 		return ErrAlreadyExists
 	}
 
-	store.data[laptop.Id] = laptop
+	other := &pb.Laptop{}
+	err := copier.Copy(other, store.data[laptop.Id])
+	if err != nil {
+		return fmt.Errorf("cannot copy laptop data: %w", err)
+	}
+	store.data[laptop.Id] = other
 	return nil
 }
 
