@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"io"
 	"net"
 	pb "pc-book/pb/proto"
 	"pc-book/sample"
@@ -14,7 +15,7 @@ import (
 func TestClientCreateLaptop(t *testing.T) {
 	t.Parallel()
 
-	laptopServer, serverAddress := startTestLaptopServer(t)
+	laptopServer, serverAddress := startTestLaptopServer(t, NewInMemoryLaptopStore())
 	laptopClient, conn := newTestLaptopClient(t, serverAddress)
 	defer conn.Close()
 
@@ -46,8 +47,55 @@ func newTestLaptopClient(t *testing.T, address string) (pb.LaptopServiceClient, 
 	return client, conn
 }
 
-func startTestLaptopServer(t *testing.T) (*LaptopServer, string) {
-	laptopServer := NewLaptopServer(NewInMemoryLaptopStore())
+func TestClientSearchLaptop(t *testing.T) {
+	t.Parallel()
+
+	filter := &pb.Filter{
+		MaxPriceUsd: 3000,
+		MinCpuCores: 4,
+		MinCpuGhz:   2.0,
+		MinRam:      &pb.Memory{Value: 8, Unit: pb.Memory_GIGABYTE},
+	}
+
+	store := NewInMemoryLaptopStore()
+	expectedIDs := make(map[string]bool)
+
+	for i := 0; i < 6; i++ {
+		laptop := sample.NewLaptop()
+
+		expectedIDs[laptop.Id] = true
+
+		err := store.Save(laptop)
+		require.NoError(t, err)
+	}
+
+	_, serverAddress := startTestLaptopServer(t, store)
+	laptopClient, conn := newTestLaptopClient(t, serverAddress)
+	defer conn.Close()
+
+	req := &pb.SearchLaptopRequest{Filter: filter}
+	stream, err := laptopClient.SearchLaptop(context.Background(), req)
+	require.NoError(t, err)
+
+	found := 0
+	for {
+		res, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+
+		require.NoError(t, err)
+		require.Contains(t, expectedIDs, res.Laptop.Id)
+
+		found++
+
+	}
+
+	require.Equal(t, len(expectedIDs), found)
+}
+
+func startTestLaptopServer(t *testing.T, store *InMemoryLaptopStore) (*LaptopServer, string) {
+	laptopServer := NewLaptopServer(store)
 
 	grpcServer := grpc.NewServer()
 	pb.RegisterLaptopServiceServer(grpcServer, laptopServer)
