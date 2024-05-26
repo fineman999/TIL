@@ -11,7 +11,7 @@ class SerializerTest {
     @Test
     void writeAndReadBinaryFile() {
         String binaryFile = "laptop.bin";
-        final Laptop laptop = new Generator().NewLaptop();
+        final Laptop laptop = new Generator().newLaptop();
 
         Serializer serializer = new Serializer();
         serializer.WriteBinaryFile(laptop, binaryFile);

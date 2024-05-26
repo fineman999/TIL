@@ -41,7 +41,7 @@ class LaptopServiceTest {
   @Test
   void createLaptopWithAValidID() {
     final Generator generator = new Generator();
-    final Laptop laptop = generator.NewLaptop();
+    final Laptop laptop = generator.newLaptop();
     CreateLaptopRequest request = CreateLaptopRequest.newBuilder().setLaptop(laptop).build();
 
     LaptopServiceGrpc.LaptopServiceBlockingStub blockingStub =
@@ -57,7 +57,7 @@ class LaptopServiceTest {
   @Test
   void createLaptopWithAnEmptyID() {
     final Generator generator = new Generator();
-    final Laptop laptop = generator.NewLaptop().toBuilder().setId("").build();
+    final Laptop laptop = generator.newLaptop().toBuilder().setId("").build();
     CreateLaptopRequest request = CreateLaptopRequest.newBuilder().setLaptop(laptop).build();
 
     LaptopServiceGrpc.LaptopServiceBlockingStub blockingStub =
@@ -73,7 +73,7 @@ class LaptopServiceTest {
   @Test
   void createLaptopWithAnInvalidID() {
     final Generator generator = new Generator();
-    final Laptop laptop = generator.NewLaptop().toBuilder().setId("invalid").build();
+    final Laptop laptop = generator.newLaptop().toBuilder().setId("invalid").build();
     CreateLaptopRequest request = CreateLaptopRequest.newBuilder().setLaptop(laptop).build();
 
     LaptopServiceGrpc.LaptopServiceBlockingStub blockingStub =
@@ -87,7 +87,7 @@ class LaptopServiceTest {
   @Test
   void createLaptopWithAnAlreadyExistingID() {
     final Generator generator = new Generator();
-    final Laptop laptop = generator.NewLaptop();
+    final Laptop laptop = generator.newLaptop();
     store.save(laptop);
     CreateLaptopRequest request = CreateLaptopRequest.newBuilder().setLaptop(laptop).build();
 

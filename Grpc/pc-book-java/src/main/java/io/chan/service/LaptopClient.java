@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.chan.*;
+import io.grpc.Deadline;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.Status.Code;
@@ -84,20 +85,57 @@ public class LaptopClient {
 
   public static void main(String[] args) throws InterruptedException {
     LaptopClient client = new LaptopClient("localhost", 8081);
-    Generator generator = new Generator();
-    Laptop laptop = generator.NewLaptop();
     final ExecutorService executor = client.newExecutor();
 
+    Generator generator = new Generator();
     try {
-      var futureResponse = client.createLaptopAsync(laptop, executor);
-      futureResponse.get();
-    } catch (Exception e) {
-      e.printStackTrace();
+
+      for (int i = 0; i < 10; i++) {
+        Laptop laptop = generator.newLaptop();
+        client.createLaptopSync(generator.newLaptop());
+      }
+      final Memory minRam = Memory.newBuilder().setValue(8).setUnit(Memory.Unit.GIGABYTE).build();
+      final Filter filter =
+          Filter.newBuilder()
+              .setMaxPriceUsd(3000)
+              .setMinCpuCores(4)
+              .setMinCpuGhz(2.5)
+              .setMinRam(minRam)
+              .build();
+      client.searchLaptop(filter);
+
     } finally {
       client.shutdown();
       executor.shutdown();
     }
+
+    // async
+    //    try {
+    //      var futureResponse = client.createLaptopAsync(laptop, executor);
+    //      futureResponse.get();
+    //    } catch (Exception e) {
+    //      e.printStackTrace();
+    //    } finally {
+    //      client.shutdown();
+    //      executor.shutdown();
+    //    }
     client.close();
+  }
+
+  private void searchLaptop(final Filter filter) {
+    logger.info("Searching for laptops with filter: " + filter);
+
+    final SearchLaptopRequest searchLaptopRequest =
+        SearchLaptopRequest.newBuilder().setFilter(filter).build();
+    blockingStub
+        .withDeadlineAfter(5, TimeUnit.SECONDS) // 타임아웃 설정
+        .searchLaptop(searchLaptopRequest) // 서버에 요청
+        .forEachRemaining(
+            response -> {
+              logger.info("Found laptop with id: " + response.getLaptop().getId());
+            });
+
+    logger.info("search completed.");
   }
 
   private ExecutorService newExecutor() {

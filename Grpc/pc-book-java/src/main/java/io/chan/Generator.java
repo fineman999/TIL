@@ -14,7 +14,7 @@ public class Generator {
 
     public static void main(String[] args){
         Generator generator = new Generator();
-        Laptop laptop = generator.NewLaptop();
+        Laptop laptop = generator.newLaptop();
         System.out.println(laptop);
     }
     public Keyboard NewKeyboard() {
@@ -116,7 +116,7 @@ public class Generator {
                 .build();
     }
 
-    public Laptop NewLaptop() {
+    public Laptop newLaptop() {
         String brand = randomLaptopBrand();
         String name = randomLaptopName(brand);
 
