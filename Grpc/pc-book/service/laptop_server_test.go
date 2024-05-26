@@ -1,11 +1,13 @@
 package service
 
 import (
+	"context"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	pb "pc-book/pb/proto"
 	"pc-book/sample"
+	"reflect"
 	"testing"
 )
 
@@ -59,11 +61,14 @@ func TestServerCreateLaptop(t *testing.T) {
 		tc := testCases[i]
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			server := NewLaptopServer(tc.store)
+			server := NewLaptopServer(tc.store, nil)
 			req := &pb.CreateLaptopRequest{
 				Laptop: tc.laptop,
 			}
-			res, err := server.CreateLaptop(nil, req)
+
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			res, err := server.CreateLaptop(ctx, req)
 			if tc.code == codes.OK {
 				require.NoError(t, err)
 				require.NotNil(t, res)
@@ -80,4 +85,118 @@ func TestServerCreateLaptop(t *testing.T) {
 		})
 	}
 
+}
+
+func TestLaptopServer_CreateLaptop(t *testing.T) {
+	type fields struct {
+		LaptopServiceServer pb.LaptopServiceServer
+		laptopStore         LaptopStore
+		imageStore          ImageStore
+	}
+	type args struct {
+		ctx context.Context
+		req *pb.CreateLaptopRequest
+	}
+	var tests []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *pb.CreateLaptopResponse
+		wantErr bool
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			server := &LaptopServer{
+				LaptopServiceServer: tt.fields.LaptopServiceServer,
+				laptopStore:         tt.fields.laptopStore,
+				imageStore:          tt.fields.imageStore,
+			}
+			got, err := server.CreateLaptop(tt.args.ctx, tt.args.req)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("CreateLaptop() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("CreateLaptop() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestLaptopServer_SearchLaptop(t *testing.T) {
+	type fields struct {
+		LaptopServiceServer pb.LaptopServiceServer
+		laptopStore         LaptopStore
+		imageStore          ImageStore
+	}
+	type args struct {
+		req    *pb.SearchLaptopRequest
+		stream pb.LaptopService_SearchLaptopServer
+	}
+	var tests []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			server := &LaptopServer{
+				LaptopServiceServer: tt.fields.LaptopServiceServer,
+				laptopStore:         tt.fields.laptopStore,
+				imageStore:          tt.fields.imageStore,
+			}
+			if err := server.SearchLaptop(tt.args.req, tt.args.stream); (err != nil) != tt.wantErr {
+				t.Errorf("SearchLaptop() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestLaptopServer_checkContextError(t *testing.T) {
+	type fields struct {
+		LaptopServiceServer pb.LaptopServiceServer
+		laptopStore         LaptopStore
+		imageStore          ImageStore
+	}
+	type args struct {
+		ctx context.Context
+	}
+	var tests []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			server := &LaptopServer{
+				LaptopServiceServer: tt.fields.LaptopServiceServer,
+				laptopStore:         tt.fields.laptopStore,
+				imageStore:          tt.fields.imageStore,
+			}
+			if err := server.checkContextError(tt.args.ctx); (err != nil) != tt.wantErr {
+				t.Errorf("checkContextError() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestNewLaptopServer(t *testing.T) {
+	type args struct {
+		laptopStore LaptopStore
+		imageStore  ImageStore
+	}
+	var tests []struct {
+		name string
+		args args
+		want *LaptopServer
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NewLaptopServer(tt.args.laptopStore, tt.args.imageStore); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewLaptopServer() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

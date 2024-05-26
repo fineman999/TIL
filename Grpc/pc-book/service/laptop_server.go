@@ -1,29 +1,114 @@
 package service
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"io"
 	"log"
 	pb "pc-book/pb/proto"
 )
 
+const maxImageSize = 1 << 30 // 1 GB
+
 type LaptopServer struct {
 	pb.LaptopServiceServer // LaptopServiceServer 인터페이스를 임베딩
-	Store                  LaptopStore
+	laptopStore            LaptopStore
+	imageStore             ImageStore
 }
 
-func NewLaptopServer(store LaptopStore) *LaptopServer {
-	return &LaptopServer{Store: store}
+func NewLaptopServer(laptopStore LaptopStore, imageStore ImageStore) *LaptopServer {
+	return &LaptopServer{laptopStore: laptopStore, imageStore: imageStore}
+}
+
+func (server *LaptopServer) UploadImage(stream pb.LaptopService_UploadImageServer) error {
+	req, err := stream.Recv()
+	if err != nil {
+		return logError(status.Errorf(codes.Unknown, "cannot receive image info: %v", err))
+	}
+
+	laptopID := req.GetInfo().GetLaptopId()
+	imageType := req.GetInfo().GetImageType()
+	log.Printf("Receive an upload-image request for laptop %s with image type %s", laptopID, imageType)
+
+	laptop, err := server.laptopStore.Find(laptopID)
+	if err != nil {
+		return logError(status.Errorf(codes.Internal, "cannot find laptop: %v", err))
+	}
+
+	if laptop == nil {
+		return logError(status.Errorf(codes.InvalidArgument, "laptop %s doesn't exist", laptopID))
+	}
+
+	imageData := bytes.Buffer{}
+	imageSize := 0
+
+	for {
+		if err := server.checkContextError(stream.Context()); err != nil {
+			return err
+		}
+		log.Print("Waiting to receive more data")
+
+		req, err := stream.Recv()
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				log.Print("No more data")
+				break
+			}
+			if errors.Is(err, context.Canceled) {
+				log.Print("Client has cancelled the upload")
+				return logError(status.Error(codes.Canceled, "Client has cancelled the upload"))
+			}
+			return logError(status.Errorf(codes.Unknown, "cannot receive chunk data: %v", err))
+		}
+
+		chunk := req.GetChunkData()
+		size := len(chunk)
+
+		imageSize += size
+		if imageSize > maxImageSize {
+			return logError(status.Errorf(codes.InvalidArgument, "image is too large: %d > %d", imageSize, maxImageSize))
+		}
+
+		// make heavy
+		//time.Sleep(time.Second)
+		// chunk의 내용을 imageData 버퍼의 끝에 추가
+		n, err := imageData.Write(chunk)
+		if err != nil {
+			return logError(status.Errorf(codes.Internal, "cannot write chunk data: %v", err))
+		}
+		log.Printf("Write %d bytes to image data buffer", n)
+		log.Printf("Total size of image data buffer: %.2f KB", float64(imageData.Len())/1024)
+	}
+
+	imageID, err := server.imageStore.Save(laptopID, imageType, imageData)
+	if err != nil {
+		return logError(status.Errorf(codes.Internal, "cannot save image to the store: %v", err))
+	}
+
+	res := &pb.UploadImageResponse{
+		Id:   imageID,
+		Size: uint32(imageSize),
+	}
+
+	err = stream.SendAndClose(res)
+	if err != nil {
+		return logError(status.Errorf(codes.Unknown, "cannot send response: %v", err))
+	}
+
+	log.Printf("Image with id %s and size %d has been saved", imageID, imageSize)
+	return nil
+
 }
 
 func (server *LaptopServer) SearchLaptop(req *pb.SearchLaptopRequest, stream pb.LaptopService_SearchLaptopServer) error {
 	filter := req.GetFilter()
 	log.Printf("Receive a search-laptop request with filter: %v", filter)
 
-	err := server.Store.Search(
+	err := server.laptopStore.Search(
 		stream.Context(),
 		filter, func(laptop *pb.Laptop) error {
 			res := &pb.SearchLaptopResponse{Laptop: laptop}
@@ -68,7 +153,7 @@ func (server *LaptopServer) CreateLaptop(ctx context.Context, req *pb.CreateLapt
 		return nil, ctxErr
 	}
 
-	err := server.Store.Save(laptop)
+	err := server.laptopStore.Save(laptop)
 	if err != nil {
 		code := codes.Internal
 		if errors.Is(err, ErrAlreadyExists) {
@@ -86,12 +171,19 @@ func (server *LaptopServer) CreateLaptop(ctx context.Context, req *pb.CreateLapt
 }
 
 func (server *LaptopServer) checkContextError(ctx context.Context) error {
-	if errors.Is(ctx.Err(), context.Canceled) {
-		log.Print("The client has cancelled the request")
-		return status.Error(codes.Canceled, "The client has cancelled the request")
-	} else if errors.Is(ctx.Err(), context.DeadlineExceeded) {
-		log.Print("The deadline has exceeded")
-		return status.Error(codes.DeadlineExceeded, "The deadline has exceeded")
+	switch err := ctx.Err(); {
+	case errors.Is(err, context.Canceled):
+		return logError(status.Error(codes.Canceled, "The client has cancelled the request"))
+	case errors.Is(err, context.DeadlineExceeded):
+		return logError(status.Error(codes.DeadlineExceeded, "The deadline has exceeded"))
+	default:
+		return nil
+	}
+}
+
+func logError(err error) error {
+	if err != nil {
+		log.Print(err)
 	}
 	return nil
 }

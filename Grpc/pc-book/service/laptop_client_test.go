@@ -1,21 +1,98 @@
 package service
 
 import (
+	"bufio"
 	"context"
+	"errors"
+	"fmt"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"io"
 	"net"
+	"os"
+	"path/filepath"
 	pb "pc-book/pb/proto"
 	"pc-book/sample"
 	"testing"
 )
 
+func TestClientUploadImage(t *testing.T) {
+	t.Parallel()
+
+	testImageFolder := "../tmp"
+
+	laptopStore := NewInMemoryLaptopStore()
+	imageStore := NewDiskImageStore(testImageFolder)
+
+	laptop := sample.NewLaptop()
+	err := laptopStore.Save(laptop)
+	require.NoError(t, err)
+
+	_, serverAddress := startTestLaptopServer(t, laptopStore, imageStore)
+	laptopClient, conn := newTestLaptopClient(t, serverAddress)
+	defer conn.Close()
+
+	imagePath := fmt.Sprintf("%s/laptop.jpg", testImageFolder)
+	file, err := os.Open(imagePath)
+	require.NoError(t, err)
+	defer file.Close()
+
+	stream, err := laptopClient.UploadImage(context.Background())
+	require.NoError(t, err)
+
+	req := &pb.UploadImageRequest{
+		Data: &pb.UploadImageRequest_Info{
+			Info: &pb.ImageInfo{
+				LaptopId:  laptop.GetId(),
+				ImageType: filepath.Ext(imagePath),
+			},
+		},
+	}
+
+	err = stream.Send(req)
+	require.NoError(t, err)
+
+	reader := bufio.NewReader(file)
+	buffer := make([]byte, 1024)
+	size := 0
+	for {
+		// buffer: 읽은 데이터를 저장할 공간
+		// n: 실제로 읽은 데이터의 크기
+		n, err := reader.Read(buffer)
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+			require.NoError(t, err)
+		}
+		size += n
+
+		req := &pb.UploadImageRequest{
+			Data: &pb.UploadImageRequest_ChunkData{
+				// buffer[:n]: buffer의 0번째부터 n-1번째까지의 데이터
+				ChunkData: buffer[:n],
+			},
+		}
+
+		err = stream.Send(req)
+		require.NoError(t, err)
+	}
+
+	res, err := stream.CloseAndRecv()
+	require.NoError(t, err)
+	require.NotZero(t, res.GetId())
+	require.EqualValues(t, size, res.GetSize())
+
+	savedImagePath := fmt.Sprintf("%s/%s%s", testImageFolder, res.GetId(), filepath.Ext(imagePath))
+	require.FileExists(t, savedImagePath)
+	require.NoError(t, os.Remove(savedImagePath))
+}
+
 func TestClientCreateLaptop(t *testing.T) {
 	t.Parallel()
 
-	laptopServer, serverAddress := startTestLaptopServer(t, NewInMemoryLaptopStore())
+	laptopServer, serverAddress := startTestLaptopServer(t, NewInMemoryLaptopStore(), nil)
 	laptopClient, conn := newTestLaptopClient(t, serverAddress)
 	defer conn.Close()
 
@@ -31,7 +108,7 @@ func TestClientCreateLaptop(t *testing.T) {
 	require.Equal(t, expectedID, res.Id)
 
 	// Check if the laptop is saved to the store
-	other, err := laptopServer.Store.Find(expectedID)
+	other, err := laptopServer.laptopStore.Find(expectedID)
 	requireSampleLaptop(t, other, expectedID)
 
 }
@@ -62,6 +139,9 @@ func TestClientSearchLaptop(t *testing.T) {
 
 	for i := 0; i < 6; i++ {
 		laptop := sample.NewLaptop()
+		laptop.PriceUsd = 2000
+		laptop.Cpu.NumberCores = 5
+		laptop.Cpu.MinGhz = 3.0
 
 		expectedIDs[laptop.Id] = true
 
@@ -69,7 +149,7 @@ func TestClientSearchLaptop(t *testing.T) {
 		require.NoError(t, err)
 	}
 
-	_, serverAddress := startTestLaptopServer(t, store)
+	_, serverAddress := startTestLaptopServer(t, store, nil)
 	laptopClient, conn := newTestLaptopClient(t, serverAddress)
 	defer conn.Close()
 
@@ -94,8 +174,8 @@ func TestClientSearchLaptop(t *testing.T) {
 	require.Equal(t, len(expectedIDs), found)
 }
 
-func startTestLaptopServer(t *testing.T, store *InMemoryLaptopStore) (*LaptopServer, string) {
-	laptopServer := NewLaptopServer(store)
+func startTestLaptopServer(t *testing.T, store *InMemoryLaptopStore, imageStore ImageStore) (*LaptopServer, string) {
+	laptopServer := NewLaptopServer(store, imageStore)
 
 	grpcServer := grpc.NewServer()
 	pb.RegisterLaptopServiceServer(grpcServer, laptopServer)

@@ -1,59 +1,59 @@
 {
- "id": "40798778-55c4-422f-b53d-582f2e265099",
- "brand": "Lenovo",
- "name": "ThinkPad P1",
- "cpu": {
-  "brand": "Intel",
-  "name": "Core i7-8700K",
-  "number_cores": 4,
-  "number_threads": 5,
-  "min_ghz": 3.3853786858293704,
-  "max_ghz": 4.009101103436256
+ "id":  "32c62a91-40f8-4701-bf79-693ae05c88cd",
+ "brand":  "Dell",
+ "name":  "Vostro",
+ "cpu":  {
+  "brand":  "Intel",
+  "name":  "Core i9-9900K",
+  "number_cores":  5,
+  "number_threads":  7,
+  "min_ghz":  3.09790582367823,
+  "max_ghz":  4.142862186617124
  },
- "memory": null,
- "gpu": [
+ "memory":  null,
+ "gpu":  [
   {
-   "brand": "AMD",
-   "name": "RX 5600 XT",
-   "min_ghz": 1.4097150293146783,
-   "max_ghz": 1.8243721578980578,
-   "memory": {
-    "value": "2",
-    "unit": "GIGABYTE"
+   "brand":  "Nvidia",
+   "name":  "GTX 1660 Ti",
+   "min_ghz":  1.288517609791454,
+   "max_ghz":  1.510661407383666,
+   "memory":  {
+    "value":  "5",
+    "unit":  "GIGABYTE"
    }
   }
  ],
- "storage": [
+ "storage":  [
   {
-   "driver": "SSD",
-   "memory": {
-    "value": "935",
-    "unit": "GIGABYTE"
+   "driver":  "SSD",
+   "memory":  {
+    "value":  "520",
+    "unit":  "GIGABYTE"
    }
   },
   {
-   "driver": "HDD",
-   "memory": {
-    "value": "2",
-    "unit": "TERABYTE"
+   "driver":  "HDD",
+   "memory":  {
+    "value":  "5",
+    "unit":  "TERABYTE"
    }
   }
  ],
- "screen": {
-  "size_inch": 14.656604,
-  "resolution": {
-   "width": 7200,
-   "height": 4050
+ "screen":  {
+  "size_inch":  14.599119,
+  "resolution":  {
+   "width":  3943,
+   "height":  2218
   },
-  "panel": "OLED",
-  "multitouch": false
+  "panel":  "OLED",
+  "multitouch":  true
  },
- "keyboard": {
-  "layout": "QWERTZ",
-  "backlit": false
+ "keyboard":  {
+  "layout":  "QWERTY",
+  "backlit":  true
  },
- "weight_kg": 1.328162260454167,
- "price_usd": 2249.992511839841,
- "release_year": 2016,
- "updated_at": "2024-05-23T11:42:10.350518Z"
+ "weight_kg":  2.1668520860070863,
+ "price_usd":  1961.546157102443,
+ "release_year":  2019,
+ "updated_at":  "2024-05-26T09:58:38.687709Z"
 }
