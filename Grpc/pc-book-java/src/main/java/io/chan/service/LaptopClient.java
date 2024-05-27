@@ -3,12 +3,16 @@ package io.chan.service;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.protobuf.ByteString;
 import io.chan.*;
-import io.grpc.Deadline;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.Status.Code;
 import io.grpc.StatusRuntimeException;
+import io.grpc.stub.StreamObserver;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
 
@@ -18,12 +22,14 @@ public class LaptopClient {
 
   private final LaptopServiceGrpc.LaptopServiceBlockingStub blockingStub;
   private final LaptopServiceGrpc.LaptopServiceFutureStub futureStub;
+  private final LaptopServiceGrpc.LaptopServiceStub asyncStub;
 
   public LaptopClient(final String host, final int port) {
     channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
 
     blockingStub = LaptopServiceGrpc.newBlockingStub(channel);
     futureStub = LaptopServiceGrpc.newFutureStub(channel);
+    asyncStub = LaptopServiceGrpc.newStub(channel);
   }
 
   public void close() throws InterruptedException {
@@ -83,6 +89,56 @@ public class LaptopClient {
     channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
   }
 
+  public void uploadImage(String laptopId, String imagePath) throws InterruptedException {
+    final CountDownLatch finishLatch = new CountDownLatch(1);
+    final StreamObserver<UploadImageRequest> requestObserver =
+        asyncStub
+            .withDeadlineAfter(5, TimeUnit.SECONDS)
+            .uploadImage(new UploadResponseStreamObserver(finishLatch));
+    try (FileInputStream fileInputStream = new FileInputStream(imagePath)) {
+      final String imageType = imagePath.substring(imagePath.lastIndexOf("."));
+      final ImageInfo imageInfo =
+          ImageInfo.newBuilder().setLaptopId(laptopId).setImageType(imageType).build();
+      // send image info
+      final UploadImageRequest imageRequest =
+          UploadImageRequest.newBuilder().setInfo(imageInfo).build();
+
+      try {
+        requestObserver.onNext(imageRequest);
+        logger.info("Sent image info: " + imageInfo);
+        final byte[] bytes = new byte[1024];
+        while (true) {
+            int read = fileInputStream.read(bytes);
+            if (read == -1) {
+                break;
+            }
+            if (finishLatch.getCount() == 0) {
+                return;
+            }
+            if (read > 0) {
+                final ByteString chunkData = ByteString.copyFrom(bytes, 0, read);
+                final UploadImageRequest chunkRequest =
+                    UploadImageRequest.newBuilder().setChunkData(chunkData).build();
+                requestObserver.onNext(chunkRequest);
+                logger.info("Sent a image chunk with " + read + " bytes.");
+            }
+        }
+      } catch (Exception e) {
+        logger.severe("Cannot upload image: " + e.getMessage());
+        requestObserver.onError(e);
+      }
+    } catch (FileNotFoundException e) {
+      logger.severe("Cannot open image file: " + e.getMessage());
+    } catch (IOException e) {
+      logger.severe("Cannot read image file: " + e.getMessage());
+    }
+    requestObserver.onCompleted();
+
+    if (!finishLatch.await(1, TimeUnit.MINUTES)) {
+      logger.warning("Timeout while waiting for response");
+    }
+  }
+
   public static void main(String[] args) throws InterruptedException {
     LaptopClient client = new LaptopClient("localhost", 8081);
     final ExecutorService executor = client.newExecutor();
@@ -90,20 +146,11 @@ public class LaptopClient {
     Generator generator = new Generator();
     try {
 
-      for (int i = 0; i < 10; i++) {
-        Laptop laptop = generator.newLaptop();
-        client.createLaptopSync(generator.newLaptop());
-      }
-      final Memory minRam = Memory.newBuilder().setValue(8).setUnit(Memory.Unit.GIGABYTE).build();
-      final Filter filter =
-          Filter.newBuilder()
-              .setMaxPriceUsd(3000)
-              .setMinCpuCores(4)
-              .setMinCpuGhz(2.5)
-              .setMinRam(minRam)
-              .build();
-      client.searchLaptop(filter);
+      //      testSearchLaptop(generator, client);
 
+      final Laptop laptop = generator.newLaptop();
+      client.createLaptopSync(laptop);
+      client.uploadImage(laptop.getId(), "tmp/laptop.jpg");
     } finally {
       client.shutdown();
       executor.shutdown();
@@ -120,6 +167,22 @@ public class LaptopClient {
     //      executor.shutdown();
     //    }
     client.close();
+  }
+
+  private static void testSearchLaptop(final Generator generator, final LaptopClient client) {
+    for (int i = 0; i < 10; i++) {
+      Laptop laptop = generator.newLaptop();
+      client.createLaptopSync(laptop);
+    }
+    final Memory minRam = Memory.newBuilder().setValue(8).setUnit(Memory.Unit.GIGABYTE).build();
+    final Filter filter =
+        Filter.newBuilder()
+            .setMaxPriceUsd(3000)
+            .setMinCpuCores(4)
+            .setMinCpuGhz(2.5)
+            .setMinRam(minRam)
+            .build();
+    client.searchLaptop(filter);
   }
 
   private void searchLaptop(final Filter filter) {

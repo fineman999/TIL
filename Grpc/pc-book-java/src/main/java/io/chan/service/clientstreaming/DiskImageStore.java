@@ -1,9 +1,6 @@
 package io.chan.service.clientstreaming;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,10 +14,14 @@ public class DiskImageStore implements ImageStore {
     }
 
     @Override
-    public String save(String laptopId, String imageType, ByteArrayOutputStream imageDataStream) {
+    public String save(String laptopId, String imageType, ByteArrayOutputStream imageDataStream) throws IOException {
         String imageId = UUID.randomUUID().toString();
-        String imagePath = String.format("%s/%s%s", folder, imageId, imageType);
+        String imagePath = String.format("./%s/%s%s", folder, imageId, imageType);
 
+        File directory = new File(folder);
+        if (!directory.exists()) {
+            directory.mkdir();
+        }
         try (
                 FileOutputStream fileOutputStream = new FileOutputStream(imagePath)
         ) {
@@ -28,8 +29,6 @@ public class DiskImageStore implements ImageStore {
             ImageMetaData imageMetaData = new ImageMetaData(laptopId, imageType, imagePath);
             data.put(imageId, imageMetaData);
             return imageId;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 }

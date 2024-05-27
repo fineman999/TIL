@@ -21,7 +21,7 @@ public class LaptopService extends LaptopServiceGrpc.LaptopServiceImplBase {
 
   @Override
   public StreamObserver<UploadImageRequest> uploadImage(StreamObserver<UploadImageResponse> responseObserver) {
-    return new UploadStreamObserver(responseObserver, imageStore);
+    return new UploadRequestStreamObserver(responseObserver, imageStore,laptopStore);
   }
 
   @Override
