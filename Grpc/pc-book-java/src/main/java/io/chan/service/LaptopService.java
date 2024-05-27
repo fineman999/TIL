@@ -3,6 +3,7 @@ package io.chan.service;
 import static io.grpc.Status.CANCELLED;
 
 import io.chan.*;
+import io.chan.service.clientstreaming.ImageStore;
 import io.grpc.Context;
 import io.grpc.stub.StreamObserver;
 import java.util.UUID;
@@ -10,10 +11,17 @@ import java.util.logging.Logger;
 
 public class LaptopService extends LaptopServiceGrpc.LaptopServiceImplBase {
   private static final Logger logger = Logger.getLogger(LaptopService.class.getName());
-  private final LaptopStore store;
+  private final LaptopStore laptopStore;
+  private final ImageStore imageStore;
 
-  public LaptopService(final LaptopStore store) {
-    this.store = store;
+  public LaptopService(final LaptopStore laptopStore, ImageStore imageStore) {
+    this.laptopStore = laptopStore;
+      this.imageStore = imageStore;
+  }
+
+  @Override
+  public StreamObserver<UploadImageRequest> uploadImage(StreamObserver<UploadImageResponse> responseObserver) {
+    return new UploadStreamObserver(responseObserver, imageStore);
   }
 
   @Override
@@ -54,7 +62,7 @@ public class LaptopService extends LaptopServiceGrpc.LaptopServiceImplBase {
     }
     final Laptop other = laptop.toBuilder().setId(uuid.toString()).build();
     try {
-      store.save(other);
+      laptopStore.save(other);
     } catch (AlreadyExistsException e) {
       responseObserver.onError(
           io.grpc.Status.ALREADY_EXISTS.withDescription(e.getMessage()).asRuntimeException());
@@ -81,7 +89,7 @@ public class LaptopService extends LaptopServiceGrpc.LaptopServiceImplBase {
     logger.info("Receive a search laptop request with filter: " + filter);
 
     // 콜백 패턴 사용(store.search() 메소드를 호출하면서, 실행할 로직을 람다 표현식으로 전달하는 방식)
-    store.search(
+    laptopStore.search(
         Context.current(),
         filter,
         laptop -> {

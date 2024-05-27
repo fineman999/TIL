@@ -1,5 +1,7 @@
 package io.chan.service;
 
+import io.chan.service.clientstreaming.DiskImageStore;
+import io.chan.service.clientstreaming.ImageStore;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
@@ -17,10 +19,10 @@ public class LaptopServer {
         this.server = server;
     }
 
-    public LaptopServer(final int port, final LaptopStore store) {
+    public LaptopServer(final int port, final LaptopStore store, final ImageStore imageStore) {
         this.port = port;
         this.server = ServerBuilder.forPort(port)
-            .addService(new LaptopService(store))
+            .addService(new LaptopService(store, imageStore))
             .build();
     }
 
@@ -75,8 +77,9 @@ public class LaptopServer {
 
     public static void main(String[] args) throws InterruptedException {
         final int port = 8081;
-        final LaptopStore store = new InMemoryLapTopStore();
-        final LaptopServer laptopServer = new LaptopServer(port, store);
+        final LaptopStore laptopStore = new InMemoryLapTopStore();
+        final DiskImageStore imageStore = new DiskImageStore("img");
+        final LaptopServer laptopServer = new LaptopServer(port, laptopStore, imageStore);
         laptopServer.start();
         laptopServer.blockUntilShutdown();
     }
