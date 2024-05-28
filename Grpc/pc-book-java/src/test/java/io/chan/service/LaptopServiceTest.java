@@ -30,7 +30,7 @@ class LaptopServiceTest {
     grpcCleanup.register(
         InProcessServerBuilder.forName(serverName)
             .directExecutor()
-            .addService(new LaptopService(store, null))
+            .addService(new LaptopService(store, null,null))
             .build()
             .start());
 

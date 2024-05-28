@@ -3,6 +3,8 @@ package io.chan.service;
 import static io.grpc.Status.CANCELLED;
 
 import io.chan.*;
+import io.chan.service.bidirectional.RateLaptopRequestStreamObserver;
+import io.chan.service.bidirectional.RatingStore;
 import io.chan.service.clientstreaming.ImageStore;
 import io.grpc.Context;
 import io.grpc.stub.StreamObserver;
@@ -13,10 +15,17 @@ public class LaptopService extends LaptopServiceGrpc.LaptopServiceImplBase {
   private static final Logger logger = Logger.getLogger(LaptopService.class.getName());
   private final LaptopStore laptopStore;
   private final ImageStore imageStore;
+  private final RatingStore ratingStore;
 
-  public LaptopService(final LaptopStore laptopStore, ImageStore imageStore) {
+  public LaptopService(final LaptopStore laptopStore, ImageStore imageStore, RatingStore ratingStore) {
     this.laptopStore = laptopStore;
       this.imageStore = imageStore;
+      this.ratingStore = ratingStore;
+  }
+
+  @Override
+  public StreamObserver<RateLaptopRequest> rateLaptop(StreamObserver<RateLaptopResponse> responseObserver) {
+    return new RateLaptopRequestStreamObserver(responseObserver, ratingStore, laptopStore);
   }
 
   @Override

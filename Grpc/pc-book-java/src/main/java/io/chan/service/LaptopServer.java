@@ -1,5 +1,7 @@
 package io.chan.service;
 
+import io.chan.service.bidirectional.InMemoryRatingStore;
+import io.chan.service.bidirectional.RatingStore;
 import io.chan.service.clientstreaming.DiskImageStore;
 import io.chan.service.clientstreaming.ImageStore;
 import io.grpc.Server;
@@ -19,10 +21,10 @@ public class LaptopServer {
         this.server = server;
     }
 
-    public LaptopServer(final int port, final LaptopStore store, final ImageStore imageStore) {
+    public LaptopServer(final int port, final LaptopStore store, final ImageStore imageStore, final RatingStore ratingStore) {
         this.port = port;
         this.server = ServerBuilder.forPort(port)
-            .addService(new LaptopService(store, imageStore))
+            .addService(new LaptopService(store, imageStore, ratingStore))
             .build();
     }
 
@@ -79,7 +81,8 @@ public class LaptopServer {
         final int port = 8081;
         final LaptopStore laptopStore = new InMemoryLapTopStore();
         final DiskImageStore imageStore = new DiskImageStore("img");
-        final LaptopServer laptopServer = new LaptopServer(port, laptopStore, imageStore);
+        final InMemoryRatingStore ratingStore = new InMemoryRatingStore();
+        final LaptopServer laptopServer = new LaptopServer(port, laptopStore, imageStore, ratingStore);
         laptopServer.start();
         laptopServer.blockUntilShutdown();
     }
