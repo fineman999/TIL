@@ -211,4 +211,8 @@ public class Generator {
         int pick = rand.nextInt(Keyboard.Layout.values().length - 1);
         return Keyboard.Layout.values()[pick];
     }
+
+    public double newLaptopStore() {
+        return randomInt(1, 10);
+    }
 }
