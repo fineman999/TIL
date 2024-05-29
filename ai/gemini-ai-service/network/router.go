@@ -26,6 +26,8 @@ func NewNetwork(cfg *config.Config, service *service.Service) (*Network, error) 
 	r := &Network{cfg: cfg, service: service, router: gin.Default()}
 
 	r.router.POST("/test", r.test)
+	r.router.POST("/chat/rooms/:id", r.createChatRoom)
+	r.router.POST("/chat/rooms/:id/text", r.sendChatText)
 	return r, nil
 }
 

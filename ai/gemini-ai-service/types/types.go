@@ -8,3 +8,7 @@ type TestGeminiRequest struct {
 type TestGeminiResponse struct {
 	Payload *genai.GenerateContentResponse
 }
+
+type ChatTestGeminiRequest struct {
+	Text string `json:"text" binding:"required"`
+}
