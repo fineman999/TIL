@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"gemini-ai-service/types"
 	"github.com/gin-gonic/gin"
+	"github.com/slack-go/slack"
 	"net/http"
 	"strconv"
 )
@@ -86,4 +87,19 @@ func (n *Network) imageTest(g *gin.Context) {
 	}
 
 	g.JSON(http.StatusOK, gin.H{"response": response})
+}
+
+func (n *Network) slackTest(g *gin.Context) {
+	parse, err := slack.SlashCommandParse(g.Request)
+	if err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	ctx := g.Request.Context()
+	err = n.service.TestSlack(ctx, parse)
+	if err != nil {
+		g.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	g.JSON(http.StatusOK, gin.H{"response": "success"})
 }

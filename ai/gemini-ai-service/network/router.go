@@ -29,6 +29,7 @@ func NewNetwork(cfg *config.Config, service *service.Service) (*Network, error) 
 	r.router.POST("/chat/rooms/:id", r.createChatRoom)
 	r.router.POST("/chat/rooms/:id/text", r.sendChatText)
 	r.router.POST("/image", r.imageTest)
+	r.router.POST("/slack", r.slackTest)
 	return r, nil
 }
 

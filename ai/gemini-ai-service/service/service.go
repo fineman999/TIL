@@ -5,8 +5,10 @@ import (
 	"gemini-ai-service/ai"
 	"gemini-ai-service/config"
 	"gemini-ai-service/infrastructure"
+	"gemini-ai-service/slack"
 	"gemini-ai-service/types"
 	"github.com/google/generative-ai-go/genai"
+	slack2 "github.com/slack-go/slack"
 	"log"
 	"mime/multipart"
 	"path/filepath"
@@ -17,10 +19,11 @@ type Service struct {
 	cfg        *config.Config
 	gemini     *ai.Gemini
 	repository *infrastructure.Repository
+	slack      *slack.Slack
 }
 
-func NewService(cfg *config.Config, gemini *ai.Gemini, repository *infrastructure.Repository) (*Service, error) {
-	s := &Service{cfg: cfg, gemini: gemini, repository: repository}
+func NewService(cfg *config.Config, gemini *ai.Gemini, repository *infrastructure.Repository, slack *slack.Slack) (*Service, error) {
+	s := &Service{cfg: cfg, gemini: gemini, repository: repository, slack: slack}
 	return s, nil
 }
 
@@ -83,4 +86,12 @@ func (s *Service) ImageTest(ctx context.Context, files []*multipart.FileHeader, 
 		return nil, err
 	}
 	return response, nil
+}
+
+func (s *Service) TestSlack(ctx context.Context, text slack2.SlashCommand) error {
+	err := s.slack.SendSlashCommand(ctx, text)
+	if err != nil {
+		return err
+	}
+	return nil
 }
