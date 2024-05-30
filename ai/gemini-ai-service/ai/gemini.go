@@ -43,15 +43,36 @@ func NewGemini(cfg *config.Config) (*Gemini, error) {
 	*/
 	//var temperature float32 = 0.5 // 확률분포를 조정하는 매개변수
 	//var topP float32 = 0.9 // top_p는 확률분포 내에서 선택할 단어의 범위를 결정하는 매개변수
+
+	// 안전성 기준점 조정
+	// 괴롭힘
+	harassmentSetting := genai.SafetySetting{
+		Category:  genai.HarmCategoryHarassment,
+		Threshold: genai.HarmBlockNone,
+	}
+	// 증오심 표현
+	hateSpeechSetting := genai.SafetySetting{
+		Category:  genai.HarmCategoryHateSpeech,
+		Threshold: genai.HarmBlockNone,
+	}
+
+	safetySettings := []*genai.SafetySetting{
+		&harassmentSetting,
+		&hateSpeechSetting,
+	}
+
 	//generationConfig := genai.GenerationConfig{
 	//StopSequences: []string{".", "!", "?"}, // 해당 문자열을 만나면 생성을 중단합니다. 최대 5개까지 설정 가능
 	//MaxOutputTokens: &maxOutputTokens, // 생성할 토큰의 최대 개수를 설정합니다. 최대 2048까지 설정 가능
 	//Temperature: &temperature, // 생성할 텍스트의 다양성을 조절합니다. 0.0에서 2.0 사이의 값을 설정합니다. 기본값은 1입니다.
 	//TopP: 0.9, // Top-p sampling을 사용하여 생성할 텍스트의 다양성을 조절합니다. 0.0에서 1.0 사이의 값을 설정합니다. 기본값은 1입니다.
 	//}
+
 	// The Gemini 1.5 models are versatile and work with most use cases
 	model := client.GenerativeModel("gemini-1.5-flash")
 	// 설정하기
+	model.SafetySettings = safetySettings
+	//model.SetTemperature(temperature)
 	//model.GenerationConfig.StopSequences = generationConfig.StopSequences
 	//model.GenerationConfig.MaxOutputTokens = generationConfig.MaxOutputTokens
 	//model.GenerationConfig.Temperature = generationConfig.Temperature
