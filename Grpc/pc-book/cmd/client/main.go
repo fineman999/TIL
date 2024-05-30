@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"flag"
+	"fmt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -15,6 +16,7 @@ import (
 	"path/filepath"
 	pb "pc-book/pb/proto"
 	"pc-book/sample"
+	"strings"
 	"time"
 )
 
@@ -31,7 +33,39 @@ func main() {
 	// pb.NewLaptopServiceClient(conn): gRPC 클라이언트 생성
 	client := pb.NewLaptopServiceClient(conn)
 	//testCreateAndSearchLaptop(client) -- 생성(unary), 검색(server streaming) 테스트
-	testUploadImage(client)
+	//testUploadImage(client)
+	testRateLaptop(client)
+}
+
+func testRateLaptop(client pb.LaptopServiceClient) {
+	n := 3
+	laptopIDs := make([]string, n)
+
+	for i := 0; i < n; i++ {
+		laptop := sample.NewLaptop()
+		createLaptop(client, laptop)
+		laptopIDs[i] = laptop.GetId()
+	}
+
+	scores := make([]float64, n)
+	for {
+		fmt.Print("rate laptop (y/n): ")
+		var answer string
+		fmt.Scan(&answer)
+
+		if strings.ToLower(answer) != "y" {
+			break
+		}
+
+		for i := 0; i < n; i++ {
+			scores[i] = sample.RandomLaptopScore()
+		}
+
+		err := rateLaptop(client, laptopIDs, scores)
+		if err != nil {
+			log.Fatalf("cannot rate laptop: %v", err)
+		}
+	}
 }
 
 func testUploadImage(client pb.LaptopServiceClient) {
@@ -178,4 +212,52 @@ func createLaptop(client pb.LaptopServiceClient, laptop *pb.Laptop) {
 	}
 
 	log.Printf("create laptop with id: %s", res.Id)
+}
+
+func rateLaptop(laptopClient pb.LaptopServiceClient, laptopIDs []string, scores []float64) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	stream, err := laptopClient.RateLaptop(ctx)
+	if err != nil {
+		return err
+	}
+
+	waitResponse := make(chan error)
+	go func() {
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				log.Print("no more response")
+				waitResponse <- nil
+				return
+			}
+			if err != nil {
+				log.Printf("cannot receive response: %v", err)
+				waitResponse <- err
+				return
+			}
+
+			log.Printf("received response: %v", res)
+		}
+	}()
+
+	for i, laptopID := range laptopIDs {
+		req := &pb.RateLaptopRequest{
+			LaptopId: laptopID,
+			Score:    scores[i],
+		}
+
+		err := stream.Send(req)
+		if err != nil {
+			return err
+		}
+	}
+
+	err = stream.CloseSend()
+	if err != nil {
+		return err
+	}
+
+	return <-waitResponse
 }

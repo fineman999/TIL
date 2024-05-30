@@ -29,7 +29,7 @@ func TestClientUploadImage(t *testing.T) {
 	err := laptopStore.Save(laptop)
 	require.NoError(t, err)
 
-	_, serverAddress := startTestLaptopServer(t, laptopStore, imageStore)
+	_, serverAddress := startTestLaptopServer(t, laptopStore, imageStore, nil)
 	laptopClient, conn := newTestLaptopClient(t, serverAddress)
 	defer conn.Close()
 
@@ -92,7 +92,7 @@ func TestClientUploadImage(t *testing.T) {
 func TestClientCreateLaptop(t *testing.T) {
 	t.Parallel()
 
-	laptopServer, serverAddress := startTestLaptopServer(t, NewInMemoryLaptopStore(), nil)
+	laptopServer, serverAddress := startTestLaptopServer(t, NewInMemoryLaptopStore(), nil, nil)
 	laptopClient, conn := newTestLaptopClient(t, serverAddress)
 	defer conn.Close()
 
@@ -149,7 +149,7 @@ func TestClientSearchLaptop(t *testing.T) {
 		require.NoError(t, err)
 	}
 
-	_, serverAddress := startTestLaptopServer(t, store, nil)
+	_, serverAddress := startTestLaptopServer(t, store, nil, nil)
 	laptopClient, conn := newTestLaptopClient(t, serverAddress)
 	defer conn.Close()
 
@@ -174,8 +174,9 @@ func TestClientSearchLaptop(t *testing.T) {
 	require.Equal(t, len(expectedIDs), found)
 }
 
-func startTestLaptopServer(t *testing.T, store *InMemoryLaptopStore, imageStore ImageStore) (*LaptopServer, string) {
-	laptopServer := NewLaptopServer(store, imageStore)
+func startTestLaptopServer(t *testing.T, store *InMemoryLaptopStore,
+	imageStore ImageStore, ratingStore RatingStore) (*LaptopServer, string) {
+	laptopServer := NewLaptopServer(store, imageStore, ratingStore)
 
 	grpcServer := grpc.NewServer()
 	pb.RegisterLaptopServiceServer(grpcServer, laptopServer)

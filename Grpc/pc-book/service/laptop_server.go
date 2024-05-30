@@ -18,10 +18,59 @@ type LaptopServer struct {
 	pb.LaptopServiceServer // LaptopServiceServer 인터페이스를 임베딩
 	laptopStore            LaptopStore
 	imageStore             ImageStore
+	ratingStore            RatingStore
 }
 
-func NewLaptopServer(laptopStore LaptopStore, imageStore ImageStore) *LaptopServer {
-	return &LaptopServer{laptopStore: laptopStore, imageStore: imageStore}
+func NewLaptopServer(laptopStore LaptopStore, imageStore ImageStore, ratingStore RatingStore) *LaptopServer {
+	return &LaptopServer{laptopStore: laptopStore, imageStore: imageStore, ratingStore: ratingStore}
+}
+
+func (server *LaptopServer) RateLaptop(stream pb.LaptopService_RateLaptopServer) error {
+	for {
+		err := server.checkContextError(stream.Context())
+		if err != nil {
+			return err
+		}
+
+		req, err := stream.Recv()
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				return nil
+			}
+			return logError(status.Errorf(codes.Unknown, "cannot receive rating request: %v", err))
+		}
+
+		laptopID := req.GetLaptopId()
+		score := req.GetScore()
+
+		log.Printf("Receive a rate-laptop request for laptop %s with score %.2f", laptopID, score)
+
+		found, err := server.laptopStore.Find(laptopID)
+		if err != nil {
+			return logError(status.Errorf(codes.Internal, "cannot find laptop: %v", err))
+		}
+
+		if found == nil {
+			return logError(status.Errorf(codes.NotFound, "laptop %s not found", laptopID))
+		}
+
+		rating, err := server.ratingStore.Add(laptopID, score)
+		if err != nil {
+			return logError(status.Errorf(codes.Internal, "cannot add rating to the store: %v", err))
+		}
+
+		res := &pb.RateLaptopResponse{
+			LaptopId:     laptopID,
+			Count:        rating.Count,
+			AverageScore: rating.Sum / float64(rating.Count),
+		}
+
+		err = stream.Send(res)
+		if err != nil {
+			return logError(status.Errorf(codes.Internal, "cannot send rating response: %v", err))
+		}
+	}
+	return nil
 }
 
 func (server *LaptopServer) UploadImage(stream pb.LaptopService_UploadImageServer) error {
