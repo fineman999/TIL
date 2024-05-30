@@ -5,8 +5,10 @@ import (
 	"errors"
 	"gemini-ai-service/config"
 	"gemini-ai-service/infrastructure"
+	"gemini-ai-service/types"
 	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/option"
+	"io"
 	"log"
 )
 
@@ -86,4 +88,34 @@ func (g *Gemini) GenerateChatText(ctx context.Context, room infrastructure.Room,
 func (g *Gemini) StartChat(id int) {
 	cs := g.geminiModel.StartChat()
 	g.chats[id] = cs
+}
+
+func (g *Gemini) ImageTest(ctx context.Context, parts *types.ImageTestGeminiDto) (*genai.GenerateContentResponse, error) {
+
+	prompt := make([]genai.Part, 0)
+
+	for _, fileTemp := range parts.Images {
+		file, err := fileTemp.Image.Open()
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+		defer file.Close()
+
+		bytes, err := io.ReadAll(file)
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+		prompt = append(prompt, genai.ImageData(fileTemp.Ext, bytes))
+	}
+
+	prompt = append(prompt, genai.Text(parts.Text))
+	resp, err := g.geminiModel.GenerateContent(ctx, prompt...)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+
+	return resp, nil
 }

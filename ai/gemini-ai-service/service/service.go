@@ -7,6 +7,10 @@ import (
 	"gemini-ai-service/infrastructure"
 	"gemini-ai-service/types"
 	"github.com/google/generative-ai-go/genai"
+	"log"
+	"mime/multipart"
+	"path/filepath"
+	"strings"
 )
 
 type Service struct {
@@ -55,4 +59,28 @@ func (s *Service) CreateChat(id int) {
 	} else {
 		s.gemini.StartChatWithRooms(id, rooms)
 	}
+}
+
+func (s *Service) ImageTest(ctx context.Context, files []*multipart.FileHeader, req types.ChatTestGeminiRequest) (*genai.GenerateContentResponse, error) {
+	imageFiles := make([]*types.ImageDto, 0)
+	for _, file := range files {
+		log.Println(file.Filename)
+		fileExt := filepath.Ext(file.Filename)
+		originalFileName := strings.TrimSuffix(filepath.Base(file.Filename), filepath.Ext(file.Filename))
+		imageFiles = append(imageFiles, &types.ImageDto{
+			Image: file,
+			Ext:   fileExt,
+			Name:  originalFileName,
+		})
+	}
+	imageTestGeminiDto := &types.ImageTestGeminiDto{
+		Images: imageFiles,
+		Text:   req.Text,
+	}
+
+	response, err := s.gemini.ImageTest(ctx, imageTestGeminiDto)
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
 }

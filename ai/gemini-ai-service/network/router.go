@@ -28,6 +28,7 @@ func NewNetwork(cfg *config.Config, service *service.Service) (*Network, error) 
 	r.router.POST("/test", r.test)
 	r.router.POST("/chat/rooms/:id", r.createChatRoom)
 	r.router.POST("/chat/rooms/:id/text", r.sendChatText)
+	r.router.POST("/image", r.imageTest)
 	return r, nil
 }
 
@@ -38,6 +39,7 @@ func (n *Network) StartServer(ai *ai.Gemini) {
 		Addr:    ":8080",
 		Handler: n.router,
 	}
+	n.router.MaxMultipartMemory = 8 << 20 // 8 MiB 제한
 	n.srv = srv
 
 	go func() {

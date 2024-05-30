@@ -1,6 +1,9 @@
 package types
 
-import "github.com/google/generative-ai-go/genai"
+import (
+	"github.com/google/generative-ai-go/genai"
+	"mime/multipart"
+)
 
 type TestGeminiRequest struct {
 	Text string `json:"text" binding:"required"`
@@ -11,4 +14,16 @@ type TestGeminiResponse struct {
 
 type ChatTestGeminiRequest struct {
 	Text string `json:"text" binding:"required"`
+}
+
+type ImageDto struct {
+	Image *multipart.FileHeader
+	Ext   string
+	Name  string
+}
+
+type ImageTestGeminiDto struct {
+	Images []*ImageDto `json:"image" binding:"required"`
+	Text   string      `json:"text" binding:"required"`
+	Ext    string      `json:"ext" binding:"required"`
 }
