@@ -115,6 +115,30 @@ func (g *Gemini) GenerateChatText(ctx context.Context, room infrastructure.Room,
 	}
 	resp, err := cs.SendMessage(ctx, genai.Text(room.Text))
 	if err != nil {
+		var blockedErr *genai.BlockedError
+		if errors.As(err, &blockedErr) {
+			// 만약 promptFeedback에 blockReason이 있다면, prompt 입력에 문제가 있었던 것입니다.
+			if blockedErr != nil && blockedErr.PromptFeedback != nil {
+				reason := blockedErr.PromptFeedback.BlockReason
+				log.Println("다음의 문제가 발생하여 응답이 중단되었습니다.: ", reason)
+				return nil, blockedErr
+			}
+			if blockedErr != nil && blockedErr.Candidate != nil {
+				/**
+				FinishReasonUnspecified: 기본값입니다. 이 값은 사용되지 않습니다.
+				FinishReasonStop: 모델의 자연스러운 중단 지점이거나 제공된 중단 시퀀스입니다.
+				FinishReasonMaxTokens: 요청에서 지정한 최대 토큰 수에 도달했습니다.
+				FinishReasonSafety: 후보 컨텐츠가 안전성 이유로 플래그되었습니다.
+				FinishReasonRecitation: 후보 컨텐츠가 낭독 이유로 플래그되었습니다.
+				FinishReasonOther: 알 수 없는 이유입니다.
+				*/
+				reason := blockedErr.Candidate.FinishReason
+				log.Println("다음의 문제가 발생하여 응답이 중단되었습니다.: ", reason)
+				return nil, blockedErr
+			}
+			return nil, blockedErr
+		}
+		log.Println("에러가 발생했습니다.: ", err)
 		return nil, err
 	}
 	return resp, nil
