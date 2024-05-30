@@ -9,6 +9,10 @@ type Config struct {
 	Gemini struct {
 		Key string
 	}
+	Slack struct {
+		Token   string
+		Channel string
+	}
 }
 
 func NewConfig(path string) *Config {
