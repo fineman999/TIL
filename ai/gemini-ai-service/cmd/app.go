@@ -24,9 +24,9 @@ func NewApp(cfg *config.Config) {
 	var err error
 	if a.repository, err = infrastructure.NewRepository(cfg); err != nil {
 		panic(err)
-	} else if a.gemini, err = ai.NewGemini(cfg); err != nil {
-		panic(err)
 	} else if a.slack, err = slack.NewSlack(cfg); err != nil {
+		panic(err)
+	} else if a.gemini, err = ai.NewGemini(cfg, a.slack); err != nil {
 		panic(err)
 	} else if a.service, err = service.NewService(cfg, a.gemini, a.repository, a.slack); err != nil {
 		panic(err)

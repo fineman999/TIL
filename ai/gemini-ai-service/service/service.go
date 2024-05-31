@@ -97,12 +97,13 @@ func (s *Service) TestSlack(ctx context.Context, text slack2.SlashCommand) error
 }
 
 func (s *Service) SendSlackWithAI(ctx context.Context, parse slack2.SlashCommand) (string, error) {
-	textResponse, err := s.gemini.GenerateText(ctx, parse.Text)
-	if err != nil {
-		return "", err
+
+	err2 := s.slack.SendMessageStartChat(ctx, parse)
+	if err2 != nil {
+		return "", err2
 	}
 
-	err = s.slack.SendSlashCommandWithAI(ctx, textResponse, parse)
+	textResponse, err := s.gemini.GenerateText(ctx, parse.Text, parse)
 	if err != nil {
 		return "", err
 	}

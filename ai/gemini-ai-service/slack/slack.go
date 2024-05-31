@@ -31,6 +31,14 @@ func (s *Slack) SendMessage(ctx context.Context, message string) error {
 	return err
 }
 
+func (s *Slack) SendMessageAsync(message string, command slack.SlashCommand) error {
+	_, _, _, err := s.client.SendMessage(
+		command.ChannelID,
+		slack.MsgOptionText(message, false),
+	)
+	return err
+}
+
 func (s *Slack) SendSlashCommand(ctx context.Context, command slack.SlashCommand) error {
 
 	text := fmt.Sprintf(`
@@ -60,4 +68,18 @@ Gemini: %s
 		slack.MsgOptionText(text, false),
 	)
 	return err
+}
+
+func (s *Slack) SendMessageStartChat(ctx context.Context, slackCommand slack.SlashCommand) error {
+	text := fmt.Sprintf(`
+<@%s>님: %s
+Gemini: `, slackCommand.UserID, slackCommand.Text)
+
+	_, _, _, err := s.client.SendMessageContext(
+		ctx,
+		slackCommand.ChannelID,
+		slack.MsgOptionText(text, false),
+	)
+	return err
+
 }

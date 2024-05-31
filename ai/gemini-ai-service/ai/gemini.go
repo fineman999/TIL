@@ -6,21 +6,25 @@ import (
 	"fmt"
 	"gemini-ai-service/config"
 	"gemini-ai-service/infrastructure"
+	"gemini-ai-service/slack"
 	"gemini-ai-service/types"
 	"github.com/google/generative-ai-go/genai"
+	slack2 "github.com/slack-go/slack"
 	"google.golang.org/api/option"
 	"io"
 	"log"
 	"strings"
+	"time"
 )
 
 type Gemini struct {
 	client      *genai.Client
 	geminiModel *genai.GenerativeModel
 	chats       map[int]*genai.ChatSession
+	slack       *slack.Slack
 }
 
-func NewGemini(cfg *config.Config) (*Gemini, error) {
+func NewGemini(cfg *config.Config, slack *slack.Slack) (*Gemini, error) {
 	ctx := context.Background()
 	// Access your API key as an environment variable (see "Set up your API key" above)
 	client, err := genai.NewClient(ctx, option.WithAPIKey(cfg.Gemini.Key))
@@ -84,6 +88,7 @@ func NewGemini(cfg *config.Config) (*Gemini, error) {
 		geminiModel: model,
 		client:      client,
 		chats:       make(map[int]*genai.ChatSession),
+		slack:       slack,
 	}, nil
 }
 
@@ -217,7 +222,7 @@ func (g *Gemini) ImageTest(ctx context.Context, parts *types.ImageTestGeminiDto)
 	return resp, nil
 }
 
-func (g *Gemini) GenerateText(ctx context.Context, text string) (string, error) {
+func (g *Gemini) GenerateText(ctx context.Context, text string, command slack2.SlashCommand) (string, error) {
 	id := 99
 	if g.chats[id] == nil {
 		g.StartChat(id)
@@ -226,27 +231,48 @@ func (g *Gemini) GenerateText(ctx context.Context, text string) (string, error) 
 	if cs == nil {
 		return "", errors.New("chat session is nil")
 	}
-	var err error
-	resp, err := cs.SendMessage(ctx, genai.Text(text))
-	if err != nil {
-		var blockedErr *genai.BlockedError
-		if errors.As(err, &blockedErr) {
-			if blockedErr != nil && blockedErr.PromptFeedback != nil {
-				reason := blockedErr.PromptFeedback.BlockReason
-				log.Println("다음의 문제가 발생하여 응답이 중단되었습니다.: ", reason)
-				return "", blockedErr
-			}
-			if blockedErr != nil && blockedErr.Candidate != nil {
-				reason := blockedErr.Candidate.FinishReason
-				log.Println("다음의 문제가 발생하여 응답이 중단되었습니다.: ", reason)
-				return "", blockedErr
-			}
-			return "", blockedErr
+	nCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	stream := cs.SendMessageStream(nCtx, genai.Text(text))
+	for {
+		resp, err := stream.Next()
+		if err == io.EOF {
+			log.Print("no more laptop")
+			break
 		}
-		return "", err
+		if err != nil {
+			var blockedErr *genai.BlockedError
+			if errors.As(err, &blockedErr) {
+				if blockedErr != nil && blockedErr.PromptFeedback != nil {
+					reason := blockedErr.PromptFeedback.BlockReason
+					log.Println("다음의 문제가 발생하여 응답이 중단되었습니다.: ", reason)
+					return reason.String(), blockedErr
+				}
+				if blockedErr != nil && blockedErr.Candidate != nil {
+					reason := blockedErr.Candidate.FinishReason
+					log.Println("다음의 문제가 발생하여 응답이 중단되었습니다.: ", reason)
+					return reason.String(), blockedErr
+				}
+				return "", blockedErr
+			}
+			if errors.As(err, &context.Canceled) {
+				log.Println("요청이 취소되었습니다.")
+				return "요청이 취소되었습니다.", err
+			}
+			sprintf := fmt.Sprintf("응답 중에 문제가 발생했습니다.: %v", err)
+			log.Println(sprintf)
+			return sprintf, err
+		}
+		response := formatResponse(resp)
+
+		go func() {
+			err := g.slack.SendMessageAsync(response, command)
+			if err != nil {
+				log.Println(err)
+			}
+		}()
 	}
-	response := formatResponse(resp)
-	return response, nil
+	return "success", nil
 }
 
 func formatResponse(resp *genai.GenerateContentResponse) string {
