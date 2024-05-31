@@ -28,7 +28,7 @@ func NewService(cfg *config.Config, gemini *ai.Gemini, repository *infrastructur
 }
 
 func (s *Service) TestGemini(ctx context.Context, prompt string) (*types.TestGeminiResponse, error) {
-	text, err := s.gemini.GenerateText(ctx, prompt)
+	text, err := s.gemini.GenerateResponse(ctx, prompt)
 	if err != nil {
 		return nil, err
 	}
@@ -94,4 +94,18 @@ func (s *Service) TestSlack(ctx context.Context, text slack2.SlashCommand) error
 		return err
 	}
 	return nil
+}
+
+func (s *Service) SendSlackWithAI(ctx context.Context, parse slack2.SlashCommand) (string, error) {
+	textResponse, err := s.gemini.GenerateText(ctx, parse.Text)
+	if err != nil {
+		return "", err
+	}
+
+	err = s.slack.SendSlashCommandWithAI(ctx, textResponse, parse)
+	if err != nil {
+		return "", err
+	}
+
+	return textResponse, nil
 }

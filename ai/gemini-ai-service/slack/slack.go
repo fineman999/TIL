@@ -42,3 +42,22 @@ func (s *Slack) SendSlashCommand(ctx context.Context, command slack.SlashCommand
 	return s.SendMessage(ctx, text)
 
 }
+
+func (s *Slack) SendSlashCommandWithAI(ctx context.Context, response string, slackCommand slack.SlashCommand) error {
+	return s.SendMessageWithChannelID(ctx, response, slackCommand)
+}
+
+func (s *Slack) SendMessageWithChannelID(ctx context.Context, response string, slackCommand slack.SlashCommand) error {
+
+	text := fmt.Sprintf(`
+<@%s>님: %s
+Gemini: %s
+`, slackCommand.UserID, slackCommand.Text, response)
+
+	_, _, _, err := s.client.SendMessageContext(
+		ctx,
+		slackCommand.ChannelID,
+		slack.MsgOptionText(text, false),
+	)
+	return err
+}

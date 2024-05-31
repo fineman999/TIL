@@ -3,6 +3,7 @@ package ai
 import (
 	"context"
 	"errors"
+	"fmt"
 	"gemini-ai-service/config"
 	"gemini-ai-service/infrastructure"
 	"gemini-ai-service/types"
@@ -10,6 +11,7 @@ import (
 	"google.golang.org/api/option"
 	"io"
 	"log"
+	"strings"
 )
 
 type Gemini struct {
@@ -85,10 +87,24 @@ func NewGemini(cfg *config.Config) (*Gemini, error) {
 	}, nil
 }
 
-func (g *Gemini) GenerateText(ctx context.Context, prompt string) (*genai.GenerateContentResponse, error) {
+func (g *Gemini) GenerateResponse(ctx context.Context, prompt string) (*genai.GenerateContentResponse, error) {
 	var err error
 	resp, err := g.geminiModel.GenerateContent(ctx, genai.Text(prompt))
 	if err != nil {
+		var blockedErr *genai.BlockedError
+		if errors.As(err, &blockedErr) {
+			if blockedErr != nil && blockedErr.PromptFeedback != nil {
+				reason := blockedErr.PromptFeedback.BlockReason
+				log.Println("다음의 문제가 발생하여 응답이 중단되었습니다.: ", reason)
+				return nil, blockedErr
+			}
+			if blockedErr != nil && blockedErr.Candidate != nil {
+				reason := blockedErr.Candidate.FinishReason
+				log.Println("다음의 문제가 발생하여 응답이 중단되었습니다.: ", reason)
+				return nil, blockedErr
+			}
+			return nil, blockedErr
+		}
 		return nil, err
 	}
 	part := resp.Candidates[0].Content.Parts[0]
@@ -96,6 +112,7 @@ func (g *Gemini) GenerateText(ctx context.Context, prompt string) (*genai.Genera
 	if err != nil {
 		return nil, err
 	}
+
 	log.Println("Token의 개수: ", tokens.TotalTokens)
 	return resp, nil
 }
@@ -198,4 +215,51 @@ func (g *Gemini) ImageTest(ctx context.Context, parts *types.ImageTestGeminiDto)
 	}
 
 	return resp, nil
+}
+
+func (g *Gemini) GenerateText(ctx context.Context, text string) (string, error) {
+	id := 99
+	if g.chats[id] == nil {
+		g.StartChat(id)
+	}
+	cs := g.chats[id]
+	if cs == nil {
+		return "", errors.New("chat session is nil")
+	}
+	var err error
+	resp, err := cs.SendMessage(ctx, genai.Text(text))
+	if err != nil {
+		var blockedErr *genai.BlockedError
+		if errors.As(err, &blockedErr) {
+			if blockedErr != nil && blockedErr.PromptFeedback != nil {
+				reason := blockedErr.PromptFeedback.BlockReason
+				log.Println("다음의 문제가 발생하여 응답이 중단되었습니다.: ", reason)
+				return "", blockedErr
+			}
+			if blockedErr != nil && blockedErr.Candidate != nil {
+				reason := blockedErr.Candidate.FinishReason
+				log.Println("다음의 문제가 발생하여 응답이 중단되었습니다.: ", reason)
+				return "", blockedErr
+			}
+			return "", blockedErr
+		}
+		return "", err
+	}
+	response := formatResponse(resp)
+	return response, nil
+}
+
+func formatResponse(resp *genai.GenerateContentResponse) string {
+	var formattedContent strings.Builder
+	if resp != nil && resp.Candidates != nil {
+		for _, cand := range resp.Candidates {
+			if cand.Content != nil {
+				for _, part := range cand.Content.Parts {
+					formattedContent.WriteString(fmt.Sprintf("%v", part))
+				}
+			}
+		}
+	}
+
+	return formattedContent.String()
 }
