@@ -13,6 +13,7 @@ import (
 	"os"
 	"path/filepath"
 	pb "pc-book/pb/proto"
+	"pc-book/repository"
 	"pc-book/sample"
 	"testing"
 )
@@ -22,8 +23,8 @@ func TestClientUploadImage(t *testing.T) {
 
 	testImageFolder := "../tmp"
 
-	laptopStore := NewInMemoryLaptopStore()
-	imageStore := NewDiskImageStore(testImageFolder)
+	laptopStore := repository.NewInMemoryLaptopStore()
+	imageStore := repository.NewDiskImageStore(testImageFolder)
 
 	laptop := sample.NewLaptop()
 	err := laptopStore.Save(laptop)
@@ -92,7 +93,7 @@ func TestClientUploadImage(t *testing.T) {
 func TestClientCreateLaptop(t *testing.T) {
 	t.Parallel()
 
-	laptopServer, serverAddress := startTestLaptopServer(t, NewInMemoryLaptopStore(), nil, nil)
+	laptopServer, serverAddress := startTestLaptopServer(t, repository.NewInMemoryLaptopStore(), nil, nil)
 	laptopClient, conn := newTestLaptopClient(t, serverAddress)
 	defer conn.Close()
 
@@ -134,7 +135,7 @@ func TestClientSearchLaptop(t *testing.T) {
 		MinRam:      &pb.Memory{Value: 8, Unit: pb.Memory_GIGABYTE},
 	}
 
-	store := NewInMemoryLaptopStore()
+	store := repository.NewInMemoryLaptopStore()
 	expectedIDs := make(map[string]bool)
 
 	for i := 0; i < 6; i++ {
@@ -174,8 +175,8 @@ func TestClientSearchLaptop(t *testing.T) {
 	require.Equal(t, len(expectedIDs), found)
 }
 
-func startTestLaptopServer(t *testing.T, store *InMemoryLaptopStore,
-	imageStore ImageStore, ratingStore RatingStore) (*LaptopServer, string) {
+func startTestLaptopServer(t *testing.T, store *repository.InMemoryLaptopStore,
+	imageStore repository.ImageStore, ratingStore repository.RatingStore) (*LaptopServer, string) {
 	laptopServer := NewLaptopServer(store, imageStore, ratingStore)
 
 	grpcServer := grpc.NewServer()

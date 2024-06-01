@@ -6,6 +6,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	pb "pc-book/pb/proto"
+	"pc-book/repository"
 	"pc-book/sample"
 	"reflect"
 	"testing"
@@ -21,32 +22,32 @@ func TestServerCreateLaptop(t *testing.T) {
 	laptopInvalidID.Id = "invalid-uuid"
 
 	laptopDuplicateID := sample.NewLaptop()
-	storeDuplicateID := NewInMemoryLaptopStore()
+	storeDuplicateID := repository.NewInMemoryLaptopStore()
 	err := storeDuplicateID.Save(laptopDuplicateID)
 	require.Nil(t, err)
 
 	testCases := []struct {
 		name   string
 		laptop *pb.Laptop
-		store  LaptopStore
+		store  repository.LaptopStore
 		code   codes.Code
 	}{
 		{
 			name:   "success_with_id",
 			laptop: sample.NewLaptop(),
-			store:  NewInMemoryLaptopStore(),
+			store:  repository.NewInMemoryLaptopStore(),
 			code:   codes.OK,
 		},
 		{
 			name:   "success_no_id",
 			laptop: laptopNoID,
-			store:  NewInMemoryLaptopStore(),
+			store:  repository.NewInMemoryLaptopStore(),
 			code:   codes.OK,
 		},
 		{
 			name:   "failure_invalid_id",
 			laptop: laptopInvalidID,
-			store:  NewInMemoryLaptopStore(),
+			store:  repository.NewInMemoryLaptopStore(),
 			code:   codes.InvalidArgument,
 		},
 		{
@@ -90,8 +91,8 @@ func TestServerCreateLaptop(t *testing.T) {
 func TestLaptopServer_CreateLaptop(t *testing.T) {
 	type fields struct {
 		LaptopServiceServer pb.LaptopServiceServer
-		laptopStore         LaptopStore
-		imageStore          ImageStore
+		laptopStore         repository.LaptopStore
+		imageStore          repository.ImageStore
 	}
 	type args struct {
 		ctx context.Context
@@ -126,8 +127,8 @@ func TestLaptopServer_CreateLaptop(t *testing.T) {
 func TestLaptopServer_SearchLaptop(t *testing.T) {
 	type fields struct {
 		LaptopServiceServer pb.LaptopServiceServer
-		laptopStore         LaptopStore
-		imageStore          ImageStore
+		laptopStore         repository.LaptopStore
+		imageStore          repository.ImageStore
 	}
 	type args struct {
 		req    *pb.SearchLaptopRequest
@@ -156,8 +157,8 @@ func TestLaptopServer_SearchLaptop(t *testing.T) {
 func TestLaptopServer_checkContextError(t *testing.T) {
 	type fields struct {
 		LaptopServiceServer pb.LaptopServiceServer
-		laptopStore         LaptopStore
-		imageStore          ImageStore
+		laptopStore         repository.LaptopStore
+		imageStore          repository.ImageStore
 	}
 	type args struct {
 		ctx context.Context
@@ -184,8 +185,8 @@ func TestLaptopServer_checkContextError(t *testing.T) {
 
 func TestNewLaptopServer(t *testing.T) {
 	type args struct {
-		laptopStore LaptopStore
-		imageStore  ImageStore
+		laptopStore repository.LaptopStore
+		imageStore  repository.ImageStore
 	}
 	var tests []struct {
 		name string

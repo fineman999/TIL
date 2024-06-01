@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	pb "pc-book/pb/proto"
+	"pc-book/repository"
 	"pc-book/sample"
 	"testing"
 )
@@ -16,8 +17,8 @@ func TestClientRateLaptop(t *testing.T) {
 
 	testImageFolder := "../tmp"
 
-	laptopStore := NewInMemoryLaptopStore()
-	ratingStore := NewInMemoryRatingStore()
+	laptopStore := repository.NewInMemoryLaptopStore()
+	ratingStore := repository.NewInMemoryRatingStore()
 
 	laptop := sample.NewLaptop()
 	err := laptopStore.Save(laptop)

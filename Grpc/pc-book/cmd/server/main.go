@@ -7,9 +7,44 @@ import (
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
+	"pc-book/domain"
+	"pc-book/interceptor"
 	pb "pc-book/pb/proto"
+	"pc-book/repository"
 	"pc-book/service"
+	"pc-book/util"
+	"time"
 )
+
+const (
+	secretKey     = "secret"
+	tokenDuration = 15 * time.Minute
+)
+
+func seedUsers(userStore repository.UserStore) error {
+	err := createUser(userStore, "admin", "admin", "admin")
+	if err != nil {
+		log.Fatalf("cannot create user: %v", err)
+		return err
+	}
+	return createUser(userStore, "user1", "user1", "user")
+}
+func createUser(userStore repository.UserStore, username, password, role string) error {
+	user, err := domain.NewUser(username, password, role)
+	if err != nil {
+		return err
+	}
+	return userStore.Save(user)
+}
+
+func accessibleRoles() map[string][]string {
+	const laptopServicePath = "/LaptopService/"
+	return map[string][]string{
+		laptopServicePath + "CreateLaptop": {"admin"},
+		laptopServicePath + "UploadImage":  {"admin"},
+		laptopServicePath + "RateLaptop":   {"user", "admin"},
+	}
+}
 
 func main() {
 	// "port"라는 이름의 명령줄 인자를 정의합니다. 기본값은 8080이며, 설명은 "server port"입니다.
@@ -18,11 +53,25 @@ func main() {
 	flag.Parse()
 	log.Printf("Server started on port %d", *port)
 
-	laptopStore := service.NewInMemoryLaptopStore()
-	imageStore := service.NewDiskImageStore("img")
-	ratingStore := service.NewInMemoryRatingStore()
+	laptopStore := repository.NewInMemoryLaptopStore()
+	imageStore := repository.NewDiskImageStore("img")
+	ratingStore := repository.NewInMemoryRatingStore()
+	userStore := repository.NewInMemoryUserStore()
+	err2 := seedUsers(userStore)
+	if err2 != nil {
+		log.Fatalf("cannot seed users: %v", err2)
+		return
+	}
+	jwtManager := util.NewJWTManager(secretKey, tokenDuration)
+
+	authServer := service.NewAuthServer(userStore, jwtManager)
 	laptopServer := service.NewLaptopServer(laptopStore, imageStore, ratingStore)
-	grpcServer := grpc.NewServer()
+	authInterceptor := interceptor.NewAuthInterceptor(jwtManager, accessibleRoles())
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(authInterceptor.Unary()),
+		grpc.StreamInterceptor(authInterceptor.Stream()),
+	)
+	pb.RegisterAuthServiceServer(grpcServer, authServer)
 	pb.RegisterLaptopServiceServer(grpcServer, laptopServer)
 	/**
 	서버에서 제공하는 RPC 메서드와,

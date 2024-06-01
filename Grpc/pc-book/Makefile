@@ -8,3 +8,6 @@ client:
 	go run cmd/client/main.go -address 0.0.0.0:8081
 test:
 	go test -cover -race ./...
+
+# 실제 파일이 아니라는 것을 make에게 알려주는 역할
+.PHONY: gen clean server client test

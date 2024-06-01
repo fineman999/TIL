@@ -10,18 +10,19 @@ import (
 	"io"
 	"log"
 	pb "pc-book/pb/proto"
+	"pc-book/repository"
 )
 
 const maxImageSize = 1 << 30 // 1 GB
 
 type LaptopServer struct {
 	pb.LaptopServiceServer // LaptopServiceServer 인터페이스를 임베딩
-	laptopStore            LaptopStore
-	imageStore             ImageStore
-	ratingStore            RatingStore
+	laptopStore            repository.LaptopStore
+	imageStore             repository.ImageStore
+	ratingStore            repository.RatingStore
 }
 
-func NewLaptopServer(laptopStore LaptopStore, imageStore ImageStore, ratingStore RatingStore) *LaptopServer {
+func NewLaptopServer(laptopStore repository.LaptopStore, imageStore repository.ImageStore, ratingStore repository.RatingStore) *LaptopServer {
 	return &LaptopServer{laptopStore: laptopStore, imageStore: imageStore, ratingStore: ratingStore}
 }
 
@@ -205,7 +206,7 @@ func (server *LaptopServer) CreateLaptop(ctx context.Context, req *pb.CreateLapt
 	err := server.laptopStore.Save(laptop)
 	if err != nil {
 		code := codes.Internal
-		if errors.Is(err, ErrAlreadyExists) {
+		if errors.Is(err, repository.ErrAlreadyExists) {
 			code = codes.AlreadyExists
 		}
 		return nil, status.Errorf(code, "Cannot save laptop to the store: %v", err)
