@@ -61,7 +61,7 @@ func TestServerCreateLaptop(t *testing.T) {
 		tc := testCases[i]
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			server := NewLaptopServer(tc.store, nil)
+			server := NewLaptopServer(tc.store, nil, nil)
 			req := &pb.CreateLaptopRequest{
 				Laptop: tc.laptop,
 			}
@@ -194,7 +194,7 @@ func TestNewLaptopServer(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewLaptopServer(tt.args.laptopStore, tt.args.imageStore); !reflect.DeepEqual(got, tt.want) {
+			if got := NewLaptopServer(tt.args.laptopStore, tt.args.imageStore, nil); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewLaptopServer() = %v, want %v", got, tt.want)
 			}
 		})
