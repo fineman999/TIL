@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
 	pb "pc-book/pb/proto"
@@ -23,6 +24,12 @@ func main() {
 	laptopServer := service.NewLaptopServer(laptopStore, imageStore, ratingStore)
 	grpcServer := grpc.NewServer()
 	pb.RegisterLaptopServiceServer(grpcServer, laptopServer)
+	/**
+	서버에서 제공하는 RPC 메서드와,
+	메시지의 정보를 동적으로 조회가능하게 해주며,
+	이를 통해서 클라이언트가 서버에서 제공하는 메서드와 정보를 몰라도 탐색하고 검색할 수 있게 해줍니다.
+	*/
+	reflection.Register(grpcServer)
 
 	address := fmt.Sprintf("0.0.0.0:%d", *port)
 	listener, err := net.Listen("tcp", address)

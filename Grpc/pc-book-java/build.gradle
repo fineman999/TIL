@@ -14,6 +14,7 @@ dependencies {
     runtimeOnly 'io.grpc:grpc-netty-shaded:1.64.0'
     implementation 'io.grpc:grpc-protobuf:1.64.0'
     implementation 'io.grpc:grpc-stub:1.64.0'
+    implementation 'io.grpc:grpc-services:1.64.0'
     compileOnly 'org.apache.tomcat:annotations-api:6.0.53' // necessary for Java 9+
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'

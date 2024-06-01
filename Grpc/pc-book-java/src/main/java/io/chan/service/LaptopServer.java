@@ -6,6 +6,7 @@ import io.chan.service.clientstreaming.DiskImageStore;
 import io.chan.service.clientstreaming.ImageStore;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.protobuf.services.ProtoReflectionService;
 
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -25,6 +26,7 @@ public class LaptopServer {
         this.port = port;
         this.server = ServerBuilder.forPort(port)
             .addService(new LaptopService(store, imageStore, ratingStore))
+                .addService(ProtoReflectionService.newInstance())
             .build();
     }
 
