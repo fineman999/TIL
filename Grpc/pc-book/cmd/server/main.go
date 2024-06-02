@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"flag"
 	"fmt"
 	"google.golang.org/grpc"
@@ -9,6 +10,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
+	"os"
 	"pc-book/domain"
 	"pc-book/interceptor"
 	pb "pc-book/pb/proto"
@@ -19,6 +21,16 @@ import (
 )
 
 func loadTLSCredentials() (credentials.TransportCredentials, error) {
+	// Load certificate of the CA who signed client's certificate
+	pemClientCA, err := os.ReadFile("cert/ca-cert.pem")
+	if err != nil {
+		return nil, err
+	}
+
+	certPool := x509.NewCertPool()
+	if !certPool.AppendCertsFromPEM(pemClientCA) {
+		return nil, err
+	}
 	// Load server's certificate and private key
 	serverCert, err := tls.LoadX509KeyPair("cert/server-cert.pem", "cert/server-key.pem")
 	if err != nil {
@@ -28,7 +40,9 @@ func loadTLSCredentials() (credentials.TransportCredentials, error) {
 	// Create credentials
 	config := &tls.Config{
 		Certificates: []tls.Certificate{serverCert},
-		ClientAuth:   tls.NoClientCert, // 클라이언트 인증을 요구하지 않음(서버 사이드 TLS)
+		//ClientAuth:   tls.NoClientCert, // 클라이언트 인증을 요구하지 않음(서버 사이드 TLS)
+		ClientAuth: tls.RequireAndVerifyClientCert, // 클라이언트 인증을 요구하고 검증함(Mutual TLS)
+		ClientCAs:  certPool,                       // 클라이언트 인증서를 검증하기 위한 CA 인증서
 	}
 	return credentials.NewTLS(config), nil
 }

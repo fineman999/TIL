@@ -38,8 +38,15 @@ func loadTLSCredentials() (credentials.TransportCredentials, error) {
 		return nil, err
 	}
 
+	// Load client's certificate and private key
+	clientCert, err := tls.LoadX509KeyPair("cert/client-cert.pem", "cert/client-key.pem")
+	if err != nil {
+		return nil, err
+	}
+
 	config := &tls.Config{
-		RootCAs: certPool,
+		Certificates: []tls.Certificate{clientCert},
+		RootCAs:      certPool,
 	}
 
 	return credentials.NewTLS(config), nil
@@ -62,7 +69,6 @@ func main() {
 		return
 	}
 	defer conn.Close()
-
 	authClient := client.NewAuthClient(conn, username, password)
 	interceptor, err := client.NewAuthInterceptor(authClient, accessibleRoles(), refreshDuration)
 	if err != nil {
