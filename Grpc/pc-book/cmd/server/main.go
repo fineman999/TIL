@@ -1,9 +1,11 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"fmt"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
@@ -15,6 +17,21 @@ import (
 	"pc-book/util"
 	"time"
 )
+
+func loadTLSCredentials() (credentials.TransportCredentials, error) {
+	// Load server's certificate and private key
+	serverCert, err := tls.LoadX509KeyPair("cert/server-cert.pem", "cert/server-key.pem")
+	if err != nil {
+		return nil, err
+	}
+
+	// Create credentials
+	config := &tls.Config{
+		Certificates: []tls.Certificate{serverCert},
+		ClientAuth:   tls.NoClientCert, // 클라이언트 인증을 요구하지 않음(서버 사이드 TLS)
+	}
+	return credentials.NewTLS(config), nil
+}
 
 const (
 	secretKey     = "secret"
@@ -64,10 +81,16 @@ func main() {
 	}
 	jwtManager := util.NewJWTManager(secretKey, tokenDuration)
 
+	tlsCredentials, err := loadTLSCredentials()
+	if err != nil {
+		log.Fatalf("cannot load TLS credentials: %v", err)
+	}
+
 	authServer := service.NewAuthServer(userStore, jwtManager)
 	laptopServer := service.NewLaptopServer(laptopStore, imageStore, ratingStore)
 	authInterceptor := interceptor.NewAuthInterceptor(jwtManager, accessibleRoles())
 	grpcServer := grpc.NewServer(
+		grpc.Creds(tlsCredentials), // TLS 인증서를 사용하여 서버를 시작합니다.
 		grpc.UnaryInterceptor(authInterceptor.Unary()),
 		grpc.StreamInterceptor(authInterceptor.Stream()),
 	)

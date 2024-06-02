@@ -9,5 +9,8 @@ client:
 test:
 	go test -cover -race ./...
 
+cert:
+	cd cert && sudo sh ./gen.sh && cd ..
+
 # 실제 파일이 아니라는 것을 make에게 알려주는 역할
-.PHONY: gen clean server client test
+.PHONY: gen clean server client test cert
