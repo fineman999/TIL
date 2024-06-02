@@ -81,8 +81,9 @@ func main() {
 	// "port"라는 이름의 명령줄 인자를 정의합니다. 기본값은 8080이며, 설명은 "server port"입니다.
 	// go run main.go -port=8081
 	port := flag.Int("port", 8080, "server port")
+	enableTLS := flag.Bool("tls", false, "enable SSL/TLS")
 	flag.Parse()
-	log.Printf("Server started on port %d", *port)
+	log.Printf("Server started on port %d, TLS: %t", *port, *enableTLS)
 
 	laptopStore := repository.NewInMemoryLaptopStore()
 	imageStore := repository.NewDiskImageStore("img")
@@ -95,18 +96,22 @@ func main() {
 	}
 	jwtManager := util.NewJWTManager(secretKey, tokenDuration)
 
-	tlsCredentials, err := loadTLSCredentials()
-	if err != nil {
-		log.Fatalf("cannot load TLS credentials: %v", err)
-	}
-
 	authServer := service.NewAuthServer(userStore, jwtManager)
 	laptopServer := service.NewLaptopServer(laptopStore, imageStore, ratingStore)
 	authInterceptor := interceptor.NewAuthInterceptor(jwtManager, accessibleRoles())
-	grpcServer := grpc.NewServer(
-		grpc.Creds(tlsCredentials), // TLS 인증서를 사용하여 서버를 시작합니다.
+	serverOptions := []grpc.ServerOption{
 		grpc.UnaryInterceptor(authInterceptor.Unary()),
 		grpc.StreamInterceptor(authInterceptor.Stream()),
+	}
+	if *enableTLS {
+		tlsCredentials, err := loadTLSCredentials()
+		if err != nil {
+			log.Fatalf("cannot load TLS credentials: %v", err)
+		}
+		serverOptions = append(serverOptions, grpc.Creds(tlsCredentials))
+	}
+	grpcServer := grpc.NewServer(
+		serverOptions...,
 	)
 	pb.RegisterAuthServiceServer(grpcServer, authServer)
 	pb.RegisterLaptopServiceServer(grpcServer, laptopServer)

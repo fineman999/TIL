@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  server1:
+    build:
+      context: .
+      dockerfile: grpc.Dockerfile
+    command: go run cmd/server/main.go -port 50051
+    volumes:
+      - .:/app
+    expose:
+      - "50051"
+  server2:
+    build:
+      context: .
+      dockerfile: grpc.Dockerfile
+    command: go run cmd/server/main.go -port 50052
+    volumes:
+      - .:/app
+    expose:
+      - "50052"
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - server1
+      - server2

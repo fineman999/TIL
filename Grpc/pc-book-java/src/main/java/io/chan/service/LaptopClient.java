@@ -6,12 +6,11 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.ByteString;
 import io.chan.*;
 import io.chan.service.bidirectional.RateLaptopResponseStreamObserver;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
+import io.grpc.*;
 import io.grpc.Status.Code;
-import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,8 +26,10 @@ public class LaptopClient {
   private final LaptopServiceGrpc.LaptopServiceFutureStub futureStub;
   private final LaptopServiceGrpc.LaptopServiceStub asyncStub;
 
-  public LaptopClient(final String host, final int port) {
-    channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
+  public LaptopClient(
+      final String host, final int port, final ChannelCredentials channelCredentials) {
+    channel =
+        Grpc.newChannelBuilderForAddress(host, port, channelCredentials).build();
 
     blockingStub = LaptopServiceGrpc.newBlockingStub(channel);
     futureStub = LaptopServiceGrpc.newFutureStub(channel);
@@ -175,8 +176,20 @@ public class LaptopClient {
     }
   }
 
-  public static void main(String[] args) throws InterruptedException {
-    LaptopClient client = new LaptopClient("localhost", 8081);
+  public static ChannelCredentials loadTLSCredentials() throws IOException {
+    final File serverCACertFile = new File("cert/ca-cert.pem");
+    final File clientCertFile = new File("cert/client-cert.pem");
+    final File clientKeyFile = new File("cert/client-key.pem");
+
+    return TlsChannelCredentials.newBuilder()
+            .trustManager(serverCACertFile)
+            .keyManager(clientCertFile, clientKeyFile)
+            .build();
+  }
+
+  public static void main(String[] args) throws InterruptedException, IOException {
+    // localhost로 하면 tls 연결이 안됨
+    LaptopClient client = new LaptopClient("0.0.0.0", 8081, loadTLSCredentials());
     final ExecutorService executor = client.newExecutor();
 
     Generator generator = new Generator();

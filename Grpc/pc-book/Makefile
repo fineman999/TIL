@@ -2,6 +2,10 @@ gen:
 	protoc --go_out=./pb --go_opt=paths=source_relative --go-grpc_out=./pb --go-grpc_opt=paths=source_relative proto/*.proto
 clean:
 	rm -rf pb/*
+server1:
+	go run cmd/server/main.go -port 50051
+server2:
+	go run cmd/server/main.go -port 50052
 server:
 	go run cmd/server/main.go -port 8081
 client:

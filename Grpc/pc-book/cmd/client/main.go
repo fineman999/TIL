@@ -6,6 +6,7 @@ import (
 	"flag"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 	"log"
 	"os"
 	client "pc-book/client"
@@ -54,16 +55,21 @@ func loadTLSCredentials() (credentials.TransportCredentials, error) {
 
 func main() {
 	serverAddress := flag.String("address", "0.0.0.0:8080", "server address")
+	enableTLS := flag.Bool("tls", false, "enable SSL/TLS")
 	flag.Parse()
-	log.Printf("server address: %s", *serverAddress)
+	log.Printf("server address: %s, enable TLS: %t", *serverAddress, *enableTLS)
 
-	creds, err := loadTLSCredentials()
-	if err != nil {
-		log.Fatalf("cannot load TLS credentials: %v", err)
-		return
+	transportOptions := grpc.WithTransportCredentials(insecure.NewCredentials())
+	if *enableTLS {
+		tlsCredentials, err := loadTLSCredentials()
+		if err != nil {
+			log.Fatalf("cannot load TLS credentials: %v", err)
+			return
+		}
+		transportOptions = grpc.WithTransportCredentials(tlsCredentials)
 	}
 
-	conn, err := grpc.NewClient(*serverAddress, grpc.WithTransportCredentials(creds))
+	conn, err := grpc.NewClient(*serverAddress, transportOptions)
 	if err != nil {
 		log.Fatalf("cannot dial server: %v", err)
 		return
@@ -78,11 +84,12 @@ func main() {
 
 	conn2, err := grpc.NewClient(
 		*serverAddress,
-		grpc.WithTransportCredentials(creds),
+		transportOptions,
 		grpc.WithUnaryInterceptor(interceptor.Unary()),
 		grpc.WithStreamInterceptor(interceptor.Stream()),
 	)
 
+	log.Printf("test rate laptop")
 	laptopClient := client.NewLaptopClient(conn2)
 	laptopClient.TestRateLaptop()
 }
