@@ -10,6 +10,8 @@ server:
 	go run cmd/server/main.go -port 8081
 client:
 	go run cmd/client/main.go -address 0.0.0.0:8081
+client-tls:
+	go run cmd/client/main.go -address 0.0.0.0:8081 -tls
 test:
 	go test -cover -race ./...
 
