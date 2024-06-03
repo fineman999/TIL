@@ -24,13 +24,21 @@ type Network struct {
 
 func NewNetwork(cfg *config.Config, service *service.Service) (*Network, error) {
 	r := &Network{cfg: cfg, service: service, router: gin.Default()}
+	slackGroup := r.router.Group("/slack")
 
-	r.router.POST("/test", r.test)
-	r.router.POST("/chat/rooms/:id", r.createChatRoom)
-	r.router.POST("/chat/rooms/:id/text", r.sendChatText)
-	r.router.POST("/image", r.imageTest)
-	r.router.POST("/slack", r.slackTest)
-	r.router.POST("/slack/command", r.chatSlackWithAI)
+	slackGroup.POST("", r.slackTest)
+	slackGroup.POST("/command", r.chatSlackWithAI)
+
+	geminiGroup := r.router.Group("/api/gemini")
+
+	geminiGroup.POST("/test", r.test)
+	geminiGroup.POST("/chat/rooms/:id", r.createChatRoom)
+	geminiGroup.POST("/chat/rooms/:id/text", r.sendChatText)
+	geminiGroup.POST("/image", r.imageTest)
+
+	vertexGroup := r.router.Group("/api/vertex")
+	vertexGroup.POST("/generate", r.generateTextWithVertex)
+
 	return r, nil
 }
 

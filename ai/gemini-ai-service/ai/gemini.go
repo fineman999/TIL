@@ -263,7 +263,7 @@ func (g *Gemini) GenerateText(ctx context.Context, text string, command slack2.S
 			log.Println(sprintf)
 			return sprintf, err
 		}
-		response := formatResponse(resp)
+		response := g.formatResponse(resp)
 
 		go func() {
 			err := g.slack.SendMessageAsync(response, command)
@@ -275,7 +275,7 @@ func (g *Gemini) GenerateText(ctx context.Context, text string, command slack2.S
 	return "success", nil
 }
 
-func formatResponse(resp *genai.GenerateContentResponse) string {
+func (g *Gemini) formatResponse(resp *genai.GenerateContentResponse) string {
 	var formattedContent strings.Builder
 	if resp != nil && resp.Candidates != nil {
 		for _, cand := range resp.Candidates {

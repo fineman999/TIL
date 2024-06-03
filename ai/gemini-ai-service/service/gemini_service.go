@@ -2,10 +2,7 @@ package service
 
 import (
 	"context"
-	"gemini-ai-service/ai"
-	"gemini-ai-service/config"
 	"gemini-ai-service/infrastructure"
-	"gemini-ai-service/slack"
 	"gemini-ai-service/types"
 	"github.com/google/generative-ai-go/genai"
 	slack2 "github.com/slack-go/slack"
@@ -14,18 +11,6 @@ import (
 	"path/filepath"
 	"strings"
 )
-
-type Service struct {
-	cfg        *config.Config
-	gemini     *ai.Gemini
-	repository *infrastructure.Repository
-	slack      *slack.Slack
-}
-
-func NewService(cfg *config.Config, gemini *ai.Gemini, repository *infrastructure.Repository, slack *slack.Slack) (*Service, error) {
-	s := &Service{cfg: cfg, gemini: gemini, repository: repository, slack: slack}
-	return s, nil
-}
 
 func (s *Service) TestGemini(ctx context.Context, prompt string) (*types.TestGeminiResponse, error) {
 	text, err := s.gemini.GenerateResponse(ctx, prompt)
