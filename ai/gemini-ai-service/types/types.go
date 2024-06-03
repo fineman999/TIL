@@ -33,3 +33,7 @@ type VideoUrlRequest struct {
 	Text     string `json:"text" binding:"required"`
 	MIMEType string `json:"mimeType" binding:"required"`
 }
+
+type UploadFileRes struct {
+	Url string `json:"url"`
+}

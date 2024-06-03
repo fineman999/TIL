@@ -3,6 +3,7 @@ package cmd
 import (
 	"gemini-ai-service/ai"
 	"gemini-ai-service/config"
+	"gemini-ai-service/gcs"
 	"gemini-ai-service/infrastructure"
 	"gemini-ai-service/network"
 	"gemini-ai-service/service"
@@ -17,6 +18,7 @@ type App struct {
 	slack      *slack.Slack
 	repository *infrastructure.Repository
 	vertex     *ai.Vertex
+	storage    *gcs.Storage
 }
 
 func NewApp(cfg *config.Config) {
@@ -24,6 +26,8 @@ func NewApp(cfg *config.Config) {
 
 	var err error
 	if a.repository, err = infrastructure.NewRepository(cfg); err != nil {
+		panic(err)
+	} else if a.storage, err = gcs.NewStorage(cfg); err != nil {
 		panic(err)
 	} else if a.slack, err = slack.NewSlack(cfg); err != nil {
 		panic(err)
@@ -35,13 +39,12 @@ func NewApp(cfg *config.Config) {
 		a.gemini,
 		a.repository,
 		a.slack,
-		a.vertex); err != nil {
+		a.vertex,
+		a.storage); err != nil {
 		panic(err)
 	} else if a.network, err = network.NewNetwork(cfg, a.service); err != nil {
 		panic(err)
 	} else {
-		a.network.StartServer(a.gemini)
-
-		//go a.network.endServer()
+		a.network.StartServer(a.gemini, a.vertex, a.storage)
 	}
 }

@@ -17,6 +17,11 @@ type Config struct {
 		Location string
 		Project  string
 	}
+	GCS struct {
+		ProjectID  string
+		Bucket     string
+		UploadPath string
+	}
 }
 
 func NewConfig(path string) *Config {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"gemini-ai-service/ai"
 	"gemini-ai-service/config"
+	"gemini-ai-service/gcs"
 	"gemini-ai-service/service"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -19,7 +20,9 @@ type Network struct {
 	service *service.Service
 	router  *gin.Engine
 	srv     *http.Server
-	ai      *ai.Gemini
+	gemini  *ai.Gemini
+	vertex  *ai.Vertex
+	storage *gcs.Storage
 }
 
 func NewNetwork(cfg *config.Config, service *service.Service) (*Network, error) {
@@ -40,11 +43,16 @@ func NewNetwork(cfg *config.Config, service *service.Service) (*Network, error) 
 	vertexGroup.POST("/generate", r.generateTextWithVertex)
 	vertexGroup.POST("/video", r.generateVideoUrl)
 
+	storageGroup := r.router.Group("/api/storage")
+	storageGroup.POST("/upload", r.testUploadFile)
+
 	return r, nil
 }
 
-func (n *Network) StartServer(ai *ai.Gemini) {
-	n.ai = ai
+func (n *Network) StartServer(gemini *ai.Gemini, vertex *ai.Vertex, storage *gcs.Storage) {
+	n.gemini = gemini
+	n.vertex = vertex
+	n.storage = storage
 	//n.router.Run(":8080")
 	srv := &http.Server{
 		Addr:    ":8080",
@@ -72,7 +80,9 @@ func (n *Network) endServer() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	log.Println("Shutdown Server ...")
-	n.ai.Close()
+	n.gemini.Close()
+	n.vertex.Close()
+	n.storage.Close()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

@@ -103,3 +103,8 @@ func (v *Vertex) formatResponse(resp *genai.GenerateContentResponse) string {
 
 	return formattedContent.String()
 }
+
+func (v *Vertex) Close() {
+	log.Println("Closing Vertex AI client")
+	v.client.Close()
+}
