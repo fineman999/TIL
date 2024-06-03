@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: grpc.Dockerfile
-    command: go run cmd/server/main.go -port 50051
+    command: go run cmd/server/main.go -port 50051 -tls
     volumes:
       - .:/app
     expose:
@@ -14,7 +14,7 @@ services:
     build:
       context: .
       dockerfile: grpc.Dockerfile
-    command: go run cmd/server/main.go -port 50052
+    command: go run cmd/server/main.go -port 50052 -tls
     volumes:
       - .:/app
     expose:
