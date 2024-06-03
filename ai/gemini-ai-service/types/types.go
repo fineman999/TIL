@@ -27,3 +27,9 @@ type ImageTestGeminiDto struct {
 	Text   string      `json:"text" binding:"required"`
 	Ext    string      `json:"ext" binding:"required"`
 }
+
+type VideoUrlRequest struct {
+	Url      string `json:"url" binding:"required"`
+	Text     string `json:"text" binding:"required"`
+	MIMEType string `json:"mimeType" binding:"required"`
+}

@@ -38,6 +38,7 @@ func NewNetwork(cfg *config.Config, service *service.Service) (*Network, error) 
 
 	vertexGroup := r.router.Group("/api/vertex")
 	vertexGroup.POST("/generate", r.generateTextWithVertex)
+	vertexGroup.POST("/video", r.generateVideoUrl)
 
 	return r, nil
 }
