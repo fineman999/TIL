@@ -16,6 +16,7 @@ type App struct {
 	gemini     *ai.Gemini
 	slack      *slack.Slack
 	repository *infrastructure.Repository
+	vertex     *ai.Vertex
 }
 
 func NewApp(cfg *config.Config) {
@@ -27,6 +28,8 @@ func NewApp(cfg *config.Config) {
 	} else if a.slack, err = slack.NewSlack(cfg); err != nil {
 		panic(err)
 	} else if a.gemini, err = ai.NewGemini(cfg, a.slack); err != nil {
+		panic(err)
+	} else if a.vertex, err = ai.NewVertex(cfg); err != nil {
 		panic(err)
 	} else if a.service, err = service.NewService(cfg, a.gemini, a.repository, a.slack); err != nil {
 		panic(err)

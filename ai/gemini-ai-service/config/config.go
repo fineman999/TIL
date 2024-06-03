@@ -13,6 +13,10 @@ type Config struct {
 		Token   string
 		Channel string
 	}
+	Vertex struct {
+		Location string
+		Project  string
+	}
 }
 
 func NewConfig(path string) *Config {
@@ -34,4 +38,16 @@ func NewConfig(path string) *Config {
 			return c
 		}
 	}
+}
+
+func (c *Config) SetEnvVarFromJSON() error {
+	_, err := os.Stat("vertex-api-key.json")
+	if err != nil {
+		return err
+	}
+	err = os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "vertex-api-key.json")
+	if err != nil {
+		return err
+	}
+	return nil
 }

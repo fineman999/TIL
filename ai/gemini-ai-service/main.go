@@ -15,6 +15,11 @@ func main() {
 	log.Println("config path: ", *configFlag)
 	cfg := config.NewConfig(*configFlag)
 
+	err := cfg.SetEnvVarFromJSON()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 	cmd.NewApp(cfg)
 
 }
