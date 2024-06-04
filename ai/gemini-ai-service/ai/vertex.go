@@ -8,6 +8,7 @@ import (
 	"gemini-ai-service/config"
 	"gemini-ai-service/types"
 	"log"
+	"path/filepath"
 	"strings"
 )
 
@@ -15,6 +16,11 @@ type Vertex struct {
 	model  *genai.GenerativeModel
 	client *genai.Client
 }
+
+const (
+	VIDEO_MIME_TYPE = "video/mp4"
+	Image_MIME_TYPE = "image/jpeg"
+)
 
 /*
 gemini-1.5-pro: (미리보기) 멀티모달(텍스트, 이미지, 오디오, PDF, 코드, 동영상)로 생성되며, 최대 100만 개 입력 토큰까지 다양한 태스크 범위로 확장됩니다.
@@ -62,7 +68,7 @@ func (v *Vertex) GenerateResponse(ctx context.Context, prompt string) (string, e
 	return response, nil
 }
 
-func (v *Vertex) GenerateVideoUrl(ctx context.Context, request types.VideoUrlRequest) (*genai.GenerateContentResponse, error) {
+func (v *Vertex) GenerateVideoUrl(ctx context.Context, request *types.VideoUrlRequest) (*genai.GenerateContentResponse, error) {
 	data := genai.FileData{
 		MIMEType: request.MIMEType,
 		FileURI:  request.Url,
@@ -87,6 +93,21 @@ func (v *Vertex) GenerateVideoUrl(ctx context.Context, request types.VideoUrlReq
 		return nil, err
 	}
 	return resp, nil
+}
+func (v *Vertex) GenerateFile(ctx context.Context, fileToVertexDto *types.FileToVertex) (*genai.GenerateContentResponse, error) {
+	fileName := fileToVertexDto.FileName
+	extension := filepath.Ext(fileName)
+	extEnum := Image_MIME_TYPE
+	if extension == "mp4" {
+		extEnum = VIDEO_MIME_TYPE
+	}
+
+	fileURI := fmt.Sprintf("gs://%s/%s", fileToVertexDto.BucketName, fileToVertexDto.Path)
+	return v.GenerateVideoUrl(ctx, &types.VideoUrlRequest{
+		Url:      fileURI,
+		Text:     fileToVertexDto.Text,
+		MIMEType: extEnum,
+	})
 }
 
 func (v *Vertex) formatResponse(resp *genai.GenerateContentResponse) string {

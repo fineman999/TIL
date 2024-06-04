@@ -10,7 +10,7 @@ import (
 )
 
 func (n *Network) test(g *gin.Context) {
-	var req types.TestGeminiRequest
+	var req types.TextRequest
 
 	if err := g.ShouldBindJSON(&req); err != nil {
 		g.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

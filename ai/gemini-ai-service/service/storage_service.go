@@ -14,6 +14,6 @@ func (s *Service) UploadFile(ctx context.Context, file multipart.File, header *m
 	}
 
 	return &types.UploadFileRes{
-		Url: uploadFileName,
+		Url: uploadFileName.FileName,
 	}, nil
 }

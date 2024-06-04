@@ -5,7 +5,7 @@ import (
 	"mime/multipart"
 )
 
-type TestGeminiRequest struct {
+type TextRequest struct {
 	Text string `json:"text" binding:"required"`
 }
 type TestGeminiResponse struct {
@@ -36,4 +36,11 @@ type VideoUrlRequest struct {
 
 type UploadFileRes struct {
 	Url string `json:"url"`
+}
+
+type FileToVertex struct {
+	BucketName string `json:"bucket_name"`
+	FileName   string `json:"file_name"`
+	Path       string `json:"path"`
+	Text       string `json:"text"`
 }
