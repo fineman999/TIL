@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package computer.v1;
+option go_package= "github.com/fineman999/TIL/GRPC/buf/buf-test/proto/computer/v1;computer";
+message Screen {
+  message Resolution {
+    uint32 width = 1;
+    uint32 height = 2;
+  }
+
+  enum Panel {
+    PANEL_UNSPECIFIED = 0;
+    PANEL_LCD = 1;
+    PANEL_OLED = 2;
+  }
+
+  float size_inch = 1;
+  Resolution resolution = 2;
+  Panel panel = 3;
+  bool multitouch = 4;
+}

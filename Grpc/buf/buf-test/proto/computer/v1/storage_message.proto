@@ -1,0 +1,15 @@
+syntax = "proto3";
+package computer.v1;
+import "computer/v1/memory_message.proto";
+option go_package= "github.com/fineman999/TIL/GRPC/buf/buf-test/proto/computer/v1;computer";
+message Storage {
+  enum Driver {
+    DRIVER_UNSPECIFIED = 0;
+    DRIVER_LOCAL = 1;
+    DRIVER_S3 = 2;
+    DRIVER_SSD = 3;
+    DRIVER_HDD = 4;
+  }
+  Driver driver = 1;
+  Memory memory = 2;
+}

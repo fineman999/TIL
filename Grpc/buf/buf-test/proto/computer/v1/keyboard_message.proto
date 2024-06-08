@@ -1,0 +1,14 @@
+syntax = "proto3";
+package computer.v1;
+option go_package= "github.com/fineman999/TIL/GRPC/buf/buf-test/proto/computer/v1;computer";
+message Keyboard {
+  enum Layout {
+    LAYOUT_UNSPECIFIED = 0;
+    LAYOUT_QWERTY = 1;
+    LAYOUT_QWERTZ = 2;
+    LAYOUT_AZERTY = 3;
+  }
+
+  Layout layout = 1;
+  bool backlit = 2;
+}
