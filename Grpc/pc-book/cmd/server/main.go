@@ -1,15 +1,19 @@
 package main
 
 import (
+	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"flag"
 	"fmt"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
+	"net/http"
 	"os"
 	"pc-book/domain"
 	"pc-book/interceptor"
@@ -20,9 +24,15 @@ import (
 	"time"
 )
 
+const (
+	clientCACertFile = "cert/ca-cert.pem"
+	serverCertFile   = "cert/server-cert.pem"
+	serverKeyFile    = "cert/server-key.pem"
+)
+
 func loadTLSCredentials() (credentials.TransportCredentials, error) {
 	// Load certificate of the CA who signed client's certificate
-	pemClientCA, err := os.ReadFile("cert/ca-cert.pem")
+	pemClientCA, err := os.ReadFile(clientCACertFile)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +42,7 @@ func loadTLSCredentials() (credentials.TransportCredentials, error) {
 		return nil, err
 	}
 	// Load server's certificate and private key
-	serverCert, err := tls.LoadX509KeyPair("cert/server-cert.pem", "cert/server-key.pem")
+	serverCert, err := tls.LoadX509KeyPair(serverCertFile, serverKeyFile)
 	if err != nil {
 		return nil, err
 	}
@@ -77,36 +87,16 @@ func accessibleRoles() map[string][]string {
 	}
 }
 
-func main() {
-	// "port"라는 이름의 명령줄 인자를 정의합니다. 기본값은 8080이며, 설명은 "server port"입니다.
-	// go run main.go -port=8081
-	port := flag.Int("port", 8080, "server port")
-	enableTLS := flag.Bool("tls", false, "enable SSL/TLS")
-	flag.Parse()
-	log.Printf("Server started on port %d, TLS: %t", *port, *enableTLS)
-
-	laptopStore := repository.NewInMemoryLaptopStore()
-	imageStore := repository.NewDiskImageStore("img")
-	ratingStore := repository.NewInMemoryRatingStore()
-	userStore := repository.NewInMemoryUserStore()
-	err2 := seedUsers(userStore)
-	if err2 != nil {
-		log.Fatalf("cannot seed users: %v", err2)
-		return
-	}
-	jwtManager := util.NewJWTManager(secretKey, tokenDuration)
-
-	authServer := service.NewAuthServer(userStore, jwtManager)
-	laptopServer := service.NewLaptopServer(laptopStore, imageStore, ratingStore)
+func runGRPCServer(authServer pb.AuthServiceServer, laptopServer pb.LaptopServiceServer, jwtManager *util.JWTManager, enableTLS bool, listener net.Listener) error {
 	authInterceptor := interceptor.NewAuthInterceptor(jwtManager, accessibleRoles())
 	serverOptions := []grpc.ServerOption{
 		grpc.UnaryInterceptor(authInterceptor.Unary()),
 		grpc.StreamInterceptor(authInterceptor.Stream()),
 	}
-	if *enableTLS {
+	if enableTLS {
 		tlsCredentials, err := loadTLSCredentials()
 		if err != nil {
-			log.Fatalf("cannot load TLS credentials: %v", err)
+			return fmt.Errorf("cannot load TLS credentials: %v", err)
 		}
 		serverOptions = append(serverOptions, grpc.Creds(tlsCredentials))
 	}
@@ -122,13 +112,79 @@ func main() {
 	*/
 	reflection.Register(grpcServer)
 
+	log.Printf("gRPC server is running on port: %d", listener.Addr().(*net.TCPAddr).Port)
+	log.Printf("Enable TLS: %t", enableTLS)
+	return grpcServer.Serve(listener)
+}
+
+func runRESTServer(
+	authServer pb.AuthServiceServer,
+	laptopServer pb.LaptopServiceServer,
+	jwtManager *util.JWTManager,
+	enableTLS bool,
+	listener net.Listener,
+	grpcEndpoint string,
+) error {
+	mux := runtime.NewServeMux()
+	dialOptions := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// err := pb.RegisterAuthServiceHandlerServer(ctx, mux, authServer)
+	// streaming을 지원하지 않는 REST API를 gRPC로 변환할 때 사용 - Unary로 변환
+	err := pb.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, dialOptions)
+	if err != nil {
+		return err
+	}
+
+	//err = pb.RegisterLaptopServiceHandlerServer(ctx, mux, laptopServer)
+	// streaming을 지원하지 않는 REST API를 gRPC로 변환할 때 사용 - Unary로 변환
+	err = pb.RegisterLaptopServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, dialOptions)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("REST server is running on port: %d", listener.Addr().(*net.TCPAddr).Port)
+	log.Printf("Enable TLS: %t", enableTLS)
+	if enableTLS {
+		return http.ServeTLS(listener, mux, serverCertFile, serverKeyFile)
+	}
+	return http.Serve(listener, mux)
+}
+
+func main() {
+	// "port"라는 이름의 명령줄 인자를 정의합니다. 기본값은 8080이며, 설명은 "server port"입니다.
+	// go run main.go -port=8081
+	port := flag.Int("port", 8080, "server port")
+	enableTLS := flag.Bool("tls", false, "enable SSL/TLS")
+	serverType := flag.String("type", "grpc", "type of server (grpc/rest)")
+	endPoint := flag.String("endpoint", "", "gRPC server endpoint")
+	flag.Parse()
+	log.Printf("Server started on port %d, TLS: %t", *port, *enableTLS)
+
+	laptopStore := repository.NewInMemoryLaptopStore()
+	imageStore := repository.NewDiskImageStore("img")
+	ratingStore := repository.NewInMemoryRatingStore()
+	userStore := repository.NewInMemoryUserStore()
+	err2 := seedUsers(userStore)
+	if err2 != nil {
+		log.Fatalf("cannot seed users: %v", err2)
+	}
+	jwtManager := util.NewJWTManager(secretKey, tokenDuration)
+
+	authServer := service.NewAuthServer(userStore, jwtManager)
+	laptopServer := service.NewLaptopServer(laptopStore, imageStore, ratingStore)
 	address := fmt.Sprintf("0.0.0.0:%d", *port)
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		log.Fatalf("cannot start server: %v", err)
 	}
-
-	if err := grpcServer.Serve(listener); err != nil {
-		log.Fatalf("cannot start server: %v", err)
+	if *serverType == "grpc" {
+		err = runGRPCServer(authServer, laptopServer, jwtManager, *enableTLS, listener)
+	} else {
+		err = runRESTServer(authServer, laptopServer, jwtManager, *enableTLS, listener, *endPoint)
+	}
+	if err != nil {
+		log.Fatalf("cannot run grpc server: %v", err)
 	}
 }

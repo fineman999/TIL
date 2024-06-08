@@ -1,0 +1,26 @@
+syntax = "proto3";
+option go_package = "./pb";
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Notes";
+    version: "1.0";
+    contact: {
+      name: "bbengfort";
+      url: "https://github.com/bbengfort/notes";
+      email: "info@bengfort.com";
+    };
+    license: {
+      name: "BSD 3-Clause License";
+      url: "https://github.com/bbengfort/notes/LICENSE";
+    };
+  };
+
+  schemes: HTTP;
+  schemes: HTTPS;
+  consumes: "application/json";
+  produces: "application/json";
+};

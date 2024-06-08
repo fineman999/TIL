@@ -1,0 +1,17 @@
+version: v1
+plugins:
+  - plugin: go
+    out: pb
+    opt:
+      - paths=source_relative
+  - plugin: go-grpc
+    out: pb
+    opt:
+      - paths=source_relative
+  - plugin: grpc-gateway
+    out: pb
+    opt:
+      - paths=source_relative
+# plugin인 버전명을 명시하면 로컬에 설치안해도 된다.
+  - plugin: buf.build/grpc-ecosystem/openapiv2
+    out: openapi
