@@ -27,6 +27,7 @@ orjson==3.10.3
 packaging==23.2
 pydantic==2.7.3
 pydantic_core==2.18.4
+python-dotenv==1.0.1
 PyYAML==6.0.1
 regex==2024.5.15
 requests==2.32.3
@@ -36,5 +37,5 @@ tenacity==8.3.0
 tiktoken==0.7.0
 tqdm==4.66.4
 typing_extensions==4.12.2
-urllib3==2.2.1
+urllib3==1.26.6
 yarl==1.9.4
