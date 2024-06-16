@@ -22,7 +22,7 @@ def test_unstructured_loader():
 
 
 def test_pdf_document_loader():
-    pdf_loader = PyPDFLoader("[공고문]2024년청년전세임대1순위입주자수시모집.pdf")
+    pdf_loader = PyPDFLoader("../05_vetorstores/[공고문]2024년청년전세임대1순위입주자수시모집.pdf")
     pages = pdf_loader.load_and_split() # pdf 문서를 읽어서 페이지별로 나누어 반환
     print(pages[1].page_content)
 
