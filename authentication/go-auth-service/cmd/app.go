@@ -14,7 +14,7 @@ type App struct {
 	repository *repository.Repository
 }
 
-func NewApp(cfg *config.Config) {
+func NewApp(cfg *config.Config, port string) {
 	a := &App{cfg: cfg}
 	var err error
 	if a.repository, err = repository.NewRepository(cfg); err != nil {
@@ -26,6 +26,6 @@ func NewApp(cfg *config.Config) {
 	} else if a.network, err = network.NewNetwork(cfg, a.service); err != nil {
 		panic(err)
 	} else {
-		a.network.StartServer()
+		a.network.StartServer(port)
 	}
 }

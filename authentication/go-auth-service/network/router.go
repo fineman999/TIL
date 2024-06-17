@@ -29,10 +29,10 @@ func NewNetwork(cfg *config.Config, service *service.Service) (*Network, error) 
 	return r, nil
 }
 
-func (n *Network) StartServer() {
+func (n *Network) StartServer(port string) {
 
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":" + port,
 		Handler: n.router,
 	}
 
