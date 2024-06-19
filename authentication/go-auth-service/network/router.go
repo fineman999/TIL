@@ -23,9 +23,10 @@ type Network struct {
 func NewNetwork(cfg *config.Config, service *service.Service) (*Network, error) {
 	r := &Network{cfg: cfg, service: service, router: gin.Default()}
 	testGroup := r.router.Group("/api/test")
-
 	testGroup.GET("", r.test)
 
+	oauthGroup := r.router.Group("/login/oauth2/code")
+	oauthGroup.GET("/x", r.twitterOAuth)
 	return r, nil
 }
 

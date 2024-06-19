@@ -7,9 +7,11 @@ import (
 
 type Config struct {
 	Twitter struct {
-		ConsumerKey    string
-		ConsumerSecret string
-		AccessToken    string
+		ConsumerKey              string
+		ConsumerSecret           string
+		AccessToken              string
+		TwitterOAuthClientID     string
+		TwitterOAuthClientSecret string
 	}
 }
 
