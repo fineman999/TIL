@@ -26,8 +26,11 @@ func NewNetwork(cfg *config.Config, service *service.Service) (*Network, error) 
 	testGroup.GET("", r.test)
 
 	oauthGroup := r.router.Group("/login/oauth2/code")
-	oauthGroup.GET("/x", r.twitterOAuth)
+	oauthGroup.GET("/twitter", r.twitterOAuth)
 	oauthGroup.GET("/google", r.googleOAuth)
+
+	pkceGroup := r.router.Group("/api/pkce")
+	pkceGroup.GET("", r.getPkceInfo)
 	return r, nil
 }
 

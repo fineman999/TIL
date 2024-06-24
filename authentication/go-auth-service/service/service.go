@@ -26,8 +26,12 @@ func NewService(
 	return s, nil
 }
 
-func (s *Service) TwitterOAuth() {
-
+func (s *Service) TwitterOAuth(ctx context.Context, code, state string) {
+	authenticate, err := s.oauthConf.TwitterAuthenticate(ctx, code, state)
+	if err != nil {
+		return
+	}
+	fmt.Println(authenticate)
 }
 
 func (s *Service) GoogleOAuth(ctx context.Context, code string) {
@@ -37,4 +41,8 @@ func (s *Service) GoogleOAuth(ctx context.Context, code string) {
 		return
 	}
 	fmt.Println(authenticate)
+}
+
+func (s *Service) GetPkceInfo() *auth.Pkce {
+	return s.oauthConf.GetPKCE()
 }
