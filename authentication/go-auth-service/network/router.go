@@ -27,6 +27,7 @@ func NewNetwork(cfg *config.Config, service *service.Service) (*Network, error) 
 
 	oauthGroup := r.router.Group("/login/oauth2/code")
 	oauthGroup.GET("/x", r.twitterOAuth)
+	oauthGroup.GET("/google", r.googleOAuth)
 	return r, nil
 }
 

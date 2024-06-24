@@ -13,7 +13,7 @@ type App struct {
 	service    *service.Service
 	network    *network.Network
 	repository *repository.Repository
-	auth       *auth.TwitterAuth
+	auth       *auth.OAuth
 }
 
 func NewApp(cfg *config.Config, port string) {

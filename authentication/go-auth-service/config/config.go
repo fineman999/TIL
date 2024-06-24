@@ -13,6 +13,10 @@ type Config struct {
 		TwitterOAuthClientID     string
 		TwitterOAuthClientSecret string
 	}
+	Google struct {
+		ClientID     string
+		ClientSecret string
+	}
 }
 
 func NewConfig(path string) *Config {
