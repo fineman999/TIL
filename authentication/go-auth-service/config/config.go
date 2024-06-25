@@ -17,6 +17,12 @@ type Config struct {
 		ClientID     string
 		ClientSecret string
 	}
+	OAUTH1 struct {
+		ConsumerKey    string
+		ConsumerSecret string
+		AccessToken    string
+		AccessSecret   string
+	}
 }
 
 func NewConfig(path string) *Config {
