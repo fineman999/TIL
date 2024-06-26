@@ -23,6 +23,9 @@ type Config struct {
 		AccessToken    string
 		AccessSecret   string
 	}
+	Jwt struct {
+		SecretKey string
+	}
 }
 
 func NewConfig(path string) *Config {

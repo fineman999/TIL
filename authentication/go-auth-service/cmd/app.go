@@ -14,13 +14,17 @@ type App struct {
 	network       *network.Network
 	repository    *repository.Repository
 	auth          *auth.OAuth
+	jwt           *auth.JwtConfig
 	twitterOauth1 *auth.TwitterOAuth1
 }
 
 func NewApp(cfg *config.Config, port string) {
 	a := &App{cfg: cfg}
 	var err error
-	if a.auth = auth.NewAuth(cfg); err != nil {
+	if a.jwt = auth.NewJwtConfig(cfg); err != nil {
+		panic(err)
+
+	} else if a.auth = auth.NewAuth(cfg); err != nil {
 		panic(err)
 	} else if a.twitterOauth1 = auth.NewOAuth1(cfg); err != nil {
 		panic(err)
