@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"github.com/dghubble/go-twitter/twitter"
 	"go-auth-service/auth"
 	"go-auth-service/config"
 	"go-auth-service/repository"
@@ -50,15 +51,23 @@ func (s *Service) GetPkceInfo() *auth.Pkce {
 	return s.oauthConf.GetPKCE()
 }
 
-func (s *Service) StartOAuth1(ctx context.Context) (*auth.OAuth1Token, error) {
-	info, err := s.oauth1TwitterConf.GetOAuthInfo(ctx)
+func (s *Service) StartOAuth1(_ context.Context) (*auth.OAuth1Token, error) {
+	info, err := s.oauth1TwitterConf.GetOAuthInfo()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get oauth info: %w", err)
 	}
 	return info, nil
 }
 
-func (s *Service) CallbackOAuth1(ctx context.Context, oauthToken, oauthVerifier string) {
+func (s *Service) CallbackOAuth1(ctx context.Context, oauthToken, oauthVerifier string) (*twitter.User, error) {
 
-	s.oauth1TwitterConf.VerifyOAuth(ctx, oauthToken, oauthVerifier)
+	verifyOAuth, err := s.oauth1TwitterConf.VerifyOAuth(oauthToken, oauthVerifier)
+	if err != nil {
+		return nil, fmt.Errorf("failed to verify oauth: %w", err)
+	}
+	userInformation, err := s.oauth1TwitterConf.GetUserInformation(ctx, verifyOAuth)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user information: %w", err)
+	}
+	return userInformation, nil
 }

@@ -36,6 +36,7 @@ type Pkce struct {
 	State               string
 }
 
+// TODO: Redis로 관리 필요
 var ListPkce = make(map[string]*Pkce)
 
 type User struct {

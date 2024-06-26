@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
 	"go-auth-service/config"
@@ -17,9 +18,11 @@ const (
 	TwitterRequestTokenURL = "https://twitter.com/oauth/request_token"
 	TwitterAccessTokenURL  = "https://twitter.com/oauth/access_token"
 	ClientCallbackURL      = "http://127.0.0.1:3000/authpage"
-	TwitterRedirectURL     = "https://twitter.com/oauth/authenticate?oauth_token="
 	AuthorizeURL           = "https://twitter.com/oauth/authenticate"
 )
+
+// TODO: Redis로 관리 필요
+var oauthRepo = make(map[string]*oauth1.Token)
 
 func NewOAuth1(cfg *config.Config) *TwitterOAuth1 {
 	newConfig := oauth1.NewConfig(
@@ -51,15 +54,17 @@ type OAuth1Token struct {
 func (t *TwitterOAuth1) GetClient(ctx context.Context) *twitter.Client {
 	httpClient := t.OAuth1.Client(ctx, t.Token)
 	return twitter.NewClient(httpClient)
-
 }
 
-func (t *TwitterOAuth1) GetOAuthInfo(ctx context.Context) (*OAuth1Token, error) {
+func (t *TwitterOAuth1) GetOAuthInfo() (*OAuth1Token, error) {
 	requestToken, requestTokenSecret, err := t.OAuth1.RequestToken()
-
 	if err != nil {
 		return nil, err
 	}
+
+	token := oauth1.NewToken(requestToken, requestTokenSecret)
+	oauthRepo[requestToken] = token
+
 	urlCheck, err := t.OAuth1.AuthorizationURL(requestToken)
 	if err != nil {
 		return nil, err
@@ -72,6 +77,30 @@ func (t *TwitterOAuth1) GetOAuthInfo(ctx context.Context) (*OAuth1Token, error) 
 	}, nil
 }
 
-func (t *TwitterOAuth1) VerifyOAuth(ctx context.Context, token string, verifier string) {
-	panic("implement me")
+func (t *TwitterOAuth1) VerifyOAuth(token string, verifier string) (*oauth1.Token, error) {
+	if _, ok := oauthRepo[token]; !ok {
+		return nil, fmt.Errorf("token not found")
+	}
+	requestToken := oauthRepo[token]
+
+	accessToken, accessSecret, err := t.OAuth1.AccessToken(requestToken.Token, requestToken.TokenSecret, verifier)
+	if err != nil {
+		return nil, err
+	}
+
+	newToken := oauth1.NewToken(accessToken, accessSecret)
+	return newToken, nil
+}
+
+func (t *TwitterOAuth1) GetUserInformation(ctx context.Context, token *oauth1.Token) (*twitter.User, error) {
+	httpClient := t.OAuth1.Client(ctx, token)
+	newClient := twitter.NewClient(httpClient)
+	user, _, err := newClient.Accounts.VerifyCredentials(&twitter.AccountVerifyParams{
+		SkipStatus:   twitter.Bool(true),
+		IncludeEmail: twitter.Bool(true),
+	})
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }

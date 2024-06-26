@@ -53,5 +53,10 @@ func (n *Network) callbackOAuth1(g *gin.Context) {
 	oauthToken := g.Query("oauth_token")
 	oauthVerifier := g.Query("oauth_verifier")
 	ctx := g.Request.Context()
-	n.service.CallbackOAuth1(ctx, oauthToken, oauthVerifier)
+	auth1, err := n.service.CallbackOAuth1(ctx, oauthToken, oauthVerifier)
+	if err != nil {
+		g.JSON(http.StatusInternalServerError, gin.H{"response": err.Error()})
+		return
+	}
+	g.JSON(http.StatusOK, gin.H{"response": auth1})
 }
