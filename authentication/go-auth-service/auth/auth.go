@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	TwitterCallBackURL = "http://localhost:8080/login/oauth2/code/twitter"
-	GoogleCallBackURL  = "http://localhost:8080/login/oauth2/code/google"
+	TwitterCallBackURL = "http://127.0.0.1:8080/login/oauth2/code/twitter"
+	GoogleCallBackURL  = "http://127.0.0.1:8080/login/oauth2/code/google"
 
 	// 인증 후 유저 정보를 가져오기 위한 API
 	GoogleUserInfoAPIEndpoint  = "https://www.googleapis.com/oauth2/v3/userinfo"

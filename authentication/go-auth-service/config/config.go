@@ -17,7 +17,7 @@ type Config struct {
 		ClientID     string
 		ClientSecret string
 	}
-	OAUTH1 struct {
+	Oauth1 struct {
 		ConsumerKey    string
 		ConsumerSecret string
 		AccessToken    string

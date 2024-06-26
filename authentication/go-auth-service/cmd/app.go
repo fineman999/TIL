@@ -29,6 +29,7 @@ func NewApp(cfg *config.Config, port string) {
 	} else if a.service, err = service.NewService(cfg,
 		a.repository,
 		a.auth,
+		a.twitterOauth1,
 	); err != nil {
 		panic(err)
 	} else if a.network, err = network.NewNetwork(cfg, a.service); err != nil {

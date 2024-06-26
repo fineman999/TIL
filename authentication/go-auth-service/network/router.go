@@ -2,6 +2,7 @@ package network
 
 import (
 	"context"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"go-auth-service/config"
 	"go-auth-service/service"
@@ -21,7 +22,18 @@ type Network struct {
 }
 
 func NewNetwork(cfg *config.Config, service *service.Service) (*Network, error) {
-	r := &Network{cfg: cfg, service: service, router: gin.Default()}
+	engine := gin.Default()
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowOrigins = []string{
+		"http://localhost:3000",
+		"http://127.0.0.1:3000",
+	}
+	corsConfig.AllowCredentials = true
+	corsConfig.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"}
+	corsConfig.AllowHeaders = []string{"Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "X-Forwarded-For", "Authorization", "accept", "origin", "Cache-Control", "X-Requested-With", "ip"}
+	engine.Use(cors.New(corsConfig))
+
+	r := &Network{cfg: cfg, service: service, router: engine}
 	testGroup := r.router.Group("/api/test")
 	testGroup.GET("", r.test)
 
@@ -31,6 +43,10 @@ func NewNetwork(cfg *config.Config, service *service.Service) (*Network, error) 
 
 	pkceGroup := r.router.Group("/api/pkce")
 	pkceGroup.GET("", r.getPkceInfo)
+
+	oauth1Group := r.router.Group("/api/oauth1")
+	oauth1Group.GET("/twitter", r.startOauth1)
+	oauth1Group.GET("/twitter/callback", r.callbackOAuth1)
 	return r, nil
 }
 
