@@ -46,7 +46,9 @@ func NewNetwork(cfg *config.Config, service *service.Service) (*Network, error) 
 
 	oauth1Group := r.router.Group("/api/oauth1")
 	oauth1Group.GET("/twitter", r.startOauth1)
-	oauth1Group.GET("/twitter/callback", r.callbackOAuth1)
+
+	oauth1CallbackGroup := r.router.Group("/login/oauth1/code")
+	oauth1CallbackGroup.GET("/twitter", r.callbackOAuth1)
 	return r, nil
 }
 

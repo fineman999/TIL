@@ -1,4 +1,4 @@
-package auth
+package oauth
 
 import (
 	"fmt"
@@ -8,24 +8,25 @@ import (
 )
 
 type JwtConfig struct {
-	secretKey string
+	secretKey []byte
 }
 
 // Claims defines the structure of JWT claims
 type Claims struct {
 	UserID string `json:"userId"`
 	Email  string `json:"email"`
+	Name   string `json:"name"`
 	jwt.RegisteredClaims
 }
 
 func NewJwtConfig(cfg *config.Config) *JwtConfig {
 	return &JwtConfig{
-		secretKey: cfg.Jwt.SecretKey,
+		secretKey: []byte(cfg.Jwt.SecretKey),
 	}
 }
 
 // GenerateToken generates an access token and a refresh token
-func (j JwtConfig) GenerateToken(userID, email string) (string, string, error) {
+func (j JwtConfig) GenerateToken(userID, name string) (string, string, error) {
 	// Define the expiration times
 	accessTokenExpiration := time.Now().Add(15 * time.Minute)
 	refreshTokenExpiration := time.Now().Add(7 * 24 * time.Hour)
@@ -33,7 +34,7 @@ func (j JwtConfig) GenerateToken(userID, email string) (string, string, error) {
 	// Create the claims
 	accessTokenClaims := Claims{
 		UserID: userID,
-		Email:  email,
+		Name:   name,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(accessTokenExpiration),
 		},
@@ -41,7 +42,6 @@ func (j JwtConfig) GenerateToken(userID, email string) (string, string, error) {
 
 	refreshTokenClaims := Claims{
 		UserID: userID,
-		Email:  email,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(refreshTokenExpiration),
 		},

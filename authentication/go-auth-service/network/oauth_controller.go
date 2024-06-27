@@ -13,8 +13,21 @@ func (n *Network) twitterOAuth(g *gin.Context) {
 	code := g.Query("code")
 	state := g.Query("state")
 	ctx := g.Request.Context()
-	n.service.TwitterOAuth(ctx, code, state)
-	g.JSON(http.StatusOK, gin.H{"response": "test"})
+	oAuth, err := n.service.TwitterOAuth(ctx, code, state)
+	if err != nil {
+		g.JSON(http.StatusInternalServerError, gin.H{"response": err.Error()})
+		return
+	}
+	//clientURL := oAuth.ClientURL
+	accessToken := oAuth.AccessToken
+	refreshToken := oAuth.RefreshToken
+	g.SetCookie("access_token", accessToken, 3600, "/", "127.0.0.1", false, false) // 1 hour expiry
+
+	// Set the refresh token as an HttpOnly cookie (not accessible by JavaScript)
+	g.SetCookie("refresh_token", refreshToken, 604800, "/", "127.0.0.1", false, true) // 1 week expiry, HttpOnly
+	g.SetSameSite(http.SameSiteNoneMode)
+	// Redirect to the client URL
+	g.Redirect(http.StatusMovedPermanently, "http://127.0.0.1:3000")
 }
 
 func (n *Network) googleOAuth(g *gin.Context) {
@@ -33,8 +46,7 @@ func (n *Network) googleOAuth(g *gin.Context) {
 
 func (n *Network) getPkceInfo(g *gin.Context) {
 	log.Println("getPkceInfo")
-
-	info := n.service.GetPkceInfo()
+	info := n.service.GetStartOAuth2()
 	g.JSON(http.StatusOK, gin.H{"response": info})
 }
 

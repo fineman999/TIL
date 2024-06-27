@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"go-auth-service/auth"
 	"go-auth-service/config"
 	"go-auth-service/network"
+	"go-auth-service/oauth"
 	"go-auth-service/repository"
 	"go-auth-service/service"
 )
@@ -13,20 +13,20 @@ type App struct {
 	service       *service.Service
 	network       *network.Network
 	repository    *repository.Repository
-	auth          *auth.OAuth
-	jwt           *auth.JwtConfig
-	twitterOauth1 *auth.TwitterOAuth1
+	auth          *oauth.OAuth
+	jwt           *oauth.JwtConfig
+	twitterOauth1 *oauth.TwitterOAuth1
 }
 
 func NewApp(cfg *config.Config, port string) {
 	a := &App{cfg: cfg}
 	var err error
-	if a.jwt = auth.NewJwtConfig(cfg); err != nil {
+	if a.jwt = oauth.NewJwtConfig(cfg); err != nil {
 		panic(err)
 
-	} else if a.auth = auth.NewAuth(cfg); err != nil {
+	} else if a.auth = oauth.NewAuth(cfg); err != nil {
 		panic(err)
-	} else if a.twitterOauth1 = auth.NewOAuth1(cfg); err != nil {
+	} else if a.twitterOauth1 = oauth.NewOAuth1(cfg); err != nil {
 		panic(err)
 	} else if a.repository, err = repository.NewRepository(cfg); err != nil {
 		panic(err)
@@ -34,6 +34,7 @@ func NewApp(cfg *config.Config, port string) {
 		a.repository,
 		a.auth,
 		a.twitterOauth1,
+		a.jwt,
 	); err != nil {
 		panic(err)
 	} else if a.network, err = network.NewNetwork(cfg, a.service); err != nil {

@@ -1,4 +1,4 @@
-package auth
+package oauth
 
 import (
 	"context"
@@ -17,7 +17,7 @@ type TwitterOAuth1 struct {
 const (
 	TwitterRequestTokenURL = "https://twitter.com/oauth/request_token"
 	TwitterAccessTokenURL  = "https://twitter.com/oauth/access_token"
-	ClientCallbackURL      = "http://127.0.0.1:3000/authpage"
+	ClientCallbackURL      = "http://127.0.0.1:8080/login/oauth1/code/twitter"
 	AuthorizeURL           = "https://twitter.com/oauth/authenticate"
 )
 
@@ -102,5 +102,9 @@ func (t *TwitterOAuth1) GetUserInformation(ctx context.Context, token *oauth1.To
 	if err != nil {
 		return nil, err
 	}
+	// profileImageURL
+	// Name
+	// screenName
+	// Email
 	return user, nil
 }

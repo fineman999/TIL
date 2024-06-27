@@ -12,6 +12,7 @@ type Config struct {
 		AccessToken              string
 		TwitterOAuthClientID     string
 		TwitterOAuthClientSecret string
+		Scope                    []string
 	}
 	Google struct {
 		ClientID     string

@@ -1,4 +1,4 @@
-package auth
+package oauth
 
 import (
 	"context"
@@ -16,6 +16,7 @@ import (
 const (
 	TwitterCallBackURL = "http://127.0.0.1:8080/login/oauth2/code/twitter"
 	GoogleCallBackURL  = "http://127.0.0.1:8080/login/oauth2/code/google"
+	ClientURL          = "http://localhost:3000"
 
 	// 인증 후 유저 정보를 가져오기 위한 API
 	GoogleUserInfoAPIEndpoint  = "https://www.googleapis.com/oauth2/v3/userinfo"
@@ -30,23 +31,28 @@ var EndPoint = oauth2.Endpoint{
 }
 
 type Pkce struct {
-	CodeVerifier        string
-	CodeChallenge       string
-	CodeChallengeMethod string
-	State               string
+	CodeVerifier        string `json:"code_verifier"`
+	CodeChallenge       string `json:"code_challenge"`
+	CodeChallengeMethod string `json:"code_challenge_method"`
+	State               string `json:"state"`
 }
 
 // TODO: Redis로 관리 필요
 var ListPkce = make(map[string]*Pkce)
 
 type User struct {
-	Email string `json:"email"`
-	Name  string `json:"name"`
+	Data UserDetail `json:"data"`
+}
+
+type UserDetail struct {
+	Id       string `json:"id"`
+	UserName string `json:"username"`
+	Name     string `json:"name"`
 }
 
 type OAuth struct {
-	TwitterOAuth *oauth2.Config
-	GoogleOAuth  *oauth2.Config
+	twitterOAuth *oauth2.Config
+	googleOAuth  *oauth2.Config
 }
 
 func NewAuth(cfg *config.Config) *OAuth {
@@ -54,7 +60,7 @@ func NewAuth(cfg *config.Config) *OAuth {
 		ClientID:     cfg.Twitter.TwitterOAuthClientID,
 		ClientSecret: cfg.Twitter.TwitterOAuthClientSecret,
 		RedirectURL:  TwitterCallBackURL,
-		Scopes:       []string{"users.read", "tweet.read", "follows.read", "follows.write", "offline.access"},
+		Scopes:       cfg.Twitter.Scope,
 		Endpoint:     EndPoint,
 	}
 	googleOAuth := &oauth2.Config{
@@ -65,28 +71,28 @@ func NewAuth(cfg *config.Config) *OAuth {
 		Endpoint:     google.Endpoint,
 	}
 	return &OAuth{
-		TwitterOAuth: oauthConf,
-		GoogleOAuth:  googleOAuth,
+		twitterOAuth: oauthConf,
+		googleOAuth:  googleOAuth,
 	}
-}
-func (t *OAuth) GetAuthURLWithState(state string) string {
-	return t.TwitterOAuth.AuthCodeURL(state)
-}
-
-func (t *OAuth) GetAuthURLWithStateAndPrompt(state string, prompt string) string {
-	return t.TwitterOAuth.AuthCodeURL(state, oauth2.SetAuthURLParam("prompt", prompt))
 }
 
 func (t *OAuth) getTwitterAuthURLWithStateAndPrompts(state string) string {
 	authUrlParams := make([]oauth2.AuthCodeOption, 0)
 	authUrlParams = append(authUrlParams, oauth2.SetAuthURLParam("user.fields", "profile_image_url"))
-	return t.TwitterOAuth.AuthCodeURL(state, authUrlParams...)
+	return t.twitterOAuth.AuthCodeURL(state, authUrlParams...)
+}
+
+func (t *OAuth) GetTwitterClientID() string {
+	return t.twitterOAuth.ClientID
+}
+func (t *OAuth) GetTwitterScope() []string {
+	return t.twitterOAuth.Scopes
 }
 
 func (t *OAuth) GetToken(code string) (*oauth2.Token, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	token, err := t.TwitterOAuth.Exchange(ctx, code)
+	token, err := t.twitterOAuth.Exchange(ctx, code)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +101,7 @@ func (t *OAuth) GetToken(code string) (*oauth2.Token, error) {
 func (t *OAuth) RefreshToken(token *oauth2.Token) (*oauth2.Token, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	tokenSource := t.TwitterOAuth.TokenSource(ctx, token)
+	tokenSource := t.twitterOAuth.TokenSource(ctx, token)
 	token, err := tokenSource.Token()
 	if err != nil {
 		return nil, err
@@ -103,18 +109,18 @@ func (t *OAuth) RefreshToken(token *oauth2.Token) (*oauth2.Token, error) {
 	return token, nil
 }
 
-func (t *OAuth) TwitterAuthenticate(ctx context.Context, code string, state string) (*User, error) {
+func (t *OAuth) TwitterAuthenticate(ctx context.Context, code string, state string) (*UserDetail, error) {
 
 	if _, ok := ListPkce[state]; !ok {
 		return nil, fmt.Errorf("state not found")
 	}
 	pkce := ListPkce[state]
-	token, err := t.TwitterOAuth.Exchange(ctx, code, oauth2.VerifierOption(pkce.CodeVerifier))
+	token, err := t.twitterOAuth.Exchange(ctx, code, oauth2.VerifierOption(pkce.CodeVerifier))
 	if err != nil {
 		return nil, fmt.Errorf("failed to exchange token: %w", err)
 	}
 
-	client := t.TwitterOAuth.Client(ctx, token)
+	client := t.twitterOAuth.Client(ctx, token)
 	userInfoRes, err := client.Get(TwitterUserInfoAPIEndpoint)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user info: %w", err)
@@ -131,22 +137,22 @@ func (t *OAuth) TwitterAuthenticate(ctx context.Context, code string, state stri
 		return nil, fmt.Errorf("failed to unmarshal user info: %w", err)
 	}
 
-	source := t.TwitterOAuth.TokenSource(ctx, token)
-	token, err = source.Token()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get token: %w", err)
-	}
-	return &authUser, nil
+	//source := t.twitterOAuth.TokenSource(ctx, token)
+	//token, err = source.Token()
+	//if err != nil {
+	//	return nil, fmt.Errorf("failed to get token: %w", err)
+	//}
+	return &authUser.Data, nil
 }
 
 func (t *OAuth) GoogleAuthenticate(ctx context.Context, code string) (*User, error) {
 
-	token, err := t.GoogleOAuth.Exchange(ctx, code)
+	token, err := t.googleOAuth.Exchange(ctx, code)
 	if err != nil {
 		return nil, fmt.Errorf("failed to exchange token: %w", err)
 	}
 
-	client := t.GoogleOAuth.Client(ctx, token)
+	client := t.googleOAuth.Client(ctx, token)
 	userInfoRes, err := client.Get(GoogleUserInfoAPIEndpoint)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user info: %w", err)
@@ -163,7 +169,7 @@ func (t *OAuth) GoogleAuthenticate(ctx context.Context, code string) (*User, err
 		return nil, fmt.Errorf("failed to unmarshal user info: %w", err)
 	}
 
-	source := t.GoogleOAuth.TokenSource(ctx, token)
+	source := t.googleOAuth.TokenSource(ctx, token)
 	token, err = source.Token()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get token: %w", err)
