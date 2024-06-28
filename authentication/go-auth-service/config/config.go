@@ -27,6 +27,10 @@ type Config struct {
 	Jwt struct {
 		SecretKey string
 	}
+	Mongo struct {
+		Username string
+		Password string
+	}
 }
 
 func NewConfig(path string) *Config {

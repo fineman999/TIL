@@ -39,7 +39,10 @@ func (s *Service) TwitterOAuth(ctx context.Context, code, state string) (*types.
 	if err != nil {
 		return nil, err
 	}
-	s.repository.SaveUser(authenticate.Id, authenticate.Name, authenticate.UserName)
+	_, err = s.repository.SaveUser(ctx, authenticate.Id, authenticate.Name, authenticate.UserName)
+	if err != nil {
+		return nil, err
+	}
 	accessToken, refreshToken, err := s.jwtConfig.GenerateToken(authenticate.Id, authenticate.Name)
 	if err != nil {
 		return nil, err

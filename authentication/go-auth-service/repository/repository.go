@@ -1,9 +1,15 @@
 package repository
 
-import "go-auth-service/config"
+import (
+	"context"
+	"go-auth-service/config"
+	"go.mongodb.org/mongo-driver/mongo"
+)
 
 type Repository struct {
-	cfg *config.Config
+	cfg        *config.Config
+	mongo      *config.Mongo
+	collection *mongo.Collection
 }
 type User struct {
 	UserID string
@@ -11,22 +17,25 @@ type User struct {
 	Id     string
 }
 
-var userRepo = make(map[string]User)
-
-func NewRepository(cfg *config.Config) (*Repository, error) {
+func NewRepository(cfg *config.Config, mongo *config.Mongo) (*Repository, error) {
+	collection := mongo.Client.Database("go-oauth-service").Collection("users")
 	return &Repository{
-		cfg: cfg,
+		cfg:        cfg,
+		mongo:      mongo,
+		collection: collection,
 	}, nil
 }
 
-func (r *Repository) SaveUser(userID, email, id string) {
-	userRepo[userID] = User{
+func (r *Repository) SaveUser(ctx context.Context, userID, email, id string) (*mongo.InsertOneResult, error) {
+	return r.collection.InsertOne(ctx, User{
 		UserID: userID,
 		Email:  email,
 		Id:     id,
-	}
+	})
 }
 
-func (r *Repository) GetUser(userID string) User {
-	return userRepo[userID]
+func (r *Repository) GetUser(ctx context.Context, userID string) (*User, error) {
+	var user User
+	err := r.collection.FindOne(ctx, User{UserID: userID}).Decode(&user)
+	return &user, err
 }

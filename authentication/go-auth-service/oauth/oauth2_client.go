@@ -121,7 +121,8 @@ func (t *OAuth) TwitterAuthenticate(ctx context.Context, code string, state stri
 	}
 
 	client := t.twitterOAuth.Client(ctx, token)
-	userInfoRes, err := client.Get(TwitterUserInfoAPIEndpoint)
+
+	userInfoRes, err := client.Get(TwitterUserInfoAPIEndpoint + "?user.fields=profile_image_url,created_at")
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user info: %w", err)
 	}

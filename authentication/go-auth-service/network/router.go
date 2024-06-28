@@ -52,7 +52,7 @@ func NewNetwork(cfg *config.Config, service *service.Service) (*Network, error) 
 	return r, nil
 }
 
-func (n *Network) StartServer(port string) {
+func (n *Network) StartServer(port string, mongo *config.Mongo) {
 
 	srv := &http.Server{
 		Addr:    ":" + port,
@@ -67,10 +67,10 @@ func (n *Network) StartServer(port string) {
 			log.Fatalf("listen: %s\n", err)
 		}
 	}()
-	n.endServer()
+	n.endServer(mongo)
 }
 
-func (n *Network) endServer() {
+func (n *Network) endServer(mongo *config.Mongo) {
 	// Wait for interrupt signal to gracefully shutdown the server with
 	// a timeout of 5 seconds.
 	quit := make(chan os.Signal, 1)
@@ -81,6 +81,7 @@ func (n *Network) endServer() {
 	<-quit
 	log.Println("Shutdown Server ...")
 
+	mongo.Close()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := n.srv.Shutdown(ctx); err != nil {

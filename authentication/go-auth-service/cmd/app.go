@@ -16,6 +16,7 @@ type App struct {
 	auth          *oauth.OAuth
 	jwt           *oauth.JwtConfig
 	twitterOauth1 *oauth.TwitterOAuth1
+	mongo         *config.Mongo
 }
 
 func NewApp(cfg *config.Config, port string) {
@@ -24,11 +25,13 @@ func NewApp(cfg *config.Config, port string) {
 	if a.jwt = oauth.NewJwtConfig(cfg); err != nil {
 		panic(err)
 
+	} else if a.mongo = config.NewMongoConfig(cfg); err != nil {
+		panic(err)
 	} else if a.auth = oauth.NewAuth(cfg); err != nil {
 		panic(err)
 	} else if a.twitterOauth1 = oauth.NewOAuth1(cfg); err != nil {
 		panic(err)
-	} else if a.repository, err = repository.NewRepository(cfg); err != nil {
+	} else if a.repository, err = repository.NewRepository(cfg, a.mongo); err != nil {
 		panic(err)
 	} else if a.service, err = service.NewService(cfg,
 		a.repository,
@@ -40,6 +43,6 @@ func NewApp(cfg *config.Config, port string) {
 	} else if a.network, err = network.NewNetwork(cfg, a.service); err != nil {
 		panic(err)
 	} else {
-		a.network.StartServer(port)
+		a.network.StartServer(port, a.mongo)
 	}
 }
