@@ -1,0 +1,13 @@
+popbill:
+  #링크아이디
+  linkId: ${TESTER}
+  #비밀키
+  secretKey: SwWxqU+0TErBXy/9TVjIPEnI0VTUMMSQZtJf3Ed8q3I=
+  #연동환경 설정, true-테스트, false-운영(Production), (기본값:false)
+  isTest: true
+  #인증토큰 IP 검증 설정, true-사용, false-미사용, (기본값:true)
+  isIpRestrictOnOff: true
+  #통신 IP 고정, true-사용, false-미사용, (기본값:false)
+  useStaticIp: false
+  #로컬시스템 시간 사용여부, true-사용, false-미사용, (기본값:true)
+  useLocalTimeYn: true
