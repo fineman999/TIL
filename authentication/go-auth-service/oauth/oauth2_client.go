@@ -14,9 +14,10 @@ import (
 )
 
 const (
-	TwitterCallBackURL = "http://127.0.0.1:8080/login/oauth2/code/twitter"
-	GoogleCallBackURL  = "http://127.0.0.1:8080/login/oauth2/code/google"
-	ClientURL          = "http://localhost:3000"
+	TwitterCallBackURL = "https://www.chan-factory.store/login/oauth2/code/twitter"
+	//TwitterCallBackURL = "http://127.0.0.1:8080/login/oauth2/code/twitter"
+	GoogleCallBackURL = "http://127.0.0.1:8080/login/oauth2/code/google"
+	ClientURL         = "http://localhost:3000"
 
 	// 인증 후 유저 정보를 가져오기 위한 API
 	GoogleUserInfoAPIEndpoint  = "https://www.googleapis.com/oauth2/v3/userinfo"
@@ -41,7 +42,9 @@ type Pkce struct {
 var ListPkce = make(map[string]*Pkce)
 
 type User struct {
-	Data UserDetail `json:"data"`
+	Data         UserDetail `json:"data"`
+	AccessToken  string     `json:"access_token"`
+	RefreshToken string     `json:"refresh_token"`
 }
 
 type UserDetail struct {
@@ -109,7 +112,7 @@ func (t *OAuth) RefreshToken(token *oauth2.Token) (*oauth2.Token, error) {
 	return token, nil
 }
 
-func (t *OAuth) TwitterAuthenticate(ctx context.Context, code string, state string) (*UserDetail, error) {
+func (t *OAuth) TwitterAuthenticate(ctx context.Context, code string, state string) (*User, error) {
 
 	if _, ok := ListPkce[state]; !ok {
 		return nil, fmt.Errorf("state not found")
@@ -137,13 +140,9 @@ func (t *OAuth) TwitterAuthenticate(ctx context.Context, code string, state stri
 	if err := json.Unmarshal(userInfo, &authUser); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal user info: %w", err)
 	}
-
-	//source := t.twitterOAuth.TokenSource(ctx, token)
-	//token, err = source.Token()
-	//if err != nil {
-	//	return nil, fmt.Errorf("failed to get token: %w", err)
-	//}
-	return &authUser.Data, nil
+	authUser.AccessToken = token.AccessToken
+	authUser.RefreshToken = token.RefreshToken
+	return &authUser, nil
 }
 
 func (t *OAuth) GoogleAuthenticate(ctx context.Context, code string) (*User, error) {

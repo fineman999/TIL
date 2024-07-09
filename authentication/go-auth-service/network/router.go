@@ -41,14 +41,17 @@ func NewNetwork(cfg *config.Config, service *service.Service) (*Network, error) 
 	oauthGroup.GET("/twitter", r.twitterOAuth)
 	oauthGroup.GET("/google", r.googleOAuth)
 
-	pkceGroup := r.router.Group("/api/pkce")
-	pkceGroup.GET("", r.getPkceInfo)
+	pkceGroup := r.router.Group("/api")
+	pkceGroup.GET("/pkce", r.getPkceInfo)
 
 	oauth1Group := r.router.Group("/api/oauth1")
 	oauth1Group.GET("/twitter", r.startOauth1)
 
 	oauth1CallbackGroup := r.router.Group("/login/oauth1/code")
 	oauth1CallbackGroup.GET("/twitter", r.callbackOAuth1)
+
+	r.router.GET("/api/oauth1/tweets", r.getTweets)
+	r.router.POST("/api/oauth1/tweets", r.postTweet)
 	return r, nil
 }
 

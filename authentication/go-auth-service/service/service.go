@@ -39,11 +39,11 @@ func (s *Service) TwitterOAuth(ctx context.Context, code, state string) (*types.
 	if err != nil {
 		return nil, err
 	}
-	_, err = s.repository.SaveUser(ctx, authenticate.Id, authenticate.Name, authenticate.UserName)
+	_, err = s.repository.SaveUser(ctx, authenticate.Data.Id, authenticate.Data.Name, authenticate.Data.UserName, authenticate.AccessToken, authenticate.RefreshToken)
 	if err != nil {
 		return nil, err
 	}
-	accessToken, refreshToken, err := s.jwtConfig.GenerateToken(authenticate.Id, authenticate.Name)
+	accessToken, refreshToken, err := s.jwtConfig.GenerateToken(authenticate.Data.Id, authenticate.Data.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -95,4 +95,15 @@ func (s *Service) CallbackOAuth1(ctx context.Context, oauthToken, oauthVerifier 
 		return nil, fmt.Errorf("failed to get user information: %w", err)
 	}
 	return userInformation, nil
+}
+
+func (s *Service) GetTweets(ctx context.Context, token string, id string) (string, error) {
+	tweets := s.oauthClient.GetTweets(ctx, token, id)
+	return tweets, nil
+}
+
+func (s *Service) PostTweet(ctx context.Context, token string, tweet string) string {
+	result := s.oauthClient.PostTweet(ctx, token, tweet)
+
+	return result
 }

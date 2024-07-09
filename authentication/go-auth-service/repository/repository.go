@@ -12,9 +12,11 @@ type Repository struct {
 	collection *mongo.Collection
 }
 type User struct {
-	UserID string
-	Email  string
-	Id     string
+	UserID       string
+	Email        string
+	Id           string
+	AccessToken  string
+	RefreshToken string
 }
 
 func NewRepository(cfg *config.Config, mongo *config.Mongo) (*Repository, error) {
@@ -26,11 +28,13 @@ func NewRepository(cfg *config.Config, mongo *config.Mongo) (*Repository, error)
 	}, nil
 }
 
-func (r *Repository) SaveUser(ctx context.Context, userID, email, id string) (*mongo.InsertOneResult, error) {
+func (r *Repository) SaveUser(ctx context.Context, userID, email, id, token, refreshToken string) (*mongo.InsertOneResult, error) {
 	return r.collection.InsertOne(ctx, User{
-		UserID: userID,
-		Email:  email,
-		Id:     id,
+		UserID:       userID,
+		Email:        email,
+		Id:           id,
+		AccessToken:  token,
+		RefreshToken: refreshToken,
 	})
 }
 

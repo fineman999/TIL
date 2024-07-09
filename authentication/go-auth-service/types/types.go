@@ -14,3 +14,8 @@ type OAuth2TokenRes struct {
 	RefreshToken string `json:"refresh_token"`
 	ClientURL    string `json:"client_url"`
 }
+
+type TokenInfo struct {
+	AccessToken string `json:"access_token"`
+	Id          string
+}

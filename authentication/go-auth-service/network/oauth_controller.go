@@ -72,3 +72,23 @@ func (n *Network) callbackOAuth1(g *gin.Context) {
 	}
 	g.JSON(http.StatusOK, gin.H{"response": auth1})
 }
+
+func (n *Network) getTweets(g *gin.Context) {
+	token := g.Query("token")
+	id := g.Query("id")
+	ctx := g.Request.Context()
+	tweets, err := n.service.GetTweets(ctx, token, id)
+	if err != nil {
+		g.JSON(http.StatusInternalServerError, gin.H{"response": err.Error()})
+		return
+	}
+	g.JSON(http.StatusOK, gin.H{"response": tweets})
+}
+
+func (n *Network) postTweet(g *gin.Context) {
+	token := g.Query("token")
+	tweet := g.Query("tweet")
+	ctx := g.Request.Context()
+	result := n.service.PostTweet(ctx, token, tweet)
+	g.JSON(http.StatusOK, gin.H{"response": result})
+}
