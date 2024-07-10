@@ -55,6 +55,27 @@ func (s *Service) TwitterOAuth(ctx context.Context, code, state string) (*types.
 	}, nil
 }
 
+func (s *Service) TwitterOAuthApp(ctx context.Context, code string, state string) (*types.OAuth2TokenRes, error) {
+	authenticate, err := s.oauthClient.TwitterAuthenticateApp(ctx, code, state)
+	if err != nil {
+		return nil, err
+	}
+	_, err = s.repository.SaveUser(ctx, authenticate.Data.Id, authenticate.Data.Name, authenticate.Data.UserName, authenticate.AccessToken, authenticate.RefreshToken)
+	if err != nil {
+		return nil, err
+	}
+	accessToken, refreshToken, err := s.jwtConfig.GenerateToken(authenticate.Data.Id, authenticate.Data.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.OAuth2TokenRes{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		ClientURL:    oauth.ClientURL,
+	}, nil
+}
+
 func (s *Service) GoogleOAuth(ctx context.Context, code string) {
 
 	authenticate, err := s.oauthClient.GoogleAuthenticate(ctx, code)
@@ -69,10 +90,21 @@ func (s *Service) GetStartOAuth2() *types.StartOAuth2SetupRes {
 	scopes := s.oauthClient.GetTwitterScope()
 	clientID := s.oauthClient.GetTwitterClientID()
 	return &types.StartOAuth2SetupRes{
-		Pkce:        pkce,
-		Scopes:      scopes,
-		RedirectUrl: oauth.TwitterCallBackURL,
-		ClientID:    clientID,
+		Twitter: types.OAuth2SetupRes{
+			Pkce:           pkce,
+			Scopes:         scopes,
+			WebRedirectUrl: oauth.TwitterWebCallBackURL,
+			AppRedirectUrl: oauth.TwitterAppCallBackURL,
+			ClientID:       clientID,
+		},
+		Apple: types.OAuth2AppleSetupRes{
+			Scopes:         []string{"name", "email"},
+			ResponseType:   "code",
+			ResponseMode:   "query",
+			ClientId:       s.oauthClient.GetAppleClientID(),
+			WebRedirectUrl: oauth.AppleWebCallBackURL,
+			AppRedirectUrl: oauth.AppleAppCallBackURL,
+		},
 	}
 }
 
@@ -106,4 +138,47 @@ func (s *Service) PostTweet(ctx context.Context, token string, tweet string) str
 	result := s.oauthClient.PostTweet(ctx, token, tweet)
 
 	return result
+}
+
+func (s *Service) AppleOAuth(ctx context.Context, code string) (*types.OAuth2TokenRes, error) {
+	authenticate, err := s.oauthClient.AppleAuthenticate(ctx, code)
+	if err != nil {
+		return nil, err
+	}
+	_, err = s.repository.SaveUser(ctx, authenticate.Data.Id, authenticate.Data.Name, authenticate.Data.UserName, authenticate.AccessToken, authenticate.RefreshToken)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(authenticate)
+	accessToken, refreshToken, err := s.jwtConfig.GenerateToken(authenticate.Data.Id, authenticate.Data.Name)
+	if err != nil {
+		return nil, err
+	}
+	return &types.OAuth2TokenRes{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		ClientURL:    oauth.ClientURL,
+	}, nil
+
+}
+
+func (s *Service) AppleOAuthNative(ctx context.Context, token string) (*types.OAuth2TokenRes, error) {
+	authenticate, err := s.oauthClient.AppleAuthenticateNative(ctx, token)
+	if err != nil {
+		return nil, err
+	}
+	_, err = s.repository.SaveUser(ctx, authenticate.Data.Id, authenticate.Data.Name, authenticate.Data.UserName, authenticate.AccessToken, authenticate.RefreshToken)
+	if err != nil {
+		return nil, err
+	}
+	accessToken, refreshToken, err := s.jwtConfig.GenerateToken(authenticate.Data.Id, authenticate.Data.Name)
+	if err != nil {
+		return nil, err
+	}
+	return &types.OAuth2TokenRes{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		ClientURL:    oauth.ClientURL,
+	}, nil
+
 }

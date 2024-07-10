@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/naoina/toml"
+	"log"
 	"os"
 )
 
@@ -31,6 +32,12 @@ type Config struct {
 		Username string
 		Password string
 	}
+	Apple struct {
+		ClientID string
+		KeyID    string
+		TeamID   string
+		Secret   string
+	}
 }
 
 func NewConfig(path string) *Config {
@@ -49,6 +56,12 @@ func NewConfig(path string) *Config {
 		if err = toml.NewDecoder(file).Decode(c); err != nil {
 			panic(err)
 		} else {
+			appleSecretPath := "./AuthKey_45SHHKVMNM.p8"
+			content, err := os.ReadFile(appleSecretPath)
+			if err != nil {
+				log.Fatal(err)
+			}
+			c.Apple.Secret = string(content)
 			return c
 		}
 	}

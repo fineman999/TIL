@@ -30,6 +30,81 @@ func (n *Network) twitterOAuth(g *gin.Context) {
 	g.Redirect(http.StatusMovedPermanently, "http://127.0.0.1:3000")
 }
 
+func (n *Network) twitterOAuthApp(g *gin.Context) {
+	log.Println("twitterOAuth")
+	log.Println(g.Request.URL.Query())
+
+	code := g.Query("code")
+	state := g.Query("state")
+	ctx := g.Request.Context()
+	oAuth, err := n.service.TwitterOAuthApp(ctx, code, state)
+	if err != nil {
+		g.JSON(http.StatusInternalServerError, gin.H{"response": err.Error()})
+		return
+	}
+	//clientURL := oAuth.ClientURL
+	accessToken := oAuth.AccessToken
+	refreshToken := oAuth.RefreshToken
+	location := "myapp://oauth/callback" + "?access_token=" + accessToken + "&refresh_token=" + refreshToken
+	g.Redirect(http.StatusMovedPermanently, location)
+}
+
+func (n *Network) appleOAuth(g *gin.Context) {
+	log.Println(g.Request.URL.Query())
+
+	code := g.Query("code")
+	ctx := g.Request.Context()
+	oAuth, err := n.service.AppleOAuth(ctx, code)
+	if err != nil {
+		g.JSON(http.StatusInternalServerError, gin.H{"response": err.Error()})
+		return
+	}
+	//clientURL := oAuth.ClientURL
+	accessToken := oAuth.AccessToken
+	refreshToken := oAuth.RefreshToken
+	g.SetCookie("access_token", accessToken, 3600, "/", "127.0.0.1", false, false) // 1 hour expiry
+
+	// Set the refresh token as an HttpOnly cookie (not accessible by JavaScript)
+	g.SetCookie("refresh_token", refreshToken, 604800, "/", "127.0.0.1", false, true) // 1 week expiry, HttpOnly
+	g.SetSameSite(http.SameSiteNoneMode)
+	//Redirect to the client URL
+	g.Redirect(http.StatusMovedPermanently, "http://localhost:3000")
+}
+func (n *Network) appleOAuthApp(g *gin.Context) {
+	log.Println(g.Request.URL.Query())
+
+	code := g.Query("code")
+	ctx := g.Request.Context()
+	oAuth, err := n.service.AppleOAuth(ctx, code)
+	if err != nil {
+		g.JSON(http.StatusInternalServerError, gin.H{"response": err.Error()})
+		return
+	}
+	//clientURL := oAuth.ClientURL
+	accessToken := oAuth.AccessToken
+	refreshToken := oAuth.RefreshToken
+	//Redirect to the client URL
+	location := "myapp://oauth/callback" + "?access_token=" + accessToken + "&refresh_token=" + refreshToken
+	g.Redirect(http.StatusMovedPermanently, location)
+}
+
+func (n *Network) appleOAuthNative(g *gin.Context) {
+	log.Println(g.Request.URL.Query())
+
+	token := g.Query("code")
+	ctx := g.Request.Context()
+	oAuth, err := n.service.AppleOAuthNative(ctx, token)
+	if err != nil {
+		g.JSON(http.StatusInternalServerError, gin.H{"response": err.Error()})
+		return
+	}
+	//clientURL := oAuth.ClientURL
+	//accessToken := oAuth.AccessToken
+	//refreshToken := oAuth.RefreshToken
+	//Redirect to the client URL
+	//location := "myapp://oauth/callback" + "?access_token=" + accessToken + "&refresh_token=" + refreshToken
+	g.JSON(http.StatusOK, gin.H{"response": oAuth})
+}
 func (n *Network) googleOAuth(g *gin.Context) {
 	log.Println("test")
 	log.Println(g.Request.URL.Query())

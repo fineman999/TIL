@@ -19,6 +19,9 @@ type User struct {
 	RefreshToken string
 }
 
+type Pkce struct {
+}
+
 func NewRepository(cfg *config.Config, mongo *config.Mongo) (*Repository, error) {
 	collection := mongo.Client.Database("go-oauth-service").Collection("users")
 	return &Repository{

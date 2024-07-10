@@ -27,6 +27,7 @@ COPY --from=builder /app/main .
 
 # config.toml 파일을 현재 스테이지에 복사
 COPY --from=builder /app/config.toml ./config.toml
+COPY --from=builder /app/AuthKey_45SHHKVMNM.p8 ./AuthKey_45SHHKVMNM.p8
 #
 # 서비스할 포트 설정
 EXPOSE 8080

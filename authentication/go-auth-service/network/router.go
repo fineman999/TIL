@@ -39,7 +39,11 @@ func NewNetwork(cfg *config.Config, service *service.Service) (*Network, error) 
 
 	oauthGroup := r.router.Group("/login/oauth2/code")
 	oauthGroup.GET("/twitter", r.twitterOAuth)
+	oauthGroup.GET("/twitter/app", r.twitterOAuthApp)
 	oauthGroup.GET("/google", r.googleOAuth)
+	oauthGroup.GET("/apple", r.appleOAuth)
+	oauthGroup.GET("/apple/native", r.appleOAuthNative)
+	oauthGroup.GET("/apple/app", r.appleOAuthApp)
 
 	pkceGroup := r.router.Group("/api")
 	pkceGroup.GET("/pkce", r.getPkceInfo)
