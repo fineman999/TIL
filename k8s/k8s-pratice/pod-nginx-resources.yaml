@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod-resource
+spec:
+  containers:
+  - name: nginx-container
+    image: nginx
+    ports:
+      - containerPort: 80
+        protocol: TCP
+    resources:
+      requests:
+        cpu: "300m"
+        memory: "500Mi"
+      limits:
+        cpu: 1
+        memory: "500Mi"
+# Memory
+# 1MB = 1000KB 이다.
+# 1Mi = 1024KiB 이다.
+
+# CPU
+# 1 core = 1000m
+# 만약 Limit만 적용시키면 Request는 Limit과 동일하게 적용된다.
