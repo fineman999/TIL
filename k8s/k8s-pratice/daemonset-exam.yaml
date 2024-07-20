@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: daemonset-nginx
+  annotations:
+    kubernetes.io/change-cause: "version 1.15"
+spec:
+  selector:
+    matchLabels:
+      app: webui
+  template:
+    metadata:
+      name: nginx-pod
+      labels:
+        app: webui
+    spec:
+      containers:
+        - name: app
+          image: nginx:1.15
+          ports:
+            - containerPort: 80
