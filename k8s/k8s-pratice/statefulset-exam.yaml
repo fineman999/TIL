@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: sf-nginx
+  annotations:
+    kubernetes.io/change-cause: "version 1.14"
+spec:
+  replicas: 3
+  serviceName: sf-service
+#  podManagementPolicy: OrderedReady # 순차적으로 Pod를 생성하고 준비가 되면 다음 Pod를 생성
+  podManagementPolicy: Parallel # 순차적으로 Pod를 생성하지 않고 병렬로 생성
+  selector:
+    matchLabels:
+      app: webui
+  template:
+    metadata:
+      name: nginx-pod
+      labels:
+        app: webui
+    spec:
+      containers:
+        - name: app
+          image: nginx:1.14
+          ports:
+            - containerPort: 80
