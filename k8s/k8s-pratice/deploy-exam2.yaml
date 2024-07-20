@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-nginx
+  annotations:
+    kubernetes.io/change-cause: "version 1.14"
+spec:
+  progressDeadlineSeconds: 600 # 600초 동안 진행되지 않으면 업데이트를 중지
+  revisionHistoryLimit: 10 # 10개의 리비전을 유지 (리비전: 업데이트 이력)
+  strategy:
+    type: RollingUpdate # 롤링 업데이트 전략
+    rollingUpdate:
+      maxSurge: 25% # 최대 25%의 Pod가 추가될 수 있음 replicas=3 25% = 0.75 -> 3 + 1 = 4개 까지 생성(얼마나 많은 Pod가 추가될 수 있는지 설정 가능)
+      maxUnavailable: 25% # 최대 25%의 Pod가 사용 불가능할 수 있음 replicas=3 25% = 0.75 -> 3 - 1 = 2개 까지 사용 불가능
+  replicas: 3
+  selector:
+    matchLabels:
+      app: webui
+  template:
+    metadata:
+      labels:
+        app: webui
+    spec:
+      containers:
+        - name: app
+          image: nginx:1.14
+          ports:
+            - containerPort: 80
