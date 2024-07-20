@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: job-example
+spec:
+  template:
+    spec:
+      containers:
+        - name: centos-container
+          image: centos:7
+          command: ["bash"]
+          args:
+            - "-c"
+            - "echo 'Hello World'; sleep 50; echo 'Bye'"
+#      restartPolicy: Never # 비정상적일때 ContainerCannotRun 에러 발생하고, 새로운 파드로 다시 시작
+      restartPolicy: OnFailure # 비정상적으로 종료된 경우에만 재시작
+  backoffLimit: 3 # 재시작 횟수
+#  completions: 1 # 완료되어야 하는 파드의 수(순차적으로 실행)
+#  parallelism: 1 # 동시에 실행되는 파드의 수(병렬로 실행)
+#  activeDeadlineSeconds: 100 # Job이 완료되어야 하는 시간, 기한 초과시 강제로 Terminate 됨
