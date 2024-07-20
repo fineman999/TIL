@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: rs-mainui
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      name: apache
+    matchExpressions:
+      - {key: app, operator: In, values: [main]}
+      - {key: rel, operator: In, values: [stable]}
+  template:
+    metadata:
+      name: nginx-pod
+      labels:
+        name: apache
+        app: main
+        rel: stable
+    spec:
+      containers:
+        - name: apache-container
+          image: httpd:2.2
