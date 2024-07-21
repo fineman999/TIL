@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cronjob-exam
+spec:
+  schedule: "* * * * *"
+  startingDeadlineSeconds: 300 # 5 minutes
+  concurrencyPolicy: Forbid # 설명: Forbid는 다음 작업이 실행되기 전에 이전 작업이 완료되어야 함을 의미합니다.
+#  concurrencyPolicy: Allow # 설명: Allow는 다음 작업이 실행되기 전에 이전 작업이 완료되지 않아도 됨을 의미합니다.
+  successfulJobsHistoryLimit: 3 # 성공한 작업의 수를 제한합니다. - 4개 이상의 성공한 작업이 있으면 가장 오래된 작업이 삭제됩니다.
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: hello
+              image: busybox:1.28
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -c
+                - date; echo Hello from the Kubernetes cluster
+          restartPolicy: OnFailure
