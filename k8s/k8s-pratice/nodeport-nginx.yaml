@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeport-service
+spec:
+  type: NodePort
+  clusterIP: 10.100.100.200 # ClusterIP를 지정하지 않으면 랜덤으로 할당
+  selector:
+    app: webui
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 80 # NodePort를 지정하지 않으면 랜덤으로 할당
