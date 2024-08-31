@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: anon-pod
+  annotations:
+    imageRegistry: "https://hub.docker.com"
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.14
+      ports:
+        - containerPort: 80
