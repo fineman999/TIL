@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webui
+  labels:
+    app: webui
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: webui
+  template:
+    metadata:
+      name: webui
+      labels:
+        app: webui
+    spec:
+      containers:
+        - name: webui
+          image: nginx:1.14
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              protocol: TCP
+      tolerations:
+        - key: "role"
+          operator: "Equal"
+          value: "web"
+          effect: "NoSchedule"
+      restartPolicy: Always
