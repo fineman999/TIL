@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: tensorflow-gpu-ssd
+spec:
+  containers:
+    - name: tensorflow-gpu
+      image: tensorflow/tensorflow:nightly-jupyter
+      ports:
+        - containerPort: 8888
+          protocol: TCP
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: distype
+                operator: Exists
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - preference:
+            matchExpressions:
+              - key: gpu
+                operator: In
+                values:
+                  - "true"
+              - key: distype
+                operator: In
+                values:
+                  - "ssd"
+          weight: 20 # gpu가 true이고, disType이 ssd이면 weight 20이 된다. 하나당 10씩 증가한다.
