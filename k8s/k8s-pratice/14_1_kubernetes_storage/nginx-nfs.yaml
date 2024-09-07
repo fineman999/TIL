@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-nfs
+  labels:
+    role: web-nfs
+spec:
+  containers:
+    - name: web-nfs
+      image: nginx
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 80
+          protocol: TCP
+      volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: html
+  restartPolicy: Always
+  volumes:
+    - name: html
+      nfs:
+        path: /sharedir/k8s
+        server: 172.27.20.50
