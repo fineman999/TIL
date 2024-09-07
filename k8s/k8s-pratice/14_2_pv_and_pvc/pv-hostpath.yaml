@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-hostpath
+spec:
+    capacity:
+      storage: 2Gi
+    volumeMode: Filesystem
+    accessModes:
+      - ReadWriteMany
+    persistentVolumeReclaimPolicy: Delete
+    storageClassName: manual
+    nfs:
+      path: /home/nfs
+      server: 10.178.0.5
