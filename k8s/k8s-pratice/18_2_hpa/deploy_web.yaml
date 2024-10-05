@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-web
+  labels:
+    app: deploy-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      name: deploy-web
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: deploy-web
+          image: smlinux/hpa-example
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 200m
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-web
+  labels:
+    app: web
+spec:
+    ports:
+    - port: 80
+      targetPort: 80
+    selector:
+        app: web
+

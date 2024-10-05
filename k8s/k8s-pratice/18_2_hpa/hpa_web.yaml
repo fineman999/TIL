@@ -1,0 +1,12 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hpa-web
+spec:
+  maxReplicas: 10
+  minReplicas: 1
+  scaleTargetRef: # deploy로 동작시킨 pod를 대상으로 autoscale을 적용 - replicas를 조절
+    apiVersion: apps/v1
+    kind: Deployment
+    name: deploy-web
+  targetCPUUtilizationPercentage: 50 # CPU 사용률이 50%가 넘으면 replicas를 늘림
