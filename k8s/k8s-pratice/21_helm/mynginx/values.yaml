@@ -1,0 +1,9 @@
+replicaCount: 1
+image:
+  repository: nginx
+  tag: 1.25.2
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+service:
+  type: NodePort
+  port: 80
