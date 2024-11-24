@@ -139,3 +139,10 @@ Resources:
           ToPort: 3306
           SourceSecurityGroupId: !Ref WasSG
           Description: Allow MySQL/Aurora from WAS SG
+
+Outputs:
+    WeplatAp2BastionSGId:
+      Description: "ID of the created Bastion SG"
+      Value: !Ref BastionSG
+      Export:
+        Name: WeplatAp2BastionSGId
