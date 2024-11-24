@@ -1,0 +1,141 @@
+#  1. VPC 생성
+#  aws cloudformation create-stack \
+#    --stack-name stack-weplat2-ap2-sg \
+#    --template-body file://02_sg_group_cloudformation.yaml \
+#    --capabilities CAPABILITY_NAMED_IAM
+#  2. VPC 업데이트
+#  aws cloudformation update-stack \
+#  --stack-name stack-weplat2-ap2-sg \
+#  --template-body file://02_sg_group_cloudformation.yaml \
+#  --capabilities CAPABILITY_NAMED_IAM
+#  3. VPC 삭제
+#  aws cloudformation delete-stack --stack-name stack-weplat2-ap2-sg
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template for creating Security Groups for weplat2-ap2 VPC.
+
+Resources:
+
+  # Security Group for Bastion
+  BastionSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: weplat2-ap2-Bastion-sg
+      GroupDescription: Bastion SG
+      VpcId: !ImportValue WeplatVPCId  # Importing VPC ID from the other template
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 220.76.144.217/32 # Replace with Office IP CIDR
+          Description: Office IP
+
+  # Security Group for External ALB
+  ExtAlbSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: weplat2-ap2-Web-alb-sg
+      GroupDescription: weplat2-ap2-Web-alb-sg
+      VpcId: !ImportValue WeplatVPCId  # Importing VPC ID from the other template
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+          Description: Allow HTTP traffic
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+          Description: Allow HTTPS traffic
+
+  # Security Group for Web Servers
+  WebSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: weplat2-ap2-Web-sg
+      GroupDescription: weplat2-ap2-Web-sg
+      VpcId: !ImportValue WeplatVPCId  # Importing VPC ID from the other template
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          SourceSecurityGroupId: !Ref BastionSG
+          Description: Allow SSH from Bastion
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourceSecurityGroupId: !Ref ExtAlbSG
+          Description: Allow HTTP from Web ALB
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          SourceSecurityGroupId: !Ref ExtAlbSG
+          Description: Allow HTTPS from Web ALB
+
+  # Security Group for Internal ALB
+  IntAlbSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: weplat2-ap2-WAS-alb-sg
+      GroupDescription: weplat2-ap2-WAS-alb-sg
+      VpcId: !ImportValue WeplatVPCId  # Importing VPC ID from the other template
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          SourceSecurityGroupId: !Ref WebSG
+          Description: Allow TCP 8080 from Web SG
+        - IpProtocol: tcp
+          FromPort: 8888
+          ToPort: 8888
+          SourceSecurityGroupId: !Ref WebSG
+          Description: Allow TCP 8888 from Web SG
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 220.76.144.217/32 # Replace with Office IP CIDR
+          Description: Office IP for TCP 8080
+        - IpProtocol: tcp
+          FromPort: 8888
+          ToPort: 8888
+          CidrIp: 220.76.144.217/32 # Replace with Office IP CIDR
+          Description: Office IP for TCP 8888
+
+  # Security Group for WAS
+  WasSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: weplat2-ap2-WAS-sg
+      GroupDescription: WAS SG
+      VpcId: !ImportValue WeplatVPCId  # Importing VPC ID from the other template
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          SourceSecurityGroupId: !Ref BastionSG
+          Description: Allow SSH from Bastion
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          SourceSecurityGroupId: !Ref IntAlbSG
+          Description: Allow TCP 8080 from WAS ALB
+        - IpProtocol: tcp
+          FromPort: 8888
+          ToPort: 8888
+          SourceSecurityGroupId: !Ref IntAlbSG
+          Description: Allow TCP 8888 from WAS ALB
+
+  # Security Group for DB
+  DbSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: weplat2-ap2-DB-sg
+      GroupDescription: DB SG
+      VpcId: !ImportValue WeplatVPCId  # Importing VPC ID from the other template
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !Ref WasSG
+          Description: Allow MySQL/Aurora from WAS SG
