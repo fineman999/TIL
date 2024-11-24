@@ -199,3 +199,10 @@ Resources:
     Properties:
       SubnetId: !Ref PrivateSubnet4
       RouteTableId: !Ref PrivateRouteTable
+
+Outputs:
+  WeplatVPCId:
+    Description: "ID of the created VPC"
+    Value: !Ref WeplatVPC
+    Export:
+      Name: WeplatVPCId
