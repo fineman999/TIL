@@ -1,0 +1,64 @@
+
+# 0. 사전 준비
+# 0.1 키 페어 생성(동일 리전)
+# aws ec2 create-key-pair --key-name weplat2-ap2-key --query 'KeyMaterial' --output text > weplat2-ap2-key.pem
+# 0.2 키 페어 권한 설정
+# chmod 400 weplat2-ap2-key.pem
+# 0.3 키 존재하는지 확인
+# aws ec2 describe-key-pairs --key-name weplat2-ap2-key
+# aws ec2 describe-key-pairs --query 'KeyPairs[*].KeyName'
+# 1. VPC 생성
+# aws cloudformation create-stack \
+#   --stack-name stack-weplat2-ap2-bastion \
+#   --template-body file://03_bastion_cloudformation.yaml \
+#   --parameters ParameterKey=KeyPairName,ParameterValue=weplat2-ap2-key \
+#   --capabilities CAPABILITY_NAMED_IAM
+# 2. VPC 업데이트
+# aws cloudformation update-stack \
+# --stack-name stack-weplat2-ap2-bastion \
+# --template-body file://03_bastion_cloudformation.yaml \
+# --parameters ParameterKey=AMI,ParameterValue=ami-040c33c6a51fd5d96 \
+# --capabilities CAPABILITY_NAMED_IAM
+# 3. VPC 삭제
+# aws cloudformation delete-stack --stack-name stack-weplat2-ap2-bastion
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template to create a Bastion Server in the weplat2-ap2 VPC.
+
+Parameters:
+  AMI:
+    Type: AWS::EC2::Image::Id
+    Default: ami-040c33c6a51fd5d96 # Replace with the actual AMI ID for Ubuntu 24.04 LTS in your region
+  KeyPairName:
+    Description: Name of an existing EC2 Key Pair to enable SSH access
+    Type: String
+    Default: weplat2-ap2-key
+
+Resources:
+
+  BastionInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: !Ref AMI
+      KeyName: weplat2-ap2-key
+      SubnetId: !ImportValue WeplatSubnetPublic2Id
+      SecurityGroupIds:
+        - !ImportValue WeplatAp2BastionSGId
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 8
+            VolumeType: gp3
+      DisableApiTermination: true
+      Tags:
+        - Key: Name
+          Value: weplat2-ap2-Bastion
+
+Outputs:
+  BastionInstanceId:
+    Description: The ID of the Bastion server instance
+    Value: !Ref BastionInstance
+
+  BastionPublicIp:
+    Description: The public IP address of the Bastion server instance
+    Value: !GetAtt BastionInstance.PublicIp
