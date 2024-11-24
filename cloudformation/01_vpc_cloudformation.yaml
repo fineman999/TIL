@@ -1,0 +1,201 @@
+#  1. VPC 생성
+#  aws cloudformation create-stack \
+#    --stack-name my-stack \
+#    --template-body file://01_vpc_cloudformation.yaml \
+#    --capabilities CAPABILITY_NAMED_IAM
+#  2. VPC 업데이트
+#  aws cloudformation update-stack \
+#  --stack-name my-stack \
+#  --template-body file://01_vpc_cloudformation.yaml \
+#  --capabilities CAPABILITY_NAMED_IAM
+#  3. VPC 삭제
+#  aws cloudformation delete-stack --stack-name my-stack
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template for VPC with public and private subnets, NAT gateway, and routing tables.
+
+Resources:
+  WeplatVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true # DNS 허용
+      EnableDnsHostnames: true # DNS 호스트네임 허용
+      Tags:
+        - Key: Name
+          Value: weplat2-ap2-vpc
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway # 인터넷 게이트웨이 생성
+    Properties:
+      Tags:
+        - Key: Name
+          Value: weplat2-ap2-igw
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment # VPC와 인터넷 게이트웨이 연결
+    Properties:
+      VpcId: !Ref WeplatVPC # !Ref WeplatVPC : WeplatVPC 리소스의 식별자를 반환
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref WeplatVPC
+      CidrBlock: 10.0.0.0/24
+      AvailabilityZone: ap-northeast-2a
+      MapPublicIpOnLaunch: true # 인스턴스 생성시 자동으로 퍼블릭 IP 할당
+      Tags:
+        - Key: Name
+          Value: weplat2-ap2-subnet-public1
+
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref WeplatVPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: ap-northeast-2c
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: weplat2-ap2-subnet-public2
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref WeplatVPC
+      CidrBlock: 10.0.2.0/24
+      AvailabilityZone: ap-northeast-2a
+      Tags:
+        - Key: Name
+          Value: weplat2-ap2-subnet-private1
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref WeplatVPC
+      CidrBlock: 10.0.3.0/24
+      AvailabilityZone: ap-northeast-2c
+      Tags:
+        - Key: Name
+          Value: weplat2-ap2-subnet-private2
+
+  PrivateSubnet3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref WeplatVPC
+      CidrBlock: 10.0.4.0/24
+      AvailabilityZone: ap-northeast-2a
+      Tags:
+        - Key: Name
+          Value: weplat2-ap2-subnet-private3
+
+  PrivateSubnet4:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref WeplatVPC
+      CidrBlock: 10.0.5.0/24
+      AvailabilityZone: ap-northeast-2c
+      Tags:
+        - Key: Name
+          Value: weplat2-ap2-subnet-private4
+
+  PrivateSubnet5:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref WeplatVPC
+      CidrBlock: 10.0.6.0/24
+      AvailabilityZone: ap-northeast-2a
+      Tags:
+        - Key: Name
+          Value: weplat2-ap2-subnet-private5
+
+  PrivateSubnet6:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref WeplatVPC
+      CidrBlock: 10.0.7.0/24
+      AvailabilityZone: ap-northeast-2c
+      Tags:
+        - Key: Name
+          Value: weplat2-ap2-subnet-private6
+
+  NATGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      AllocationId: !GetAtt ElasticIP.AllocationId # !GetAtt ElasticIP.AllocationId : ElasticIP 리소스의 AllocationId 속성을 반환
+      Tags:
+        - Key: Name
+          Value: weplat2-ap2-ngw
+
+  ElasticIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref WeplatVPC
+      Tags:
+        - Key: Name
+          Value: weplat2-ap2-rtb-public
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet2
+      RouteTableId: !Ref PublicRouteTable
+
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref WeplatVPC
+      Tags:
+        - Key: Name
+          Value: weplat2-ap2-rtb-private
+
+  PrivateRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NATGateway
+
+  PrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet1
+      RouteTableId: !Ref PrivateRouteTable
+
+  PrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet2
+      RouteTableId: !Ref PrivateRouteTable
+
+  PrivateSubnet3RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet3
+      RouteTableId: !Ref PrivateRouteTable
+
+  PrivateSubnet4RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet4
+      RouteTableId: !Ref PrivateRouteTable
