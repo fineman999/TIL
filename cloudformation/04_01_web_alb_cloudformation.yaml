@@ -1,0 +1,113 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CloudFormation template for creating Security Groups for weplat2-ap2 VPC.
+
+Parameters:
+  AMI:
+    Type: AWS::EC2::Image::Id
+    Default: ami-040c33c6a51fd5d96 # Replace with the actual AMI ID for Ubuntu 24.04 LTS in your region
+  KeyPairName:
+    Description: Name of an existing EC2 Key Pair to enable SSH access
+    Type: String
+    Default: weplat2-ap2-key
+
+Resources:
+  WebServer1:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      KeyName: !Ref KeyPairName
+      SubnetId: !ImportValue WeplatSubnetPrivate1Id
+      SecurityGroupIds:
+        - !ImportValue WeplatAp2WebSGId
+      ImageId: !Ref AMI
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 8
+            VolumeType: gp3
+            DeleteOnTermination: true # 종료 시 삭제
+      DisableApiTermination: true # API를 통한 종료 방지
+      UserData:
+        Fn::Base64:
+          Fn::Join:
+            - ""
+            - - |
+                #!/bin/bash
+              - sudo yum -y update
+              - sudo yum install -y httpd
+              - sudo systemctl start httpd.service
+              - sudo systemctl enable httpd.service
+              - echo "WEB1" >> /var/www/html/index.html
+      Tags:
+        - Key: Name
+          Value: weplat2-ap2-Web-1
+  WebServer2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      KeyName: !Ref KeyPairName
+      SubnetId: !ImportValue WeplatSubnetPrivate2Id
+      SecurityGroupIds:
+        - !ImportValue WeplatAp2WebSGId
+      ImageId: !Ref AMI
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 8
+            VolumeType: gp3
+            DeleteOnTermination: true
+      DisableApiTermination: true
+      UserData:
+        Fn::Base64:
+          Fn::Join:
+            - ""
+            - - |
+                #!/bin/bash
+              - sudo yum -y update
+              - sudo yum install -y httpd
+              - sudo systemctl start httpd.service
+              - sudo systemctl enable httpd.service
+              - echo "WEB2" >> /var/www/html/index.html
+      Tags:
+        - Key: Name
+          Value: weplat2-ap2-Web-2
+  WebTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: weplat2-ap2-web-alb-tg
+      Protocol: HTTP
+      Port: 80
+      VpcId: !ImportValue WeplatVPCId
+      HealthCheckPath: /
+      HealthCheckEnabled: true
+      HealthCheckPort: "traffic-port" # 기본값(정의된 프로토콜 및 포트 사용)
+      HealthCheckProtocol: HTTP
+      HealthCheckIntervalSeconds: 10 # 10초마다
+      HealthCheckTimeoutSeconds: 5 # 5초 이내 응답 없으면 실패
+      HealthyThresholdCount: 3 # 3번 성공시
+      UnhealthyThresholdCount: 2 # 2번 실패시
+      Targets:
+        - Id: !Ref WebServer1
+        - Id: !Ref WebServer2
+  WebLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: weplat2-ap2-web-alb
+      Subnets:
+        - !ImportValue WeplatSubnetPublic1Id
+        - !ImportValue WeplatSubnetPublic2Id
+      SecurityGroups:
+        - !ImportValue WeplatAp2ExtAlbSGId
+      Scheme: internet-facing
+      LoadBalancerAttributes: # 로드 밸런서 속성
+        - Key: deletion_protection.enabled # 삭제 방지 활성화
+          Value: "true" # 활성화
+  WebLoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref WebLoadBalancer
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref WebTargetGroup

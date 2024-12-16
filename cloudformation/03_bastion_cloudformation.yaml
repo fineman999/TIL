@@ -49,6 +49,7 @@ Resources:
           Ebs:
             VolumeSize: 8
             VolumeType: gp3
+            DeleteOnTermination: true
       DisableApiTermination: true
       Tags:
         - Key: Name

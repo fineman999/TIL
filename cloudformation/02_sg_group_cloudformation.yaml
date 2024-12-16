@@ -146,3 +146,28 @@ Outputs:
       Value: !Ref BastionSG
       Export:
         Name: WeplatAp2BastionSGId
+    WeplatAp2WebSGId:
+      Description: "ID of the created Web SG"
+      Value: !Ref WebSG
+      Export:
+        Name: WeplatAp2WebSGId
+    WeplatAp2WASSGId:
+      Description: "ID of the created WAS SG"
+      Value: !Ref WasSG
+      Export:
+        Name: WeplatAp2WASSGId
+    WeplatAp2DBSGId:
+      Description: "ID of the created DB SG"
+      Value: !Ref DbSG
+      Export:
+        Name: WeplatAp2DBSGId
+    WeplatAp2ExtAlbSGId:
+      Description: "ID of the created External ALB SG"
+      Value: !Ref ExtAlbSG
+      Export:
+        Name: WeplatAp2ExtAlbSGId
+    WeplatAp2IntAlbSGId:
+      Description: "ID of the created Internal ALB SG"
+      Value: !Ref IntAlbSG
+      Export:
+        Name: WeplatAp2IntAlbSGId

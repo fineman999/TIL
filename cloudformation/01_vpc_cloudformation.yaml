@@ -211,3 +211,33 @@ Outputs:
     Value: !Ref PublicSubnet2
     Export:
       Name: WeplatSubnetPublic2Id
+  WeplatSubnetPrivate1Id:
+    Description: "ID of the created Private Subnet 1"
+    Value: !Ref PrivateSubnet1
+    Export:
+      Name: WeplatSubnetPrivate1Id
+  WeplatSubnetPrivate2Id:
+    Description: "ID of the created Private Subnet 2"
+    Value: !Ref PrivateSubnet2
+    Export:
+      Name: WeplatSubnetPrivate2Id
+  WeplatSubnetPrivate3Id:
+    Description: "ID of the created Private Subnet 3"
+    Value: !Ref PrivateSubnet3
+    Export:
+      Name: WeplatSubnetPrivate3Id
+  WeplatSubnetPrivate4Id:
+    Description: "ID of the created Private Subnet 4"
+    Value: !Ref PrivateSubnet4
+    Export:
+      Name: WeplatSubnetPrivate4Id
+  WeplatSubnetPrivate5Id:
+    Description: "ID of the created Private Subnet 5"
+    Value: !Ref PrivateSubnet5
+    Export:
+      Name: WeplatSubnetPrivate5Id
+  WeplatSubnetPrivate6Id:
+    Description: "ID of the created Private Subnet 6"
+    Value: !Ref PrivateSubnet6
+    Export:
+      Name: WeplatSubnetPrivate6Id
