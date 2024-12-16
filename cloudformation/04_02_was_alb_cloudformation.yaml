@@ -1,0 +1,176 @@
+# 1. TEMPLATE 생성
+# aws cloudformation create-stack \
+#   --stack-name stack-weplat2-ap2-was-alb \
+#   --template-body file://04_02_was_alb_cloudformation.yaml \
+#   --parameters ParameterKey=KeyPairName,ParameterValue=weplat2-ap2-key \
+#   --capabilities CAPABILITY_NAMED_IAM
+# 2. TEMPLATE 업데이트
+# aws cloudformation update-stack \
+# --stack-name stack-weplat2-ap2-was-alb \
+# --template-body file://04_02_was_alb_cloudformation.yaml \
+# --parameters ParameterKey=AMI,ParameterValue=ami-040c33c6a51fd5d96 \
+# --capabilities CAPABILITY_NAMED_IAM
+# 3. TEMPLATE 삭제
+# aws cloudformation delete-stack --stack-name stack-weplat2-ap2-was-alb
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CloudFormation template for creating ALB and EC2 instances for weplat-ap2 VPC.
+
+Parameters:
+  AMI:
+    Type: AWS::EC2::Image::Id
+    Default: ami-040c33c6a51fd5d96 # Replace with the actual AMI ID for Ubuntu 24.04 LTS in your region
+  KeyPairName:
+    Description: Name of an existing EC2 Key Pair to enable SSH access
+    Type: String
+    Default: weplat2-ap2-key
+
+
+Resources:
+  WASServer1:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      KeyName: !Ref KeyPairName
+      SubnetId: !ImportValue WeplatSubnetPrivate3Id
+      SecurityGroupIds:
+        - !ImportValue WeplatAp2WASSGId
+      ImageId: !Ref AMI
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda # AWS EC2 인스턴스에 연결될 EBS(Elastic Block Store) 볼륨을 지정할 때 사용되는 파라미터
+          Ebs:
+            VolumeSize: 8
+            VolumeType: gp3
+            DeleteOnTermination: true # 종료 시 삭제
+      DisableApiTermination: true # API를 통한 종료 방지
+      UserData:
+        Fn::Base64:
+          Fn::Join:
+            - ""
+            - - |
+                #!/bin/bash
+              - sudo yum -y update
+              - sudo yum install java-11-amazon-corretto.x86_64 -y
+              - sudo groupadd --system tomcat
+              - sudo useradd -d /usr/share/tomcat -r -s /bin/false -g tomcat tomcat
+              - export VER="9.0.63"
+              - wget https://archive.apache.org/dist/tomcat/tomcat-9/v${VER}/bin/apache-tomcat-${VER}.tar.gz
+              - sudo tar xvf apache-tomcat-${VER}.tar.gz -C /usr/share/
+              - sudo ln -s /usr/share/apache-tomcat-$VER/ /usr/share/tomcat
+              - sudo chown -R tomcat:tomcat /usr/share/tomcat
+              - sudo systemctl daemon-reload
+              - sudo systemctl start tomcat
+              - sudo systemctl enable tomcat
+      Tags:
+        - Key: Name
+          Value: weplat2-ap2-WAS-1
+  WASServer2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      KeyName: !Ref KeyPairName
+      SubnetId: !ImportValue WeplatSubnetPrivate4Id
+      SecurityGroupIds:
+        - !ImportValue WeplatAp2WASSGId
+      ImageId: !Ref AMI
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 8
+            VolumeType: gp3
+            DeleteOnTermination: true
+      DisableApiTermination: true
+      UserData:
+        Fn::Base64:
+          Fn::Join:
+            - ""
+            - - |
+                #!/bin/bash
+              - sudo yum -y update
+              - sudo yum install java-11-amazon-corretto.x86_64 -y
+              - sudo groupadd --system tomcat
+              - sudo useradd -d /usr/share/tomcat -r -s /bin/false -g tomcat tomcat
+              - export VER="9.0.63"
+              - wget https://archive.apache.org/dist/tomcat/tomcat-9/v${VER}/bin/apache-tomcat-${VER}.tar.gz
+              - sudo tar xvf apache-tomcat-${VER}.tar.gz -C /usr/share/
+              - sudo ln -s /usr/share/apache-tomcat-$VER/ /usr/share/tomcat
+              - sudo chown -R tomcat:tomcat /usr/share/tomcat
+              - sudo systemctl daemon-reload
+              - sudo systemctl start tomcat
+              - sudo systemctl enable tomcat
+      Tags:
+        - Key: Name
+          Value: weplat2-ap2-WAS-2
+
+  WASTargetGroup8080:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: weplat2-ap2-was-alb-tg-8080
+      Protocol: HTTP
+      Port: 8080
+      VpcId: !ImportValue WeplatVPCId
+      HealthCheckPath: /
+      HealthCheckPort: "traffic-port" # 기본값(정의된 프로토콜 및 포트 사용)
+      HealthCheckProtocol: HTTP
+      HealthCheckIntervalSeconds: 10 # 10초마다
+      HealthCheckTimeoutSeconds: 5 # 5초 이내 응답 없으면 실패
+      HealthyThresholdCount: 3 # 3번 성공시
+      UnhealthyThresholdCount: 2 # 2번 실패시
+      Targets:
+        - Id: !Ref WASServer1
+          Port: 8080
+        - Id: !Ref WASServer2
+          Port: 8080
+
+  WASTargetGroup8888:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: weplat2-ap2-was-alb-tg-8888
+      Protocol: HTTP
+      Port: 8888
+      VpcId: weplat2-ap2-vpc
+      HealthCheckPath: /
+      HealthCheckPort: "traffic-port" # 기본값(정의된 프로토콜 및 포트 사용)
+      HealthCheckProtocol: HTTP
+      HealthCheckIntervalSeconds: 10 # 10초마다
+      HealthCheckTimeoutSeconds: 5 # 5초 이내 응답 없으면 실패
+      HealthyThresholdCount: 3 # 3번 성공시
+      UnhealthyThresholdCount: 2 # 2번 실패시
+      Targets:
+        - Id: !Ref WASServer1
+          Port: 8888
+        - Id: !Ref WASServer2
+          Port: 8888
+
+  WASLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: weplat2-ap2-was-alb
+      Subnets:
+        - !ImportValue WeplatSubnetPrivate3Id
+        - !ImportValue WeplatSubnetPrivate4Id
+      SecurityGroups:
+        - !ImportValue WeplatAp2IntAlbSGId
+      Scheme: internal # 내부용
+      LoadBalancerAttributes:
+        - Key: deletion_protection.enabled
+          Value: "true"
+
+  WASLoadBalancerListener8080:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref WASLoadBalancer
+      Port: 8080
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref WASTargetGroup8080
+
+  WASLoadBalancerListener8888:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref WASLoadBalancer
+      Port: 8888
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref WASTargetGroup8888

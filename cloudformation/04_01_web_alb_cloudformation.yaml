@@ -1,5 +1,22 @@
+# 1. 사전에 할일
+# DNS 호스트네임 활성화
+# 내부간의 통신을 위한 SSL 인증서 생성
+# 1. TEMPLATE 생성
+# aws cloudformation create-stack \
+#   --stack-name stack-weplat2-ap2-web-alb \
+#   --template-body file://04_01_web_alb_cloudformation.yaml \
+#   --parameters ParameterKey=KeyPairName,ParameterValue=weplat2-ap2-key \
+#   --capabilities CAPABILITY_NAMED_IAM
+# 2. TEMPLATE 업데이트
+# aws cloudformation update-stack \
+# --stack-name stack-weplat2-ap2-web-alb \
+# --template-body file://04_01_web_alb_cloudformation.yaml \
+# --parameters ParameterKey=AMI,ParameterValue=ami-040c33c6a51fd5d96 \
+# --capabilities CAPABILITY_NAMED_IAM
+# 3. TEMPLATE 삭제
+# aws cloudformation delete-stack --stack-name stack-weplat2-ap2-web-alb
 AWSTemplateFormatVersion: "2010-09-09"
-Description: CloudFormation template for creating Security Groups for weplat2-ap2 VPC.
+Description: CloudFormation template for creating ALB and EC2 instances for weplat-ap2 VPC.
 
 Parameters:
   AMI:
