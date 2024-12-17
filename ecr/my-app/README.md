@@ -1,70 +1,46 @@
-# Getting Started with Create React App
+## 1.1 AWS ECR 도커 로그아웃
+```bash
+docker logout <ECR URI>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+ex) docker logout 183295419955.dkr.ecr.ap-northeast-2.amazonaws.com/weplat2/namespace
+```
 
-## Available Scripts
+## 2. AWS Docker 빌드 및 태그
+```bash
+docker build -t <ECR URI>:<tag> .
 
-In the project directory, you can run:
+```
 
-### `yarn start`
+##  3. AWS ECR 도커 인증하기
+```bash
+aws ecr get-login-password --region <region> | docker login --username AWS --password-stdin <ECR URI>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Login Succeeded
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `yarn test`
+## 3. 이미지를 ECR에 푸시
+```bash
+docker push <ECR URI>:<tag>
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 4. ECR에 이미지가 잘 올라갔는지 확인
+```bash
+aws ecr describe-images --repository-name <repository-name>
 
-### `yarn build`
+ex) aws ecr describe-images --repository-name weplat2/namespace
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 5. ECR에 있는 이미지를 EC2에 로그인하고, aws configure 설정
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 6.ECR에 업로드한 이미지를 EC2에서 다운로드
+```bash
+docker pull <ECR URI>:<tag>
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 7. 다운로드한 이미지를 실행
+```bash
+docker run -d -p 80:80 <ECR URI>:<tag>
 
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+ex) docker run -d -p 3001:3000 --name dev-container -e NODE_ENV=dev --restart always my-dev-image
+```
