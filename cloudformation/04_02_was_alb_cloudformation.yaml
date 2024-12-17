@@ -29,7 +29,7 @@ Resources:
   WASServer1:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType: t3.micro
+      InstanceType: t2.micro
       KeyName: !Ref KeyPairName
       SubnetId: !ImportValue WeplatSubnetPrivate3Id
       SecurityGroupIds:
@@ -146,8 +146,8 @@ Resources:
     Properties:
       Name: weplat2-ap2-was-alb
       Subnets:
-        - !ImportValue WeplatSubnetPrivate3Id
-        - !ImportValue WeplatSubnetPrivate4Id
+        - !ImportValue WeplatSubnetPrivate1Id
+        - !ImportValue WeplatSubnetPrivate2Id
       SecurityGroups:
         - !ImportValue WeplatAp2IntAlbSGId
       Scheme: internal # 내부용
