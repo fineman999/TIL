@@ -1,0 +1,35 @@
+# 1. S3 버킷 생성(만들고 폴더 생성)
+# aws cloudformation create-stack \
+#   --stack-name stack-weplat2-ap2-s3 \
+#   --template-body file://05_s3_for_code_deploy.yaml \
+#   --capabilities CAPABILITY_NAMED_IAM
+#   --profile work
+# 2. S3 버킷 업데이트
+# aws cloudformation update-stack \
+# --stack-name stack-weplat2-ap2-s3 \
+# --template-body file://05_s3_for_code_deploy.yaml \
+# --capabilities CAPABILITY_NAMED_IAM
+# 3. S3 버킷 삭제
+# aws cloudformation delete-stack --stack-name stack-weplat2-ap2-s3
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  Weplot2DeployBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: 'weplot2-deploy-bucket'
+      AccessControl: 'Private'  # ACL 비활성화
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true   # 모든 퍼블릭 액세스 차단
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: 'Suspended'  # 버전 관리 비활성화
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: 'AES256'  # SSE-S3 암호화
+            BucketKeyEnabled: true
+      Tags:
+        - Key: 'Name'
+          Value: 'Weplot2DeployBucket'
