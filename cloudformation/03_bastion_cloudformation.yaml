@@ -27,11 +27,11 @@ Description: CloudFormation template to create a Bastion Server in the weplat2-a
 Parameters:
   AMI:
     Type: AWS::EC2::Image::Id
-    Default: ami-040c33c6a51fd5d96 # Replace with the actual AMI ID for Ubuntu 24.04 LTS in your region
+    Default: ami-048c8b90bfe9b49b8 # Replace with the actual AMI ID for Ubuntu 24.04 LTS in your region
   KeyPairName:
     Description: Name of an existing EC2 Key Pair to enable SSH access
     Type: String
-    Default: weplat2-ap2-key
+    Default: weplat-ap2-key
 
 Resources:
 
@@ -40,7 +40,7 @@ Resources:
     Properties:
       InstanceType: t2.micro
       ImageId: !Ref AMI
-      KeyName: weplat2-ap2-key
+      KeyName: !Ref KeyPairName
       SubnetId: !ImportValue WeplatSubnetPublic2Id
       SecurityGroupIds:
         - !ImportValue WeplatAp2BastionSGId

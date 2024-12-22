@@ -1,0 +1,115 @@
+#  1. yaml 유효성 검사
+#  aws cloudformation validate-template --template-body file://06_rds_cloudformation.yaml
+#  2. 스택 생성
+#  aws cloudformation create-stack \
+#    --stack-name stack-weplat2-ap2-rds \
+#    --template-body file://06_rds_cloudformation.yaml \
+#    --capabilities CAPABILITY_NAMED_IAM
+#  3. 스택 업데이트
+#  aws cloudformation update-stack \
+#  --stack-name stack-weplat2-ap2-rds \
+#  --template-body file://06_rds_cloudformation.yaml \
+#  --capabilities CAPABILITY_NAMED_IAM
+#  4. 스택 삭제
+#  aws cloudformation delete-stack --stack-name stack-weplat2-ap2-rds
+#  5. 스택 로그 확인
+#  aws cloudformation describe-stack-events --stack-name stack-weplat2-ap2-rds
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation Template for RDS with Subnet Group, Parameter Group, and Option Group
+
+Parameters:
+  CreateMonitoringRole:
+    Type: String
+    Default: "true"
+    AllowedValues:
+      - "true"
+      - "false"
+    Description: "Whether to create the RDS Monitoring IAM role."
+
+Conditions:
+  ShouldCreateMonitoringRole: !Equals [ !Ref CreateMonitoringRole, "true" ]
+
+Resources:
+  # IAM Role for RDS Enhanced Monitoring (Only if condition is true)
+  RDSMonitoringRole:
+    Type: AWS::IAM::Role
+    Condition: ShouldCreateMonitoringRole
+    Properties:
+      RoleName: RDSMonitoringRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              Service: monitoring.rds.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupName: weplat-ap2-db-subnet-group
+      DBSubnetGroupDescription: weplat-ap2-db-subnet-group
+      SubnetIds:
+        - !ImportValue WeplatSubnetPrivate5Id
+        - !ImportValue WeplatSubnetPrivate6Id
+
+  DBParameterGroup:
+    Type: AWS::RDS::DBParameterGroup
+    Properties:
+      DBParameterGroupName: weplat-ap2-db-pg
+      Description: weplat-ap2-db-pg
+      Family: mysql8.0
+      Parameters:
+        max_connections: '150'
+        # Add additional parameters as needed
+
+  DBOptionGroup:
+    Type: AWS::RDS::OptionGroup
+    Properties:
+      OptionGroupName: weplat-ap2-db-og
+      EngineName: mysql
+      MajorEngineVersion: 8.0
+      OptionGroupDescription: weplat-ap2-db-og
+#      Options: []
+      # Add options if needed
+
+  DBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: weplat-ap2-rds
+      AllocatedStorage: 20
+      MaxAllocatedStorage: 100
+      DBInstanceClass: db.t3.medium
+      Engine: mysql
+      EngineVersion: 8.0.39
+      MasterUsername: weplat
+      MasterUserPassword: weplat1!
+      MultiAZ: true
+      PubliclyAccessible: false
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      VPCSecurityGroups:
+        - !ImportValue WeplatAp2DBSGId
+      BackupRetentionPeriod: 7
+      StorageType: gp3
+      AutoMinorVersionUpgrade: false
+      EnablePerformanceInsights: true
+      PerformanceInsightsRetentionPeriod: 7
+      MonitoringInterval: 60
+      MonitoringRoleArn:
+        Fn::If:
+          - ShouldCreateMonitoringRole
+          - !GetAtt RDSMonitoringRole.Arn
+          - !Ref "AWS::NoValue"
+      KmsKeyId: alias/aws/rds
+      DBParameterGroupName: !Ref DBParameterGroup
+      OptionGroupName: !Ref DBOptionGroup
+      DeletionProtection: true
+      EnableIAMDatabaseAuthentication: false
+      StorageEncrypted: true
+      EnableCloudwatchLogsExports: # Add log exports configuration here
+        - audit
+        - error
+      Tags:
+        - Key: Environment
+          Value: Development
