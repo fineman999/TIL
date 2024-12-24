@@ -1,0 +1,31 @@
+# 1. yaml 유효성 검사
+# aws cloudformation validate-template --template-body file://04_03_ecr_private_cloudformation.yaml
+# 2. 스택 생성
+# aws cloudformation create-stack \
+#   --stack-name stack-weplat2-ap2-ecr \
+#   --template-body file://04_03_ecr_private_cloudformation.yaml \
+#   --capabilities CAPABILITY_NAMED_IAM
+# 3. 스택 업데이트
+# aws cloudformation update-stack \
+# --stack-name stack-weplat2-ap2-ecr \
+# --template-body file://04_03_ecr_private_cloudformation.yaml \
+# --capabilities CAPABILITY_NAMED_IAM
+# 4. 스택 삭제
+# aws cloudformation delete-stack --stack-name stack-weplat2-ap2-ecr
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template to create a private ECR repository.
+
+Resources:
+  ECRRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: fineman999/weplat2-ap2
+      ImageTagMutability: MUTABLE
+      EncryptionConfiguration:
+        EncryptionType: AES256
+
+Outputs:
+  RepositoryURI:
+    Description: The URI of the created ECR repository
+    Value: !GetAtt ECRRepository.RepositoryUri
