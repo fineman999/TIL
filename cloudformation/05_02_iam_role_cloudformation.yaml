@@ -1,0 +1,88 @@
+# 1. yaml 유효성 검사
+# aws cloudformation validate-template --template-body file://05_02_iam_role_cloudformation.yaml
+# 2. 스택 생성
+# aws cloudformation create-stack \
+#   --stack-name stack-weplat2-ap2-iam-role \
+#   --template-body file://05_02_iam_role_cloudformation.yaml \
+#   --capabilities CAPABILITY_NAMED_IAM
+# 3. 스택 업데이트
+# aws cloudformation update-stack \
+# --stack-name stack-weplat2-ap2-iam-role \
+# --template-body file://05_02_iam_role_cloudformation.yaml \
+# --capabilities CAPABILITY_NAMED_IAM
+# 4. 스택 삭제
+# aws cloudformation delete-stack --stack-name stack-weplat2-ap2-iam-role
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template to create an IAM role for GitHub Actions with specific permissions.
+
+Resources:
+  ECRGithubActionsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: ecr-github-actions-v2
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: arn:aws:iam::183295419955:oidc-provider/token.actions.githubusercontent.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              StringLike:
+                token.actions.githubusercontent.com:sub: repo:fineman999/*
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPullOnly
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/AWSCodeDeployFullAccess
+  # 추가된 code-deploy-role 역할
+  CodeDeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: code-deploy-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: ""
+            Effect: Allow
+            Principal:
+              Service: codedeploy.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole
+
+  # 추가된 ec2-code-deploy-role 역할
+  EC2CodeDeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: ec2-code-deploy-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+        - arn:aws:iam::aws:policy/AWSCodeDeployFullAccess
+        -
+Outputs:
+  ECRGithubActionsRoleArn:
+    Description: The ARN of the IAM role for GitHub Actions
+    Value: !GetAtt ECRGithubActionsRole.Arn
+
+  CodeDeployRoleArn:
+    Description: The ARN of the IAM role for CodeDeploy
+    Value: !GetAtt CodeDeployRole.Arn
+
+  EC2CodeDeployRoleArn:
+    Description: The ARN of the IAM role for EC2 CodeDeploy
+    Value: !GetAtt EC2CodeDeployRole.Arn
