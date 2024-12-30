@@ -1,0 +1,117 @@
+# 1. yaml 유효성 검사
+# aws cloudformation validate-template --template-body file://10_web_auto_scaling_group_cloudformation.yaml
+# 2. 스택 생성
+# aws cloudformation create-stack \
+#   --stack-name stack-weplat2-ap2-web \
+#   --template-body file://10_web_auto_scaling_group_cloudformation.yaml \
+#   --capabilities CAPABILITY_NAMED_IAM
+# 3. 스택 업데이트
+# aws cloudformation update-stack \
+# --stack-name stack-weplat2-ap2-web \
+# --template-body file://10_web_auto_scaling_group_cloudformation.yaml \
+# --capabilities CAPABILITY_NAMED_IAM
+# 4. 스택 삭제
+# aws cloudformation delete-stack --stack-name stack-weplat2-ap2-web
+# 5. 스택 로그 확인
+# aws cloudformation describe-stack-events --stack-name stack-weplat2-ap2-web
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CloudFormation template for creating ALB, Web EC2 instances, and Auto Scaling Group in weplat-ap2 VPC.
+
+Parameters:
+  AMI:
+    Type: AWS::EC2::Image::Id
+    Default: ami-048c8b90bfe9b49b8 # Replace with the actual AMI ID for Ubuntu 24.04 LTS in your region
+  KeyPairName:
+    Description: Name of an existing EC2 Key Pair to enable SSH access
+    Type: String
+    Default: weplat-work-ap2-key
+
+Resources:
+  WebLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: weplat-ap2-Web-ASG-LT
+      LaunchTemplateData:
+        InstanceType: t2.micro
+        KeyName: !Ref KeyPairName
+        ImageId: !Ref AMI
+        SecurityGroupIds:
+          - !ImportValue WeplatAp2WebSGId
+        IamInstanceProfile:
+          Name: !ImportValue WeplatCWAgentInstanceProfileName
+        BlockDeviceMappings:
+          - DeviceName: /dev/xvda
+            Ebs:
+              VolumeSize: 20
+              VolumeType: gp3
+              DeleteOnTermination: true
+        UserData:
+          Fn::Base64:
+            Fn::Sub: |
+              #!/bin/bash
+              sudo yum -y update
+              sudo yum install -y httpd
+              sudo systemctl start httpd.service
+              sudo systemctl enable httpd.service
+              echo "Welcome to Web Instance" > /var/www/html/index.html
+
+  WebAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: weplat-ap2-Web-ASG
+      LaunchTemplate:
+        LaunchTemplateId: !Ref WebLaunchTemplate
+        Version: !GetAtt WebLaunchTemplate.LatestVersionNumber
+      MinSize: 2
+      MaxSize: 4
+      DesiredCapacity: 2
+      VPCZoneIdentifier:
+        - !ImportValue WeplatSubnetPrivate1Id
+        - !ImportValue WeplatSubnetPrivate2Id
+      TargetGroupARNs:
+        - !Ref WebTargetGroup
+      Tags:
+        - Key: Name
+          Value: weplat-ap2-Web
+          PropagateAtLaunch: true
+        - Key: Backup
+          Value: "Yes"
+          PropagateAtLaunch: true
+
+  WebTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: weplat-ap2-web-alb-tg
+      Protocol: HTTP
+      Port: 80
+      VpcId: !ImportValue WeplatVPCId
+      HealthCheckPath: /
+      HealthCheckEnabled: true
+      HealthCheckIntervalSeconds: 10
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 3
+      UnhealthyThresholdCount: 2
+
+  WebLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: weplat-ap2-web-alb
+      Subnets:
+        - !ImportValue WeplatSubnetPublic1Id
+        - !ImportValue WeplatSubnetPublic2Id
+      SecurityGroups:
+        - !ImportValue WeplatAp2ExtAlbSGId
+      Scheme: internet-facing
+      LoadBalancerAttributes:
+        - Key: deletion_protection.enabled
+          Value: "false"
+
+  WebLoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref WebLoadBalancer
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref WebTargetGroup

@@ -37,10 +37,11 @@ Resources:
               - sudo amazon-linux-extras install docker
               - sudo service docker start
               - sudo usermod -a -G docker ec2-user
-              - sudo yum install python3-pip
-              - sudo pip3 install docker-compose
-              - docker-compose --version
-              - docker --version
+              - sudo apt install ruby
+              - sudo apt install wget
+              - cd ~ && wget https://aws-codedeploy-ap-northeast-2.s3.ap-northeast-2.amazonaws.com/latest/install
+              - sudo chmod +x ./install
+              - sudo ./install auto
       Tags:
         - Key: Name
           Value: weplat2-ap2-Web-1

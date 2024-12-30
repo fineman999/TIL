@@ -31,7 +31,7 @@ Parameters:
   KeyPairName:
     Description: Name of an existing EC2 Key Pair to enable SSH access
     Type: String
-    Default: weplat-ap2-key
+    Default: weplat-work-ap2-key
 
 Resources:
 
@@ -49,8 +49,8 @@ Resources:
           Ebs:
             VolumeSize: 8
             VolumeType: gp3
-            DeleteOnTermination: true
-      DisableApiTermination: true
+            DeleteOnTermination: false
+      DisableApiTermination: false
       Tags:
         - Key: Name
           Value: weplat2-ap2-Bastion

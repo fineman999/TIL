@@ -12,7 +12,8 @@
 # --capabilities CAPABILITY_NAMED_IAM
 # 4. 스택 삭제
 # aws cloudformation delete-stack --stack-name stack-weplat2-ap2-iam-role
-
+# 5. 스택 로그 확인
+# aws cloudformation describe-stack-events --stack-name stack-weplat2-ap2-iam-role
 AWSTemplateFormatVersion: '2010-09-09'
 Description: CloudFormation template to create an IAM role for GitHub Actions with specific permissions.
 
@@ -44,7 +45,7 @@ Resources:
   CodeDeployRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: code-deploy-role
+      RoleName: code-deploy-role-v2
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -60,7 +61,7 @@ Resources:
   EC2CodeDeployRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: ec2-code-deploy-role
+      RoleName: ec2-code-deploy-role-v2
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -73,7 +74,40 @@ Resources:
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
         - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
         - arn:aws:iam::aws:policy/AWSCodeDeployFullAccess
-        -
+
+  # 추가된 auto-scaling-role 역할(cloudwatch-agent-role)
+  CWAgentRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: weplat_CW_Agent_Role-v2
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              Service: ec2.amazonaws.com
+      Policies:
+        - PolicyName: CloudWatchAgentPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'cloudwatch:PutMetricData'
+                  - 'cloudwatch:GetMetricData'
+                  - 'cloudwatch:GetDashboard'
+                  - 'cloudwatch:DescribeAlarms'
+                  - 'ec2:DescribeInstances'
+                  - 'ec2:DescribeTags'
+                Resource: '*'
+  # 추가된 auto-scaling-instance-profile 인스턴스 프로필
+  CWAgentInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: weplat_CW_Agent_InstanceProfile
+      Roles:
+        - !Ref CWAgentRole
 Outputs:
   ECRGithubActionsRoleArn:
     Description: The ARN of the IAM role for GitHub Actions
@@ -86,3 +120,11 @@ Outputs:
   EC2CodeDeployRoleArn:
     Description: The ARN of the IAM role for EC2 CodeDeploy
     Value: !GetAtt EC2CodeDeployRole.Arn
+  WeplatCWAgentRoleName:
+    Description: The name of the IAM role for CloudWatch Agent
+    Value: !Ref CWAgentRole
+  WeplatCWAgentInstanceProfileName:
+    Description: The name of the IAM instance profile for CloudWatch Agent
+    Value: !Ref CWAgentInstanceProfile
+    Export:
+      Name: WeplatCWAgentInstanceProfileName

@@ -206,6 +206,11 @@ Outputs:
     Value: !Ref WeplatVPC
     Export:
       Name: WeplatVPCId
+  WeplatSubnetPublic1Id:
+    Description: "ID of the created Public Subnet 1"
+    Value: !Ref PublicSubnet1
+    Export:
+      Name: WeplatSubnetPublic1Id
   WeplatSubnetPublic2Id:
     Description: "ID of the created Public Subnet 2"
     Value: !Ref PublicSubnet2

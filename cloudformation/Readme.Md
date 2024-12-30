@@ -16,3 +16,16 @@ export AWS_PROFILE=home
 # 프로필 전환 확인
 >> aws sts get-caller-identity
 ```
+
+# AWS Bastion Server로 EC2 접속
+```bash
+# Bastion Server로 접속
+>> ssh -i <PEM_FILE> ec2-user@<BASTION_PUBLIC_IP>
+
+# chmod 400 <PEM_FILE>
+>> chmod 400 weplat-work-ap2-key.pem
+
+# Bastion Server에서 EC2로 접속
+>> ssh -i <PEM_FILE> ec2-user@<EC2_PRIVATE_IP>
+ex ) ssh -i weplat-work-ap2-key.pem ec2-user@10.0.2.170
+```
