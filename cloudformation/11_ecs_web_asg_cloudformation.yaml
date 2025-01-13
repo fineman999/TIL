@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CloudFormation template to create ECS cluster with existing Auto Scaling Group in dod-ap2 VPC.
+
+Parameters:
+  ClusterName:
+    Type: String
+    Default: dod-cluster
+    Description: The name of the ECS cluster to create.
+
+Resources:
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref ClusterName
+
+  ECSAutoScalingGroupCapacityProvider:
+    Type: AWS::ECS::CapacityProvider
+    Properties:
+      Name: dod-capacity-provider
+      AutoScalingGroupProvider:
+        AutoScalingGroupArn: !Ref WebAutoScalingGroup
+        ManagedScaling:
+          Status: ENABLED
+          TargetCapacity: 100
+        ManagedTerminationProtection: ENABLED
+
+  ClusterCapacityProviderAssociations:
+    Type: AWS::ECS::ClusterCapacityProviderAssociations
+    Properties:
+      Cluster: !Ref ECSCluster
+      CapacityProviders:
+        - !Ref ECSAutoScalingGroupCapacityProvider
+      DefaultCapacityProviderStrategy:
+        - CapacityProvider: !Ref ECSAutoScalingGroupCapacityProvider
+          Weight: 1
+          Base: 1
+
+Outputs:
+  ECSClusterName:
+    Description: "The name of the created ECS cluster"
+    Value: !Ref ECSCluster
+    Export:
+      Name: ECSClusterName

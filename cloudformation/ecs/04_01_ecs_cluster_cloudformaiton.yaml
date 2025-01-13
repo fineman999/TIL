@@ -1,0 +1,37 @@
+# 1. ECS Cluster Stack 생성
+# aws cloudformation create-stack \
+#   --stack-name stack-weplat2-ap2-ecs-cluster \
+#   --template-body file://ecs/04_01_ecs_cluster_cloudformaiton.yaml \
+#   --capabilities CAPABILITY_NAMED_IAM
+
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CloudFormation template for ECS Cluster without Service Discovery
+
+Resources:
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: "AppEcsCluster"
+      CapacityProviders: ["FARGATE", "FARGATE_SPOT"]
+      ClusterSettings:
+        - Name: "containerInsights"
+          Value: "enabled"
+      Configuration:
+        ExecuteCommandConfiguration:
+          Logging: "DEFAULT"
+      DefaultCapacityProviderStrategy:
+        - CapacityProvider: "FARGATE"
+          Weight: 1
+        - CapacityProvider: "FARGATE_SPOT"
+          Weight: 0
+Outputs:
+  ECSClusterName:
+    Value: !Ref ECSCluster
+    Description: Name of the ECS Cluster
+    Export:
+      Name: AppEcsCluster
+  ECSClusterArn:
+    Value: !GetAtt ECSCluster.Arn
+    Description: ARN of the ECS Cluster
+    Export:
+      Name: AppEcsClusterArn

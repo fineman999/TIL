@@ -1,0 +1,78 @@
+# 1. Stack 생성
+# aws cloudformation create-stack \
+#   --stack-name stack-weplat2-ap2-ecs-service \
+#   --template-body file://ecs/04_ecs_service_cloudformation.yaml \
+#   --capabilities CAPABILITY_NAMED_IAM
+# 2. Stack 업데이트
+# aws cloudformation update-stack \
+# --stack-name stack-weplat2-ap2-ecs-service \
+# --template-body file://ecs/04_ecs_service_cloudformation.yaml \
+# --capabilities CAPABILITY_NAMED_IAM
+# 3. Stack 삭제
+# aws cloudformation delete-stack --stack-name stack-weplat2-ap2-ecs-service
+# 4. Stack 상태 확인
+# aws cloudformation describe-stacks --stack-name stack-weplat2-ap2-ecs-service
+# 5. Stack 스택 로그 확인
+# aws cloudformation describe-stack-events --stack-name stack-weplat2-ap2-ecs-service
+
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CloudFormation template for ECS Service with Auto Scaling, Load Balancing, and Deployment Options
+
+Resources:
+  ECSService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !ImportValue AppEcsCluster
+      ServiceName: "app-web-service"
+      LaunchType: "FARGATE"
+      PlatformVersion: "LATEST"
+      DesiredCount: 2
+      TaskDefinition: !ImportValue AppWebTaskDefinitionArn
+      DeploymentConfiguration:
+        DeploymentCircuitBreaker:
+          Enable: true
+          Rollback: true
+        MinimumHealthyPercent: 100 # 최소 실행 작업 비율 (%)
+        MaximumPercent: 200       # 최대 실행 작업 비율 (%)
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets:
+            - !ImportValue WeplatSubnetPrivate1Id
+            - !ImportValue WeplatSubnetPrivate2Id
+          SecurityGroups:
+            - !ImportValue WeplatAp2WebSGId
+          AssignPublicIp: "DISABLED"
+      LoadBalancers:
+        - ContainerName: "app-web"
+          ContainerPort: 8000
+          TargetGroupArn: !ImportValue AppWebAlbTgArn
+      SchedulingStrategy: REPLICA
+
+  ECSAutoScalingTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    DependsOn: ECSService # ECSService가 생성된 후에 생성되어야 함
+    Properties:
+      MaxCapacity: 4
+      MinCapacity: 2
+      ResourceId: !Join ["/", [service, !ImportValue AppEcsCluster, "app-web-service"]]
+      RoleARN: !ImportValue ECSAutoScalingRoleArn
+      ScalableDimension: ecs:service:DesiredCount
+      ServiceNamespace: ecs
+
+  ECSAutoScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: "app-web-asg-policy"
+      PolicyType: "TargetTrackingScaling"
+      ScalingTargetId: !Ref ECSAutoScalingTarget
+      TargetTrackingScalingPolicyConfiguration:
+        TargetValue: 70
+        PredefinedMetricSpecification:
+          PredefinedMetricType: ECSServiceAverageCPUUtilization
+        ScaleInCooldown: 300
+        ScaleOutCooldown: 300
+
+Outputs:
+  ECSServiceName:
+    Value: !Ref ECSService
+    Description: Name of the ECS service

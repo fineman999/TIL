@@ -1,0 +1,51 @@
+# 1. Stack 생성
+# aws cloudformation create-stack \
+#   --stack-name stack-weplat2-ap2-ecs-task-definition \
+#   --template-body file://ecs/03_task_definition_cloudformation.yaml \
+#   --capabilities CAPABILITY_NAMED_IAM
+# 2. Stack 업데이트
+# aws cloudformation update-stack \
+# --stack-name stack-weplat2-ap2-ecs-task-definition \
+# --template-body file://ecs/03_task_definition_cloudformation.yaml \
+# --capabilities CAPABILITY_NAMED_IAM
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CloudFormation template for ECS Task Definition
+
+Resources:
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: "/ecs/app-web"
+  ECSTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: "app-web-td"
+      Cpu: "256" # 0.25 vCPU
+      Memory: "2048" # 2GB
+      NetworkMode: "awsvpc"
+      RequiresCompatibilities:
+        - "FARGATE"
+      ExecutionRoleArn: !ImportValue AppWebExecutionRoleArn
+      TaskRoleArn: !ImportValue AppWebTaskRoleArn
+      ContainerDefinitions:
+        - Name: "app-web"
+          Image: "183295419955.dkr.ecr.ap-northeast-2.amazonaws.com/app-web"
+          Essential: true
+          PortMappings:
+            - ContainerPort: 8000
+              Protocol: tcp
+              Name: "app-web-8000-tcp"
+              AppProtocol: "http"
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group: "/ecs/app-web"
+              awslogs-region: "ap-northeast-2"
+              awslogs-stream-prefix: "app-web"
+
+Outputs:
+  TaskDefinitionArn:
+    Value: !Ref ECSTaskDefinition
+    Description: ARN of the ECS Task Definition
+    Export:
+      Name: AppWebTaskDefinitionArn

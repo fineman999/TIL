@@ -1,0 +1,106 @@
+
+# 1. Stack 생성
+# aws cloudformation create-stack \
+#   --stack-name stack-weplat2-ap2-iam-role \
+#   --template-body file://ecs/02_iam_roles_cloudformation.yaml \
+#   --capabilities CAPABILITY_NAMED_IAM
+# 2. Stack 업데이트
+# aws cloudformation update-stack \
+# --stack-name stack-weplat2-ap2-iam-role \
+# --template-body file://ecs/02_iam_roles_cloudformation.yaml \
+# --capabilities CAPABILITY_NAMED_IAM
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CloudFormation template for ECS IAM Roles
+
+Resources:
+  AppWebExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: "AppWebExecutionRole"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: "ecs-tasks.amazonaws.com"
+            Action: "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+        - "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+
+  AppWebTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: "AppWebTaskRole"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: "ecs-tasks.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: "AppWebTaskPolicy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:GetObject"
+                  - "s3:PutObject"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "*"
+
+  ECSServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: "ECSServiceRole"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service: "ecs.amazonaws.com"
+            Action: "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole"
+  ECSAutoScalingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: "ECSAutoScalingRole"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service: "application-autoscaling.amazonaws.com"
+            Action: "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceAutoscaleRole"
+        - "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole"
+
+Outputs:
+  AppWebExecutionRoleArn:
+    Value: !GetAtt AppWebExecutionRole.Arn
+    Description: ARN of the ECS Execution Role
+    Export:
+      Name: AppWebExecutionRoleArn
+
+  AppWebTaskRoleArn:
+    Value: !GetAtt AppWebTaskRole.Arn
+    Description: ARN of the ECS Task Role
+    Export:
+      Name: AppWebTaskRoleArn
+
+  ECSServiceRoleArn:
+    Value: !GetAtt ECSServiceRole.Arn
+    Description: ARN of the ECS Service Role
+    Export:
+      Name: ECSServiceRoleArn
+
+  ECSAutoScalingRoleArn:
+    Value: !GetAtt ECSAutoScalingRole.Arn
+    Description: ARN of the ECS Auto Scaling Role
+    Export:
+      Name: ECSAutoScalingRoleArn

@@ -11,7 +11,7 @@
 
 # 해당 프로필로 전환
 >> export AWS_PROFILE="<PROFILE_NAME>"
-export AWS_PROFILE=home
+export AWS_PROFILE=chanwork01
 
 # 프로필 전환 확인
 >> aws sts get-caller-identity
@@ -28,4 +28,20 @@ export AWS_PROFILE=home
 # Bastion Server에서 EC2로 접속
 >> ssh -i <PEM_FILE> ec2-user@<EC2_PRIVATE_IP>
 ex ) ssh -i weplat-work-ap2-key.pem ec2-user@10.0.2.170
+```
+
+# AWS EC2 Start init Script
+```bash
+
+#!/bin/bash
+sudo yum -y update
+sudo amazon-linux-extras install docker
+sudo service docker start
+sudo usermod -a -G docker ec2-user
+sudo apt install ruby
+sudo apt install wget
+cd ~ && wget https://aws-codedeploy-ap-northeast-2.s3.ap-northeast-2.amazonaws.com/latest/install
+sudo chmod +x ./install
+sudo ./install auto
+sudo service codedeploy-agent start
 ```

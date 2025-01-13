@@ -1,0 +1,72 @@
+#  1. stack 생성
+#  aws cloudformation create-stack \
+#    --stack-name stack-weplat2-ap2-web-alb \
+#    --template-body file://ecs/01_load_balancer_cloudformation.yaml \
+#    --capabilities CAPABILITY_NAMED_IAM
+#  2. stack 업데이트
+#  aws cloudformation update-stack \
+#  --stack-name stack-weplat2-ap2-web-alb \
+#  --template-body file://ecs/01_load_balancer_cloudformation.yaml \
+#  --capabilities CAPABILITY_NAMED_IAM
+#  3. stack 삭제
+#  aws cloudformation delete-stack --stack-name stack-weplat2-ap2-web-alb
+#  4. stack 로그 확인
+#  aws cloudformation describe-stack-events --stack-name stack-weplat2-ap2-web-alb
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CloudFormation template for an Internet-facing Application Load Balancer with Target Group and Listener
+
+Resources:
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: "app-web-alb"
+      Scheme: internet-facing
+      Subnets:
+        - !ImportValue WeplatSubnetPublic1Id
+        - !ImportValue WeplatSubnetPublic2Id
+      SecurityGroups:
+        - !ImportValue WeplatAp2ExtAlbSGId
+      IpAddressType: "ipv4"
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: "app-web-alb-tg"
+      TargetType: ip
+      Protocol: HTTP
+      Port: 8000
+      VpcId: !ImportValue WeplatVPCId
+      IpAddressType: ipv4
+      HealthCheckEnabled: true
+      HealthCheckPath: "/health"
+      HealthCheckProtocol: HTTP
+      HealthCheckPort: "traffic-port"
+      HealthCheckIntervalSeconds: 30
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 3
+      UnhealthyThresholdCount: 2
+      Matcher:
+        HttpCode: "200"
+
+  WebLoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Protocol: HTTP
+      Port: 80
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+
+Outputs:
+  LoadBalancerName:
+    Value: !Ref LoadBalancer
+    Description: Name of the load balancer
+    Export:
+      Name: !Sub AppWebAlbName
+
+  TargetGroupArn:
+    Value: !Ref TargetGroup
+    Description: ARN of the target group
+    Export:
+      Name: !Sub AppWebAlbTgArn

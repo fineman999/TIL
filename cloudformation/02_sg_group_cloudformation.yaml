@@ -72,6 +72,11 @@ Resources:
           ToPort: 443
           SourceSecurityGroupId: !Ref ExtAlbSG
           Description: Allow HTTPS from Web ALB
+        - IpProtocol: tcp
+          FromPort: 8000
+          ToPort: 8000
+          SourceSecurityGroupId: !Ref ExtAlbSG
+          Description: Allow HTTP from Web ALB
 
   # Security Group for Internal ALB
   IntAlbSG:
@@ -125,6 +130,11 @@ Resources:
           ToPort: 8888
           SourceSecurityGroupId: !Ref IntAlbSG
           Description: Allow TCP 8888 from WAS ALB
+        - IpProtocol: tcp
+          FromPort: 8081
+          ToPort: 8081
+          SourceSecurityGroupId: !Ref IntAlbSG
+          Description: Allow TCP 8081 from WAS SG
 
   # Security Group for DB
   DbSG:
