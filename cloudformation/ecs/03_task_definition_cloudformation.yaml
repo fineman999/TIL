@@ -16,6 +16,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: "/ecs/app-web"
+      RetentionInDays: 7
   ECSTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
