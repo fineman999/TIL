@@ -51,6 +51,33 @@ Resources:
                   - "logs:CreateLogStream"
                   - "logs:PutLogEvents"
                 Resource: "*"
+  AppWasTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: "AppWasTaskRole"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: "ecs-tasks.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: "AppWasTaskPolicy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:GetObject"
+                  - "s3:PutObject"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - "sagemaker:InvokeEndpoint"
+                Resource: "*"
 
   ECSServiceRole:
     Type: AWS::IAM::Role
@@ -104,3 +131,9 @@ Outputs:
     Description: ARN of the ECS Auto Scaling Role
     Export:
       Name: ECSAutoScalingRoleArn
+
+  AppWasTaskRoleArn:
+    Value: !GetAtt AppWasTaskRole.Arn
+    Description: ARN of the ECS Task Role
+    Export:
+      Name: AppWasTaskRoleArn

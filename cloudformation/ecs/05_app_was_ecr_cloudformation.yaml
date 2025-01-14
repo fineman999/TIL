@@ -1,0 +1,48 @@
+# 1. Stack 생성
+# aws cloudformation create-stack \
+#   --stack-name stack-weplat2-ap2-ecs-app-was-ecr \
+#   --template-body file://ecs/05_app_was_ecr_cloudformation.yaml \
+#   --capabilities CAPABILITY_NAMED_IAM
+# 2. Stack 업데이트
+# aws cloudformation update-stack \
+# --stack-name stack-weplat2-ap2-ecs-app-was-ecr \
+# --template-body file://ecs/05_app_was_ecr_cloudformation.yaml \
+# --capabilities CAPABILITY_NAMED_IAM
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CloudFormation template to create a private ECR repository named app-was.
+
+Resources:
+  ECRRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: app-was
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      EncryptionConfiguration:
+        EncryptionType: AES256
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Expire untagged images after 30 days",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 30
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+
+Outputs:
+  RepositoryUri:
+    Description: URI of the created ECR repository.
+    Value: !GetAtt ECRRepository.RepositoryUri
+    Export:
+      Name: !Sub AppWasEcrRepositoryUri

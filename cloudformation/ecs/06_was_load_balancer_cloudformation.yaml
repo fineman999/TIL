@@ -1,0 +1,69 @@
+# 1. stack 생성
+# aws cloudformation create-stack \
+#   --stack-name stack-weplat2-ap2-ecs-app-was-alb \
+#   --template-body file://ecs/06_was_load_balancer_cloudformation.yaml \
+#   --capabilities CAPABILITY_NAMED_IAM
+# 2. stack 업데이트
+# aws cloudformation update-stack \
+# --stack-name stack-weplat2-ap2-ecs-app-was-alb \
+# --template-body file://ecs/06_was_load_balancer_cloudformation.yaml \
+# --capabilities CAPABILITY_NAMED_IAM
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CloudFormation template for an Internal Application Load Balancer with Target Group and Listener
+
+
+Resources:
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: "app-was-alb"
+      Scheme: internal
+      Subnets:
+        - !ImportValue WeplatSubnetPrivate1Id
+        - !ImportValue WeplatSubnetPrivate2Id
+      SecurityGroups:
+        - !ImportValue WeplatAp2IntAlbSGId
+      IpAddressType: "ipv4"
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: "app-was-alb-tg"
+      TargetType: ip
+      Protocol: HTTP
+      Port: 8081
+      VpcId: !ImportValue WeplatVPCId
+      IpAddressType: ipv4
+      HealthCheckEnabled: true
+      HealthCheckPath: "/health"
+      HealthCheckProtocol: HTTP
+      HealthCheckPort: "traffic-port"
+      HealthCheckIntervalSeconds: 30
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 3
+      UnhealthyThresholdCount: 2
+      Matcher:
+        HttpCode: "200"
+
+  WasLoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Protocol: HTTP
+      Port: 80
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+
+Outputs:
+    LoadBalancerName:
+        Value: !Ref LoadBalancer
+        Description: Name of the load balancer
+        Export:
+          Name: !Sub AppWasAlbName
+
+    TargetGroupArn:
+        Value: !Ref TargetGroup
+        Description: ARN of the target group
+        Export:
+          Name: !Sub AppWasAlbTgArn

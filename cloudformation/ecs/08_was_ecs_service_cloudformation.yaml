@@ -1,0 +1,89 @@
+# 1. Stack 생성
+# aws cloudformation create-stack \
+#   --stack-name stack-weplat2-ap2-ecs-app-was-service \
+#   --template-body file://ecs/08_was_ecs_service_cloudformation.yaml \
+#   --capabilities CAPABILITY_NAMED_IAM
+# 2. Stack 업데이트
+# aws cloudformation update-stack \
+# --stack-name stack-weplat2-ap2-ecs-app-was-service \
+# --template-body file://ecs/08_was_ecs_service_cloudformation.yaml \
+# --capabilities CAPABILITY_NAMED_IAM
+# 3. Stack 삭제
+# aws cloudformation delete-stack --stack-name stack-weplat2-ap2-ecs-app-was-service
+# 4. Stack 이벤트 확인
+# aws cloudformation describe-stack-events --stack-name stack-weplat2-ap2-ecs-app-was-service
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "The template used to create an ECS Service from the ECS Console."
+
+Resources:
+  ECSService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !ImportValue AppEcsCluster
+      TaskDefinition: !ImportValue AppWasTaskDefinitionArn
+      LaunchType: "FARGATE"
+      ServiceName: "app-was-service"
+      SchedulingStrategy: "REPLICA"
+      DesiredCount: 2
+      AvailabilityZoneRebalancing: "ENABLED"
+      LoadBalancers:
+        - ContainerName: "app-was"
+          ContainerPort: 8081
+          LoadBalancerName: !Ref "AWS::NoValue"
+          TargetGroupArn: !ImportValue AppWasAlbTgArn
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: "DISABLED"
+          SecurityGroups:
+            - !ImportValue WeplatAp2WASSGId
+          Subnets:
+            - !ImportValue WeplatSubnetPrivate3Id
+            - !ImportValue WeplatSubnetPrivate4Id
+      PlatformVersion: "LATEST"
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+        DeploymentCircuitBreaker:
+          Enable: true
+          Rollback: true
+      DeploymentController:
+        Type: "ECS"
+      ServiceConnectConfiguration:
+        Enabled: false
+      Tags: []
+      EnableECSManagedTags: true
+
+  AutoScalingTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      MaxCapacity: "4"
+      MinCapacity: "2"
+      ResourceId: !Join ["/", [service, !ImportValue AppEcsCluster, "app-was-service"]]
+      RoleARN:  !ImportValue ECSAutoScalingRoleArn
+      ScalableDimension: "ecs:service:DesiredCount"
+      ServiceNamespace: "ecs"
+    DependsOn:
+      - ECSService
+
+  AutoScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: "app-was-asg-policy"
+      PolicyType: "TargetTrackingScaling"
+      ResourceId: !Join ["/", [service, !ImportValue AppEcsCluster, "app-was-service"]]
+      ScalingTargetId: !Ref AutoScalingTarget
+      TargetTrackingScalingPolicyConfiguration:
+        ScaleInCooldown: "300"
+        ScaleOutCooldown: "300"
+        TargetValue: "70"
+        PredefinedMetricSpecification:
+          PredefinedMetricType: "ECSServiceAverageCPUUtilization"
+
+Outputs:
+  WasECSService:
+    Description: "The created service."
+    Value: !Ref "ECSService"
+  WasAutoScalingTarget:
+    Value: !Ref "AutoScalingTarget"
+  WasAutoScalingPolicy:
+    Value: !Ref "AutoScalingPolicy"
