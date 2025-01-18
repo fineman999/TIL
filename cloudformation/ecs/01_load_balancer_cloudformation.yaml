@@ -48,12 +48,41 @@ Resources:
       Matcher:
         HttpCode: "200"
 
+# HTTP 리스너
+#  WebLoadBalancerListener:
+#    Type: AWS::ElasticLoadBalancingV2::Listener
+#    Properties:
+#      LoadBalancerArn: !Ref LoadBalancer
+#      Protocol: HTTP
+#      Port: 80
+#      DefaultActions:
+#        - Type: forward
+#          TargetGroupArn: !Ref TargetGroup
+
+  # HTTP 리스너 리디렉션 (HTTP -> HTTPS)
   WebLoadBalancerListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       LoadBalancerArn: !Ref LoadBalancer
       Protocol: HTTP
       Port: 80
+      DefaultActions:
+        - Type: redirect
+          RedirectConfig:
+            Protocol: HTTPS
+            Port: "443"
+            StatusCode: HTTP_301
+
+  # HTTPS 리스너
+  WebLoadBalancerHTTPSListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Protocol: HTTPS
+      Port: 443
+      SslPolicy: ELBSecurityPolicy-TLS13-1-2-2021-06
+      Certificates:
+        - CertificateArn: !ImportValue AppAcmCertificateArn
       DefaultActions:
         - Type: forward
           TargetGroupArn: !Ref TargetGroup
@@ -70,3 +99,15 @@ Outputs:
     Description: ARN of the target group
     Export:
       Name: !Sub AppWebAlbTgArn
+
+  LoadBalancerDNSName:
+    Value: !GetAtt LoadBalancer.DNSName
+    Description: DNS name of the load balancer
+    Export:
+      Name: !Sub AppWebAlbDNSName
+
+  ContainerHostZoneId:
+    Value: !GetAtt LoadBalancer.CanonicalHostedZoneID
+    Description: Hosted Zone ID of the container
+    Export:
+      Name: !Sub AppWebHostedZoneId

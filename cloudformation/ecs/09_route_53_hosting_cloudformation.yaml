@@ -1,0 +1,45 @@
+# 1. Route 53 Public Hosted Zone 생성
+#  aws cloudformation create-stack \
+#    --stack-name stack-weplat2-ap2-route53 \
+#    --template-body file://ecs/09_route_53_hosting_cloudformation.yaml \
+#    --capabilities CAPABILITY_NAMED_IAM
+# 2. Route 53 Public Hosted Zone 업데이트
+#  aws cloudformation update-stack \
+#  --stack-name stack-weplat2-ap2-route53 \
+#  --template-body file://ecs/09_route_53_hosting_cloudformation.yaml \
+#  --capabilities CAPABILITY_NAMED_IAM
+# 3. Route 53 Public Hosted Zone 삭제
+#  aws cloudformation delete-stack --stack-name stack-weplat2-ap2-route53
+# 4. 이벤트 로그 확인
+#  aws cloudformation describe-stack-events --stack-name stack-weplat2-ap2-route53
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template to create a Route 53 Public Hosted Zone and related DNS records for chan-factory.store
+
+Resources:
+  Route53HostedZone:
+    Type: AWS::Route53::HostedZone
+    Properties:
+      Name: chan-factory.store
+      HostedZoneConfig:
+        Comment: Public hosted zone for chan-factory.store
+      HostedZoneTags:
+        - Key: Environment
+          Value: Production
+
+  RootRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref Route53HostedZone
+      Name: chan-factory.store
+      Type: A
+      AliasTarget:
+        DNSName: !ImportValue AppWebAlbDNSName
+        HostedZoneId: !ImportValue AppWebHostedZoneId
+      Comment: Root domain record
+
+Outputs:
+  HostedZoneId:
+    Description: ID of the created Route 53 Public Hosted Zone.
+    Value: !Ref Route53HostedZone
+    Export:
+      Name: !Sub AppRoute53HostedZoneId

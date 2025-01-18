@@ -1,0 +1,41 @@
+# 1. stack 생성
+# aws cloudformation create-stack \
+#   --stack-name stack-weplat2-ap2-acm \
+#   --template-body file://ecs/10_acm_cloudformation.yaml \
+#   --capabilities CAPABILITY_NAMED_IAM
+# 2. 생성 후 Route 53에서 DNS 검증을 위한 CNAME 레코드 생성(연결하기)
+# 3. alb HTTPS 리스너에 ACM 인증서 연결
+# 4. stack 업데이트
+# aws cloudformation update-stack \
+# --stack-name stack-weplat2-ap2-acm \
+# --template-body file://ecs/10_acm_cloudformation.yaml \
+# --capabilities CAPABILITY_NAMED_IAM
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template to request an ACM certificate, set up Route 53 DNS validation, and configure ALB SSL termination
+
+Resources:
+
+  # ACM 인증서 생성
+  ACMCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: chan-factory.store
+      SubjectAlternativeNames:
+        - "*.chan-factory.store"
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: chan-factory.store
+          ValidationDomain: chan-factory.store
+        - DomainName: "*.chan-factory.store"
+          ValidationDomain: chan-factory.store
+      KeyAlgorithm: RSA_2048
+      Tags:
+        - Key: Environment
+          Value: Production
+
+Outputs:
+  CertificateArn:
+    Description: ARN of the created ACM certificate.
+    Value: !Ref ACMCertificate
+    Export:
+      Name: !Sub AppAcmCertificateArn
