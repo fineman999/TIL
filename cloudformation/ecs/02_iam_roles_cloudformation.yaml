@@ -27,7 +27,6 @@ Resources:
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
         - "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
-
   AppWebTaskRole:
     Type: AWS::IAM::Role
     Properties:
@@ -78,7 +77,6 @@ Resources:
                 Action:
                   - "sagemaker:InvokeEndpoint"
                 Resource: "*"
-
   ECSServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -106,7 +104,45 @@ Resources:
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceAutoscaleRole"
         - "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole"
-
+  ECRGithubActionsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: ecr-github-actions-v2
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: arn:aws:iam::183295419955:oidc-provider/token.actions.githubusercontent.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              StringLike:
+                token.actions.githubusercontent.com:sub: repo:fineman999/*
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess
+      Policies:
+        - PolicyName: "ECRRegisterTaskDefinitionPolicy"
+          PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - ecs:RegisterTaskDefinition
+                  Resource: "arn:aws:ecs:ap-northeast-2:183295419955:task-definition/*"
+                - Effect: Allow
+                  Action:
+                    - iam:PassRole #  ECS에서 특정 역할을 태스크에 전달할 수 있도록 허용
+                  Resource:
+                    - !GetAtt AppWebExecutionRole.Arn
+                    - !GetAtt AppWebTaskRole.Arn
+                - Effect: Allow
+                  Action:
+                    - ecs:DescribeServices
+                    - ecs:UpdateService
+                    - ecs:DescribeTaskDefinition
+                  Resource: "arn:aws:ecs:ap-northeast-2:183295419955:service/*" # ECS 서비스에 대한 설명을 가져올 수 있도록 허용
 Outputs:
   AppWebExecutionRoleArn:
     Value: !GetAtt AppWebExecutionRole.Arn
