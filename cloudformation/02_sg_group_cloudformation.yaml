@@ -102,6 +102,11 @@ Resources:
           SourceSecurityGroupId: !Ref WebSG
           Description: Allow TCP 80 from Web SG
         - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          SourceSecurityGroupId: !Ref WebSG
+          Description: Allow TCP 443 from Web SG
+        - IpProtocol: tcp
           FromPort: 8080
           ToPort: 8080
           CidrIp: 220.76.144.217/32 # Replace with Office IP CIDR

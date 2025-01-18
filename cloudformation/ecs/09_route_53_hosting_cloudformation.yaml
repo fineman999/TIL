@@ -36,7 +36,17 @@ Resources:
         DNSName: !ImportValue AppWebAlbDNSName
         HostedZoneId: !ImportValue AppWebHostedZoneId
       Comment: Root domain record
-
+  # Route 53에서 서브도메인 레코드 생성
+  SubdomainRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !ImportValue AppRoute53HostedZoneId
+      Name: "api.chan-factory.store"
+      Type: A
+      AliasTarget:
+        DNSName: !ImportValue AppWasAlbDnsName
+        HostedZoneId: !ImportValue AppWasAlbHostedZoneId
+      Comment: "Alias record for api.chan-factory.store pointing to internal ALB"
 Outputs:
   HostedZoneId:
     Description: ID of the created Route 53 Public Hosted Zone.
