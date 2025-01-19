@@ -1,0 +1,27 @@
+# 1. S3 버킷 생성(만들고 폴더 생성)
+# aws cloudformation create-stack \
+#   --stack-name stack-weplat2-ap2-s3 \
+#   --template-body file://ecs/12_s3_for_sage_maker_cloudformation.yaml \
+#   --capabilities CAPABILITY_NAMED_IAM
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  S3ForSageMaker:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: 'app-ml-dataset-bucket-weplot2'
+      AccessControl: 'Private'  # ACL 비활성화
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true   # 모든 퍼블릭 액세스 차단
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: 'Suspended'  # 버전 관리 비활성화
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: 'AES256'  # SSE-S3 암호화
+            BucketKeyEnabled: true
+      Tags:
+        - Key: 'Name'
+          Value: 'Weplot2SageMakerBucket'

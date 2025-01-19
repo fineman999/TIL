@@ -8,7 +8,7 @@
 #  --stack-name stack-weplat2-ap2-route53 \
 #  --template-body file://ecs/09_route_53_hosting_cloudformation.yaml \
 #  --capabilities CAPABILITY_NAMED_IAM
-# 3. Route 53 Public Hosted Zone 삭제
+# 3. Route 53 Public Hosted Zone 삭제 - 삭제시 CNAME 및 A 레코드도 먼저 삭제해야 함
 #  aws cloudformation delete-stack --stack-name stack-weplat2-ap2-route53
 # 4. 이벤트 로그 확인
 #  aws cloudformation describe-stack-events --stack-name stack-weplat2-ap2-route53
@@ -40,7 +40,7 @@ Resources:
   SubdomainRecord:
     Type: AWS::Route53::RecordSet
     Properties:
-      HostedZoneId: !ImportValue AppRoute53HostedZoneId
+      HostedZoneId: !Ref Route53HostedZone
       Name: "api.chan-factory.store"
       Type: A
       AliasTarget:

@@ -1,0 +1,71 @@
+# 1. SageMaker Studio Domain 생성
+# aws cloudformation create-stack \
+#   --stack-name stack-weplat2-ap2-sagemaker-studio-domain \
+#   --template-body file://ecs/11_sage_maker_cloudformation.yaml \
+#   --capabilities CAPABILITY_NAMED_IAM
+# 2. SageMaker Studio Domain 업데이트
+# aws cloudformation update-stack \
+# --stack-name stack-weplat2-ap2-sagemaker-studio-domain \
+# --template-body file://ecs/11_sage_maker_cloudformation.yaml \
+# --capabilities CAPABILITY_NAMED_IAM
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "CloudFormation template for Amazon SageMaker Studio Domain."
+
+Resources:
+  SageMakerExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "sagemaker.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess"
+  SageMakerStudioDomain:
+    Type: AWS::SageMaker::Domain
+    Properties:
+      DomainName: "app-pagemaker-studio"
+      AuthMode: "IAM"
+      DefaultUserSettings:
+        ExecutionRole: !GetAtt SageMakerExecutionRole.Arn
+        SecurityGroups:
+          - !GetAtt SageMakerStudioSecurityGroup.GroupId
+      SubnetIds:
+        - !ImportValue WeplatSubnetPublic1Id
+      VpcId: !ImportValue WeplatVPCId
+
+  SageMakerStudioSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Security group for SageMaker Studio"
+      VpcId: !ImportValue WeplatVPCId
+      SecurityGroupIngress:
+        - IpProtocol: -1
+          CidrIp: "0.0.0.0/0" # Open to public (ensure you restrict this as per your requirements)
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: "0.0.0.0/0"
+
+  SageMakerStudioUserProfile:
+    Type: AWS::SageMaker::UserProfile
+    Properties:
+      DomainId: !Ref SageMakerStudioDomain
+      UserProfileName: "DefaultUser"
+      UserSettings:
+        ExecutionRole: !GetAtt SageMakerExecutionRole.Arn
+Outputs:
+  SageMakerStudioDomainId:
+    Description: "The ID of the SageMaker Studio Domain."
+    Value: !Ref SageMakerStudioDomain
+  SageMakerStudioSecurityGroupId:
+    Description: "The ID of the SageMaker Studio Security Group."
+    Value: !Ref SageMakerStudioSecurityGroup
+  SageMakerExecutionRoleArn:
+    Description: "The ARN of the SageMaker execution role."
+    Value: !GetAtt SageMakerExecutionRole.Arn

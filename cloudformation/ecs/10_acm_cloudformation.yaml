@@ -10,6 +10,8 @@
 # --stack-name stack-weplat2-ap2-acm \
 # --template-body file://ecs/10_acm_cloudformation.yaml \
 # --capabilities CAPABILITY_NAMED_IAM
+# 5. 생성된 ACM 인증서 ARN 확인
+# aws cloudformation describe-stacks --stack-name stack-weplat2-ap2-acm
 AWSTemplateFormatVersion: '2010-09-09'
 Description: CloudFormation template to request an ACM certificate, set up Route 53 DNS validation, and configure ALB SSL termination
 
