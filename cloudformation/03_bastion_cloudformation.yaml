@@ -31,10 +31,10 @@ Parameters:
   KeyPairName:
     Description: Name of an existing EC2 Key Pair to enable SSH access
     Type: String
-    Default: weplat-work-ap2-key
+    Default: weplat-ap2-key
 
 Resources:
-
+  # 5️⃣ Bastion EC2 인스턴스 생성 + CloudWatch Agent 설정
   BastionInstance:
     Type: AWS::EC2::Instance
     Properties:
@@ -44,6 +44,7 @@ Resources:
       SubnetId: !ImportValue WeplatSubnetPublic2Id
       SecurityGroupIds:
         - !ImportValue WeplatAp2BastionSGId
+      IamInstanceProfile: !ImportValue CloudWatchAgentInstanceProfile # CloudWatch Agent 실행을 위한 IAM 역할(먼저 생성 필요)
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
@@ -54,6 +55,13 @@ Resources:
       Tags:
         - Key: Name
           Value: weplat2-ap2-Bastion
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          apt update -y
+          apt install -y amazon-cloudwatch-agent
+          amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CloudWatchAgent/BastionConfig -s
+
 
 Outputs:
   BastionInstanceId:

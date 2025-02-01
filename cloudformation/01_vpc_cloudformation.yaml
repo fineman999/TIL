@@ -10,6 +10,8 @@
 #  --capabilities CAPABILITY_NAMED_IAM
 #  3. VPC 삭제
 #  aws cloudformation delete-stack --stack-name my-stack
+# 4. 이벤트 로그 확인
+#  aws cloudformation describe-stack-events --stack-name my-stack
 
 AWSTemplateFormatVersion: '2010-09-09'
 Description: CloudFormation template for VPC with public and private subnets, NAT gateway, and routing tables.
