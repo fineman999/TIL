@@ -1,6 +1,5 @@
 package io.chan.queuingsystemforjava.domain.member;
 
-
 import io.chan.queuingsystemforjava.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,30 +19,35 @@ import java.util.Objects;
 @SQLRestriction("deleted_at IS NULL")
 public class Member extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long memberId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long memberId;
 
-    @Column(nullable = false, unique = true)
-    private String email;
+  @Column(nullable = false, unique = true)
+  private String email;
 
-    @Column(nullable = false)
-    private String password;
+  @Column(nullable = false)
+  private String password;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private MemberRole memberRole;
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private MemberRole memberRole;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Member member = (Member) o;
-        return Objects.equals(memberId, member.memberId);
-    }
+  public static Member create(
+      final String email, final String password, final MemberRole memberRole) {
+    return Member.builder().email(email).password(password).memberRole(memberRole).build();
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(memberId);
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Member member = (Member) o;
+    return Objects.equals(memberId, member.memberId);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(memberId);
+  }
 }
