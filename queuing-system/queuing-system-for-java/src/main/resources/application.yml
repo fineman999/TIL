@@ -1,0 +1,21 @@
+spring:
+  application:
+    name:
+      queuing-system
+  lifecycle:
+    timeout-per-shutdown-phase: 10s
+  profiles:
+    group:
+      local:
+        local
+      dev:
+        dev
+      prod:
+        prod
+server:
+  shutdown: graceful
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
