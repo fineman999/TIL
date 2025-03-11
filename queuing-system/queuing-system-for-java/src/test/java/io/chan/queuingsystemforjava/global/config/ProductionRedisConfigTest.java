@@ -1,6 +1,7 @@
 package io.chan.queuingsystemforjava.global.config;
 
 import io.chan.queuingsystemforjava.support.BaseIntegrationTest;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,13 @@ class ProductionRedisConfigTest extends BaseIntegrationTest {
     @Autowired private StringRedisTemplate redisTemplate;
 
     @Test
+    @DisplayName("RedissonClient와 LettuceRedisTemplate이 정상적으로 주입되었다.")
     void testRedissonClient() {
         assertThat(redissonClient).isNotNull();
     }
 
     @Test
+    @DisplayName("LettuceRedisTemplate이 정상적으로 주입되었다.")
     void testLettuceRedisTemplate() {
         assertThat(redisTemplate).isNotNull();
         redisTemplate.opsForValue().set("testKey", "testValue");
