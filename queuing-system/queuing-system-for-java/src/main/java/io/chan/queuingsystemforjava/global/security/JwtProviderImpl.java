@@ -12,11 +12,14 @@ import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+@Component
 @Slf4j
 public class JwtProviderImpl implements JwtProvider {
 
@@ -27,7 +30,13 @@ public class JwtProviderImpl implements JwtProvider {
     private final SecretKey secretKey;
     private final JwtParser accessTokenParser;
 
-    public JwtProviderImpl(String issuer, int expirySeconds, String secretKey) {
+    public JwtProviderImpl(
+            @Value("${jwt.issuer}")
+            String issuer,
+            @Value("${jwt.expiry-seconds}")
+            int expirySeconds,
+            @Value("${jwt.secret-key}")
+            String secretKey) {
         this.issuer = issuer;
         this.expirySeconds = expirySeconds;
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
