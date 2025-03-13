@@ -25,7 +25,7 @@ import java.util.Collection;
 import static org.assertj.core.api.Assertions.catchException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-class AuthenticationFilterTest extends BaseIntegrationTest {
+class JwtAuthenticationFilterTest extends BaseIntegrationTest {
 
     private MockFilterChain filterChain;
 
@@ -33,7 +33,7 @@ class AuthenticationFilterTest extends BaseIntegrationTest {
     private JwtProvider jwtProvider;
 
     @Autowired
-    private AuthenticationFilter authenticationFilter;
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Autowired
     private MemberJpaRepository memberJpaRepository;
@@ -88,7 +88,7 @@ class AuthenticationFilterTest extends BaseIntegrationTest {
                 request.addHeader("Authorization", bearerAccessToken);
 
                 // when
-                authenticationFilter.doFilterInternal(
+                jwtAuthenticationFilter.doFilterInternal(
                         request, response, filterChain);
 
                 // then
@@ -124,7 +124,7 @@ class AuthenticationFilterTest extends BaseIntegrationTest {
                 Exception exception =
                         catchException(
                                 () ->
-                                        authenticationFilter.doFilterInternal(
+                                        jwtAuthenticationFilter.doFilterInternal(
                                                 request,
                                                 response,
                                                 filterChain));
@@ -147,7 +147,7 @@ class AuthenticationFilterTest extends BaseIntegrationTest {
                 // given
 
                 // when
-                authenticationFilter.doFilterInternal(
+                jwtAuthenticationFilter.doFilterInternal(
                         request, response, filterChain);
 
                 // then

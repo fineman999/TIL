@@ -8,4 +8,4 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-@interface LoginMember {}
+public @interface LoginMember {}

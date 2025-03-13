@@ -2,7 +2,6 @@ package io.chan.queuingsystemforjava.global.security;
 
 import io.chan.queuingsystemforjava.common.ErrorCode;
 import io.chan.queuingsystemforjava.common.TicketingException;
-import io.chan.queuingsystemforjava.domain.member.service.JwtProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -23,7 +21,7 @@ import java.util.Objects;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class AuthenticationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String BEARER = "Bearer ";
 
     private final UserDetailsService userDetailsService;
