@@ -5,6 +5,8 @@ import java.util.Map;
 
 public interface CacheRepository {
 
+    void saveTokenWithPrefix(String token, UserToken userToken, Duration expireTime);
+
     String getValue(String key);
 
     void setValue(String key, String value, int minutes);

@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -24,14 +25,14 @@ import java.util.Objects;
 @Component
 public class AuthenticationFilter extends OncePerRequestFilter {
     private static final String BEARER = "Bearer ";
-    private final JwtProvider jwtProvider;
+
     private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.debug("JWT 인증 필터 실행");
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (Objects.nonNull(request.getHeader(authHeader))) {
+        if (Objects.nonNull(authHeader)) {
             String accessToken = removeBearer(authHeader);
             // DB에서 가져온 정보
             MemberContext memberContext = (MemberContext) userDetailsService.loadUserByUsername(accessToken);

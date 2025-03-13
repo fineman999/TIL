@@ -1,13 +1,12 @@
 package io.chan.queuingsystemforjava.global.cache;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Repository;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
 
 @Repository
@@ -24,6 +23,18 @@ public class RedisRepository implements CacheRepository {
         this.hashOps = redisTemplate.opsForHash();
     }
 
+    @Override
+    public void saveTokenWithPrefix(String token, UserToken userToken, Duration expireTime) {
+        // Hash에 데이터 저장
+        Map<String, String> userData = new HashMap<>();
+        userData.put("id", String.valueOf(userToken.getId()));
+        userData.put("email", userToken.getEmail());
+        userData.put("role", userToken.getRole());
+        hashOps.putAll(token, userData);
+
+        // 만료 시간 설정
+        redisTemplate.expire(token, expireTime);
+    }
     @Override
     public String getValue(String key) {
         return valueOps.get(key);
