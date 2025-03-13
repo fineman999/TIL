@@ -136,5 +136,25 @@ class AuthenticationFilterTest extends BaseIntegrationTest {
                         .isEqualTo(ErrorCode.INVALID_TOKEN_HEADER);
             }
         }
+
+        @Nested
+        @DisplayName("Authorization 헤더가 포함되어 있지 않으면")
+        class NotContainsAuthorizationHeader {
+
+            @Test
+            @DisplayName("무시한다.")
+            void ignoreAuthenticationProcess_WhenNotContainsAuthorizationHeader() throws Exception {
+                // given
+
+                // when
+                authenticationFilter.doFilterInternal(
+                        request, response, filterChain);
+
+                // then
+                Authentication authentication =
+                        SecurityContextHolder.getContext().getAuthentication();
+                assertThat(authentication).isNull();
+            }
+        }
     }
 }
