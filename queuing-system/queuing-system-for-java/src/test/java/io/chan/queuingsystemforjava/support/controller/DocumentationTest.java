@@ -22,7 +22,7 @@ public class DocumentationTest extends BaseControllerTest {
         // given
 
         // when
-        ResultActions result = mockMvc.perform(get("/test/docs/hello").param("name", "ticket"));
+        ResultActions result = mockMvc.perform(get("/api/v1/test/docs/hello").param("name", "ticket"));
 
         // then
         result.andExpect(status().isOk())
@@ -44,7 +44,7 @@ public class DocumentationTest extends BaseControllerTest {
         // when
         ResultActions result =
                 mockMvc.perform(
-                        post("/test/docs/hello/{test}", 1L)
+                        post("/api/v1/test/docs/hello/{test}", 1L)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(content));
 

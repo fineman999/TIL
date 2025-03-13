@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/test/docs")
+@RequestMapping("/api/v1/test/docs")
 public class DocsController {
 
     public record HelloRequest(String name) {}

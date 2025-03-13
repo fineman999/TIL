@@ -3,9 +3,19 @@ package io.chan.queuingsystemforjava.support;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.chan.queuingsystemforjava.domain.member.Member;
 import io.chan.queuingsystemforjava.domain.member.MemberRole;
+import io.chan.queuingsystemforjava.domain.member.service.JwtProvider;
+import io.chan.queuingsystemforjava.global.config.CorsConfig;
+import io.chan.queuingsystemforjava.global.config.SecurityConfig;
+import io.chan.queuingsystemforjava.global.config.WebConfig;
+import io.chan.queuingsystemforjava.global.security.CustomUserDetailsService;
+import io.chan.queuingsystemforjava.global.security.JwtAuthenticationFilter;
+import io.chan.queuingsystemforjava.global.security.JwtProviderImpl;
 import io.chan.queuingsystemforjava.support.controller.DocsController;
+import io.chan.queuingsystemforjava.support.mock.MockCustomUserDetailsService;
+import io.chan.queuingsystemforjava.support.mock.MockJwtProviderImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -15,6 +25,7 @@ import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -27,7 +38,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @WebMvcTest
 @Import({
         BaseControllerTest.RestDocsConfig.class,
-        DocsController.class
+        DocsController.class,
+        SecurityConfig.class,
+        WebConfig.class,
+        CorsConfig.class,
 })
 @ExtendWith(RestDocumentationExtension.class)
 public abstract class BaseControllerTest {
@@ -40,6 +54,21 @@ public abstract class BaseControllerTest {
 
     @TestConfiguration
     public static class RestDocsConfig {
+        @Bean
+        public JwtProvider jwtProvider() {
+            return new MockJwtProviderImpl("test", 3600, "thisisaverylongsecretkeyforjwtatleast32bytes!");
+        }
+
+
+        @Bean
+        public JwtAuthenticationFilter jwtAuthenticationFilter(UserDetailsService userDetailsService) {
+            return new JwtAuthenticationFilter(userDetailsService);
+        }
+
+        @Bean
+        public UserDetailsService customUserDetailsService() {
+            return new MockCustomUserDetailsService();
+        }
 
         @Bean
         public RestDocumentationResultHandler write() {
@@ -64,11 +93,5 @@ public abstract class BaseControllerTest {
                                         documentationContextProvider))
                         .addFilter(new CharacterEncodingFilter("UTF-8", true))
                         .build();
-
-        Member admin = Member.create("admin@admin.com", "password", MemberRole.ADMIN);
-//        this.adminBearerToken = "Bearer " + jwtProvider.createAccessToken(admin);
-
-        Member user = Member.create("user@user.com", "password", MemberRole.USER);
-//        this.userBearerToken = "Bearer " + jwtProvider.createAccessToken(user);
     }
 }

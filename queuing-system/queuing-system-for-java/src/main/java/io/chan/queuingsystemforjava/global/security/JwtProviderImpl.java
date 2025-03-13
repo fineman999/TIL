@@ -49,7 +49,8 @@ public class JwtProviderImpl implements JwtProvider {
             Claims payload = accessTokenParser.parseSignedClaims(accessToken).getPayload();
             String email = payload.getSubject();
             MemberRole memberRole = MemberRole.find(payload.get(ROLE, String.class));
-            return new CustomClaims(email, memberRole);
+            Long memberId = payload.get("memberId", Long.class);
+            return new CustomClaims(memberId, email, memberRole);
         } catch (ExpiredJwtException e) {
             throw new TicketingException(ErrorCode.EXPIRED_TOKEN);
         } catch (RuntimeException e) {
@@ -65,6 +66,7 @@ public class JwtProviderImpl implements JwtProvider {
         return Jwts.builder()
                 .issuer(issuer)
                 .issuedAt(now)
+                .claim("memberId", member.getMemberId())
                 .subject(member.getEmail())
                 .expiration(expiresAt)
                 .claim(ROLE, member.getMemberRole().getValue())
