@@ -1,10 +1,14 @@
 package io.chan.queuingsystemforjava.domain.member.repository;
 
 import io.chan.queuingsystemforjava.domain.member.Member;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.stereotype.Repository;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -17,5 +21,9 @@ public class MemberRepository {
 
     public Member getById(Long id) {
         return memberJpaRepository.findById(id).orElseThrow(() -> new NoSuchElementException("멤버를 찾을수 없습니다."));
+    }
+
+    public Optional<Member> findByEmail(String email) {
+        return memberJpaRepository.findByEmail(email);
     }
 }
