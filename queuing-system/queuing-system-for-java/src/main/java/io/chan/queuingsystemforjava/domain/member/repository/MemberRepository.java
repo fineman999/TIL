@@ -26,4 +26,9 @@ public class MemberRepository {
     public Optional<Member> findByEmail(String email) {
         return memberJpaRepository.findByEmail(email);
     }
+
+    public Optional<Member> findById(final Long aLong) {
+        return memberJpaRepository.findById(aLong);
+
+    }
 }
