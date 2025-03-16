@@ -1,5 +1,8 @@
 package io.chan.queuingsystemforjava.global.security;
 
+import static org.assertj.core.api.Assertions.catchException;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 import io.chan.queuingsystemforjava.common.ErrorCode;
 import io.chan.queuingsystemforjava.common.TicketingException;
 import io.chan.queuingsystemforjava.domain.member.Member;
@@ -7,7 +10,6 @@ import io.chan.queuingsystemforjava.domain.member.MemberRole;
 import io.chan.queuingsystemforjava.domain.member.dto.response.CustomClaims;
 import io.chan.queuingsystemforjava.domain.member.repository.MemberJpaRepository;
 import io.chan.queuingsystemforjava.domain.member.service.JwtProvider;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -15,16 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.time.ZonedDateTime;
-
-import static org.assertj.core.api.Assertions.catchException;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-
 @DataJpaTest // JPA 관련 설정만 로드하여 테스트
 class JwtProviderImplTest {
     private String issuer;
-    private int expirationSeconds;
     private String secretKey;
     private JwtProvider jwtProvider;
 
@@ -34,9 +29,10 @@ class JwtProviderImplTest {
     @BeforeEach
     void setUp() {
         issuer = "test";
-        expirationSeconds = 3600;
+        int expirationSeconds = 3600;
+        int refreshExpirationSeconds = 86400;
         secretKey = "thisisaverylongsecretkeyforjwtatleast32bytes!";
-        jwtProvider = new JwtProviderImpl(issuer, expirationSeconds, secretKey);
+        jwtProvider = new JwtProviderImpl(issuer, expirationSeconds, refreshExpirationSeconds,secretKey);
 
     }
 
@@ -88,7 +84,7 @@ class JwtProviderImplTest {
         @DisplayName("만료된 액세스 토큰을 파싱하면 예외가 발생한다.")
         void parseExpiredAccessToken() {
             // given
-            jwtProvider = new JwtProviderImpl(issuer, -1, secretKey);
+            jwtProvider = new JwtProviderImpl(issuer, -1,-1, secretKey);
             accessToken = jwtProvider.createAccessToken(member);
 
             Exception exception = catchException(() -> jwtProvider.parseAccessToken(accessToken));

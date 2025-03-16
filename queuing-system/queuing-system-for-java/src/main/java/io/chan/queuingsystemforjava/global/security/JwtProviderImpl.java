@@ -26,23 +26,56 @@ public class JwtProviderImpl implements JwtProvider {
     private static final String ROLE = "role";
 
     private final String issuer;
-    private final int expirySeconds;
+    private final int accessExpirySeconds;  // Access Token 유효 기간
+    private final int refreshExpirySeconds; // Refresh Token 유효 기간
     private final SecretKey secretKey;
     private final JwtParser accessTokenParser;
+    private final JwtParser refreshTokenParser;
 
     public JwtProviderImpl(
-            @Value("${jwt.issuer}")
-            String issuer,
-            @Value("${jwt.expiry-seconds}")
-            int expirySeconds,
-            @Value("${jwt.secret-key}")
-            String secretKey) {
+            @Value("${jwt.issuer}") String issuer,
+            @Value("${jwt.access-expiry-seconds}") int accessExpirySeconds,
+            @Value("${jwt.refresh-expiry-seconds}") int refreshExpirySeconds,
+            @Value("${jwt.secret-key}") String secretKey) {
         this.issuer = issuer;
-        this.expirySeconds = expirySeconds;
+        this.accessExpirySeconds = accessExpirySeconds;
+        this.refreshExpirySeconds = refreshExpirySeconds;
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         this.accessTokenParser = Jwts.parser().verifyWith(this.secretKey).build();
+        this.refreshTokenParser = Jwts.parser().verifyWith(this.secretKey).build();
     }
 
+    // Access Token 생성
+    @Override
+    public String createAccessToken(Member member) {
+        Date now = new Date();
+        Date expiresAt = new Date(now.getTime() + accessExpirySeconds * 1000L);
+        return Jwts.builder()
+                .issuer(issuer)
+                .issuedAt(now)
+                .claim("memberId", member.getMemberId())
+                .subject(member.getEmail())
+                .expiration(expiresAt)
+                .claim(ROLE, member.getMemberRole().getValue())
+                .signWith(secretKey)
+                .compact();
+    }
+
+    // Refresh Token 생성
+    @Override
+    public String createRefreshToken(Member member) {
+        Date now = new Date();
+        Date expiresAt = new Date(now.getTime() + refreshExpirySeconds * 1000L);
+        return Jwts.builder()
+                .issuer(issuer)
+                .issuedAt(now)
+                .subject(member.getEmail()) // Refresh Token은 최소한의 정보만 포함
+                .expiration(expiresAt)
+                .signWith(secretKey)
+                .compact();
+    }
+
+    // Access Token 파싱
     @Override
     public CustomClaims parseAccessToken(String accessToken) {
         try {
@@ -59,18 +92,17 @@ public class JwtProviderImpl implements JwtProvider {
         }
     }
 
+    // Refresh Token 파싱
     @Override
-    public String createAccessToken(Member member) {
-        Date now = new Date();
-        Date expiresAt = new Date(now.getTime() + expirySeconds * 1000L);
-        return Jwts.builder()
-                .issuer(issuer)
-                .issuedAt(now)
-                .claim("memberId", member.getMemberId())
-                .subject(member.getEmail())
-                .expiration(expiresAt)
-                .claim(ROLE, member.getMemberRole().getValue())
-                .signWith(secretKey)
-                .compact();
+    public String parseRefreshToken(String refreshToken) {
+        try {
+            Claims payload = refreshTokenParser.parseSignedClaims(refreshToken).getPayload();
+            return payload.getSubject(); // email 반환
+        } catch (ExpiredJwtException e) {
+            throw new TicketingException(ErrorCode.EXPIRED_TOKEN);
+        } catch (RuntimeException e) {
+            log.debug("리프레시 토큰이 유효하지 않습니다. token={}", refreshToken);
+            throw new TicketingException(ErrorCode.INVALID_TOKEN);
+        }
     }
 }
