@@ -21,6 +21,11 @@ public class MockJwtProviderImpl implements JwtProvider {
     }
 
     @Override
+    public String createRefreshToken(final Member member) {
+        return "";
+    }
+
+    @Override
     public CustomClaims parseAccessToken(String accessToken) {
         if (ADMIN_TOKEN.equals(accessToken)) {
             return new CustomClaims(1L, "admin@gmail.com", MemberRole.ADMIN);
@@ -40,5 +45,10 @@ public class MockJwtProviderImpl implements JwtProvider {
         } else {
             throw new IllegalArgumentException("Unsupported role: " + member.getMemberRole());
         }
+    }
+
+    @Override
+    public String parseRefreshToken(final String refreshToken) {
+        return "";
     }
 }

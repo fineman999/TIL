@@ -6,7 +6,7 @@ public class TestQueuingSystemForJavaApplication {
 
   public static void main(String[] args) {
     SpringApplication.from(QueuingSystemForJavaApplication::main)
-        .with(TestcontainersConfiguration.class)
+        .with(TestcontainersConfig.class)
         .run(args);
   }
 }
