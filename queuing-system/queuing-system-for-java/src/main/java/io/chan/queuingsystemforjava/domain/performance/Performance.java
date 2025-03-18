@@ -27,4 +27,12 @@ public class Performance extends BaseEntity {
     private String performancePlace;
 
     private ZonedDateTime performanceShowtime;
+
+    public static Performance create(final String performanceName, final String performanceLocation, final ZonedDateTime now) {
+        return Performance.builder()
+                .performanceName(performanceName)
+                .performancePlace(performanceLocation)
+                .performanceShowtime(now)
+                .build();
+    }
 }
