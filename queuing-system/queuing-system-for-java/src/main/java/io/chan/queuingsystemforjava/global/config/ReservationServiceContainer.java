@@ -116,6 +116,7 @@ public class ReservationServiceContainer {
         );
     }
 
+    @Primary
     @Bean
     public ReservationTransactionService persistencePessimisticReservationService(
             TicketRepository ticketRepository,
