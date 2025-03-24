@@ -22,4 +22,8 @@ public class SeatGradeRepository {
     public List<SeatGrade> findByPerformanceIdAndGradeNames(long performanceId, List<Long> gradeIds) {
         return seatGradeJpaRepository.findByPerformanceIdAndGradeNames(performanceId, gradeIds);
     }
+
+    public List<SeatGrade> findAll() {
+        return seatGradeJpaRepository.findAll();
+    }
 }

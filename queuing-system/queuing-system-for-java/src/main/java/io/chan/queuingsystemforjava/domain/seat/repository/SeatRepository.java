@@ -23,4 +23,8 @@ public class SeatRepository {
     public void saveAll(List<Seat> seats) {
         seatJpaRepository.saveAll(seats);
     }
+
+    public List<Seat> findAll() {
+        return seatJpaRepository.findAll();
+    }
 }
