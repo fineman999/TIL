@@ -1,9 +1,15 @@
 package io.chan.queuingsystemforjava.support;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.chan.queuingsystemforjava.domain.member.Member;
+import io.chan.queuingsystemforjava.domain.member.MemberRole;
+import io.chan.queuingsystemforjava.domain.member.service.JwtProvider;
 import io.chan.queuingsystemforjava.domain.member.service.MemberService;
+import io.chan.queuingsystemforjava.domain.performance.service.AdminPerformanceService;
+import io.chan.queuingsystemforjava.domain.performance.service.UserPerformanceService;
 import io.chan.queuingsystemforjava.global.config.WebConfig;
 import io.chan.queuingsystemforjava.support.controller.DocsController;
+import io.chan.queuingsystemforjava.support.mock.MockJwtProviderImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -40,15 +46,29 @@ public abstract class BaseControllerTest {
     @Autowired
     protected RestDocumentationResultHandler restDocs;
     protected MockMvc mockMvc;
+    @Autowired protected JwtProvider jwtProvider;
 
 
     @MockitoBean
     protected MemberService memberService;
 
+    @MockitoBean
+    protected AdminPerformanceService adminPerformanceService;
+
+    @MockitoBean
+    protected UserPerformanceService userPerformanceService;
+
+
+    protected String adminBearerToken;
+
+    protected String userBearerToken;
 
     @TestConfiguration
     public static class RestDocsConfig {
-
+        @Bean
+        public JwtProvider jwtProvider() {
+            return new MockJwtProviderImpl("test", 3600, "thisisaverylongsecretkeyforjwtatleast32bytes!");
+        }
         @Bean
         public RestDocumentationResultHandler write() {
             return MockMvcRestDocumentation.document(
@@ -67,5 +87,10 @@ public abstract class BaseControllerTest {
                 .apply(MockMvcRestDocumentation.documentationConfiguration(provider))
                 .addFilter(new CharacterEncodingFilter("UTF-8", true))
                 .build();
+        Member admin = Member.create("admin@admin.com", "password", MemberRole.ADMIN);
+        this.adminBearerToken = "Bearer " + jwtProvider.createAccessToken(admin);
+
+        Member user = Member.create("user@user.com", "password", MemberRole.USER);
+        this.userBearerToken = "Bearer " + jwtProvider.createAccessToken(user);
     }
 }

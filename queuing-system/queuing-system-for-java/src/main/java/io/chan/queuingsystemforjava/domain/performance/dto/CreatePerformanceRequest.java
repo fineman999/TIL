@@ -7,10 +7,10 @@ import java.time.ZonedDateTime;
 public record CreatePerformanceRequest(
         String performanceName,
         String performanceLocation,
-        ZonedDateTime now
+        ZonedDateTime performanceShowtime
 
 ) {
     public Performance toEntity() {
-        return Performance.create(performanceName, performanceLocation, now);
+        return Performance.create(performanceName, performanceLocation, performanceShowtime);
     }
 }

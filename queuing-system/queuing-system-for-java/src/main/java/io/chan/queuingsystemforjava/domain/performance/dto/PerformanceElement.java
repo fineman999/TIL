@@ -14,6 +14,6 @@ public record PerformanceElement(
         performance.getPerformanceId(),
         performance.getPerformanceName(),
         performance.getPerformancePlace(),
-        performance.getCreatedAt());
+        performance.getPerformanceShowtime());
   }
 }
