@@ -33,3 +33,8 @@ jwt:
 cors:
   allowed:
     origins: http://localhost:3000,http://localhost:8080
+
+
+ticketing:
+  reservation:
+    release-delay-seconds: 10

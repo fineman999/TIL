@@ -17,7 +17,6 @@ DELETE
 FROM members
 WHERE member_id > 0;
 
-
 -- Member 테이블에 데이터 삽입
 INSERT INTO members (member_id, email, password, member_role, created_at, updated_at)
 VALUES (1, 'test@gmail.com', 'testpassword', 'USER', NOW(), NOW());
@@ -36,5 +35,5 @@ INSERT INTO seat_grades (seat_grade_id, grade_name, price, performance_id, creat
 VALUES (1, 'Grade1', 10000, 1, NOW(), NOW());
 
 -- Seat 테이블에 데이터 삽입
-INSERT INTO seats (seat_id, seat_code, seat_status, member_id, zone_id, seat_grade_id, version, created_at, updated_at)
-VALUES (1, 'A01', 'SELECTED', 1, 1, 1, 1, NOW(), NOW());
+INSERT INTO seats (seat_id, seat_code, seat_status, zone_id, seat_grade_id, version, created_at, updated_at)
+VALUES (1, 'A01', 'SELECTABLE', 1, 1, 1, NOW(), NOW());

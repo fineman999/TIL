@@ -23,6 +23,13 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 예약 트랜잭션 서비스
+ * <p>
+ *     1. 좌석 선택
+ *     2. 좌석 해제
+ *     3. 티켓 예약
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class ReservationTransactionService implements ReservationService {
