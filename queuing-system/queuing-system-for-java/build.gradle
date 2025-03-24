@@ -15,6 +15,7 @@ java {
 }
 
 configurations {
+	asciidoctorExt
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
@@ -52,6 +53,7 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.testcontainers:junit-jupiter'
 	testImplementation 'org.testcontainers:mysql'
+	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -62,5 +64,36 @@ tasks.named('test') {
 
 tasks.named('asciidoctor') {
 	inputs.dir snippetsDir
+	configurations 'asciidoctorExt'
 	dependsOn test
+	sourceDir file('src/docs/asciidoc')  // 소스 디렉토리 명시
+	outputDir file('build/docs')         // 출력 디렉토리 명시
+}
+
+asciidoctor.doFirst {
+	delete file('src/main/resources/static/docs')
+}
+
+tasks.register('copyDocument', Copy) {
+	dependsOn asciidoctor
+	from file("${buildDir}/docs")  // HTML 파일이 있는 위치에서 복사
+	into file("src/main/resources/static/docs")
+}
+
+tasks.register('copyYml') {
+	def dupStr = DuplicatesStrategy.INCLUDE
+	def src = "backend-config"
+	def fileExt = "**/*.yml"
+	copy {
+		duplicatesStrategy = dupStr
+		from(src) {
+			include(fileExt)
+		}
+		into("src/main/resources")
+	}
+}
+
+build {
+	dependsOn 'copyDocument'
+	dependsOn 'copyYml'
 }
