@@ -3,6 +3,7 @@ package io.chan.queuingsystemforjava.support.controller;
 import io.chan.queuingsystemforjava.support.BaseControllerTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
@@ -13,6 +14,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WebMvcTest(DocsController.class)
 @DisplayName("API 문서 테스트 코드 작성 시")
 public class DocumentationTest extends BaseControllerTest {
 
