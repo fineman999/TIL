@@ -1,9 +1,11 @@
-package io.chan.queuingsystemforjava.common;
+package io.chan.queuingsystemforjava.common.error;
 
 import lombok.Getter;
 
+import java.util.function.Supplier;
+
 @Getter
-public class TicketingException extends RuntimeException {
+public class TicketingException extends RuntimeException implements Supplier<String> {
     private final ErrorCode errorCode;
 
     public TicketingException(ErrorCode errorCode) {
@@ -13,5 +15,10 @@ public class TicketingException extends RuntimeException {
     public TicketingException(ErrorCode errorCode, Throwable cause) {
         super(cause);
         this.errorCode = errorCode;
+    }
+
+    @Override
+    public String get() {
+        return errorCode.getMessage();
     }
 }

@@ -1,6 +1,6 @@
 package io.chan.queuingsystemforjava.domain.ticket;
 
-import io.chan.queuingsystemforjava.common.BaseEntity;
+import io.chan.queuingsystemforjava.common.entity.BaseEntity;
 import io.chan.queuingsystemforjava.domain.member.Member;
 import io.chan.queuingsystemforjava.domain.seat.Seat;
 import jakarta.persistence.*;

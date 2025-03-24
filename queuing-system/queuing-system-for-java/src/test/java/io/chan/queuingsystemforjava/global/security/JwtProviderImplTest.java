@@ -3,8 +3,8 @@ package io.chan.queuingsystemforjava.global.security;
 import static org.assertj.core.api.Assertions.catchException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import io.chan.queuingsystemforjava.common.ErrorCode;
-import io.chan.queuingsystemforjava.common.TicketingException;
+import io.chan.queuingsystemforjava.common.error.ErrorCode;
+import io.chan.queuingsystemforjava.common.error.TicketingException;
 import io.chan.queuingsystemforjava.domain.member.Member;
 import io.chan.queuingsystemforjava.domain.member.MemberRole;
 import io.chan.queuingsystemforjava.domain.member.dto.response.CustomClaims;

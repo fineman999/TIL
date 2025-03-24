@@ -1,4 +1,4 @@
-package io.chan.queuingsystemforjava.common;
+package io.chan.queuingsystemforjava.common.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;

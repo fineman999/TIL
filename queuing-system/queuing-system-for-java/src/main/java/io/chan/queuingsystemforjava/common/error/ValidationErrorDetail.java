@@ -1,4 +1,4 @@
-package io.chan.queuingsystemforjava.common;
+package io.chan.queuingsystemforjava.common.error;
 
 import lombok.Data;
 import org.springframework.validation.BindingResult;

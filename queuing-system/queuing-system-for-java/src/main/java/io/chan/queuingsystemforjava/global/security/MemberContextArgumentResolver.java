@@ -1,8 +1,8 @@
 package io.chan.queuingsystemforjava.global.security;
 
-import io.chan.queuingsystemforjava.common.ErrorCode;
+import io.chan.queuingsystemforjava.common.error.ErrorCode;
 import io.chan.queuingsystemforjava.common.LoginMember;
-import io.chan.queuingsystemforjava.common.TicketingException;
+import io.chan.queuingsystemforjava.common.error.TicketingException;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

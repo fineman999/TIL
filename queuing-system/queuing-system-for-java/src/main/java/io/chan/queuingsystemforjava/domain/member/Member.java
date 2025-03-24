@@ -1,12 +1,11 @@
 package io.chan.queuingsystemforjava.domain.member;
 
-import io.chan.queuingsystemforjava.common.BaseEntity;
+import io.chan.queuingsystemforjava.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-import java.time.ZonedDateTime;
 import java.util.Objects;
 
 @Getter

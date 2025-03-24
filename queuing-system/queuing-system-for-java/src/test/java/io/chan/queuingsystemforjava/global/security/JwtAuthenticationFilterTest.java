@@ -1,7 +1,7 @@
 package io.chan.queuingsystemforjava.global.security;
 
-import io.chan.queuingsystemforjava.common.ErrorCode;
-import io.chan.queuingsystemforjava.common.TicketingException;
+import io.chan.queuingsystemforjava.common.error.ErrorCode;
+import io.chan.queuingsystemforjava.common.error.TicketingException;
 import io.chan.queuingsystemforjava.domain.member.Member;
 import io.chan.queuingsystemforjava.domain.member.MemberRole;
 import io.chan.queuingsystemforjava.domain.member.repository.MemberJpaRepository;

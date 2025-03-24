@@ -1,6 +1,6 @@
 package io.chan.queuingsystemforjava.domain.performance;
 
-import io.chan.queuingsystemforjava.common.BaseEntity;
+import io.chan.queuingsystemforjava.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;

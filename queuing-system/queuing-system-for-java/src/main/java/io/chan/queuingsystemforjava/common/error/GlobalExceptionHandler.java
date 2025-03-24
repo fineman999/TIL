@@ -1,4 +1,4 @@
-package io.chan.queuingsystemforjava.common;
+package io.chan.queuingsystemforjava.common.error;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

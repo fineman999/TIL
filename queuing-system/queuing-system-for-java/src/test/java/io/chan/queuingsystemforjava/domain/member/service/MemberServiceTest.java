@@ -2,15 +2,13 @@ package io.chan.queuingsystemforjava.domain.member.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.BDDAssertions.catchException;
-import static org.junit.jupiter.api.Assertions.*;
 
-import io.chan.queuingsystemforjava.common.ErrorCode;
-import io.chan.queuingsystemforjava.common.TicketingException;
+import io.chan.queuingsystemforjava.common.error.ErrorCode;
+import io.chan.queuingsystemforjava.common.error.TicketingException;
 import io.chan.queuingsystemforjava.domain.member.Member;
 import io.chan.queuingsystemforjava.domain.member.MemberRole;
 import io.chan.queuingsystemforjava.domain.member.dto.request.CreateMemberRequest;
 import io.chan.queuingsystemforjava.domain.member.dto.response.CreateMemberResponse;
-import io.chan.queuingsystemforjava.domain.member.repository.MemberJpaRepository;
 import io.chan.queuingsystemforjava.domain.member.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

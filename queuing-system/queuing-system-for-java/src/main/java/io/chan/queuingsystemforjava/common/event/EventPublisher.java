@@ -1,4 +1,4 @@
-package io.chan.queuingsystemforjava.common;
+package io.chan.queuingsystemforjava.common.event;
 
 public interface EventPublisher {
 

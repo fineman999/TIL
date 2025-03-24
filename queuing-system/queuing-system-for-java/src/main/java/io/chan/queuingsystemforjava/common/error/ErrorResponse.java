@@ -1,4 +1,4 @@
-package io.chan.queuingsystemforjava.common;
+package io.chan.queuingsystemforjava.common.error;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

@@ -1,9 +1,9 @@
 package io.chan.queuingsystemforjava.domain.seat;
 
 
-import io.chan.queuingsystemforjava.common.BaseEntity;
-import io.chan.queuingsystemforjava.common.ErrorCode;
-import io.chan.queuingsystemforjava.common.TicketingException;
+import io.chan.queuingsystemforjava.common.entity.BaseEntity;
+import io.chan.queuingsystemforjava.common.error.ErrorCode;
+import io.chan.queuingsystemforjava.common.error.TicketingException;
 import io.chan.queuingsystemforjava.domain.member.Member;
 import io.chan.queuingsystemforjava.domain.zone.Zone;
 import jakarta.persistence.*;

@@ -1,9 +1,9 @@
 package io.chan.queuingsystemforjava.domain.performance.service;
 
 
-import io.chan.queuingsystemforjava.common.ErrorCode;
+import io.chan.queuingsystemforjava.common.error.ErrorCode;
 import io.chan.queuingsystemforjava.common.ItemResult;
-import io.chan.queuingsystemforjava.common.TicketingException;
+import io.chan.queuingsystemforjava.common.error.TicketingException;
 import io.chan.queuingsystemforjava.domain.performance.dto.PerformanceElement;
 import io.chan.queuingsystemforjava.domain.performance.repository.PerformanceRepository;
 import lombok.RequiredArgsConstructor;

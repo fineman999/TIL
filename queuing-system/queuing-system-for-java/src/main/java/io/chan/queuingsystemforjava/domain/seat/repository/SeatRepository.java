@@ -5,8 +5,8 @@ import io.chan.queuingsystemforjava.domain.zone.Zone;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,5 +26,17 @@ public class SeatRepository {
 
     public List<Seat> findAll() {
         return seatJpaRepository.findAll();
+    }
+
+    public Optional<Seat> findById(Long seatId) {
+        return seatJpaRepository.findById(seatId);
+    }
+
+    public Optional<Seat> findByIdWithOptimistic(Long seatId) {
+        return seatJpaRepository.findByIdWithOptimistic(seatId);
+    }
+
+    public Optional<Seat> findByIdWithPessimistic(Long seatId) {
+        return seatJpaRepository.findByIdWithPessimistic(seatId);
     }
 }
