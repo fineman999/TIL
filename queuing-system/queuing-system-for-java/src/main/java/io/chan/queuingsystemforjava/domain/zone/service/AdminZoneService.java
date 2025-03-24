@@ -31,7 +31,7 @@ public class AdminZoneService {
                         zoneElement ->
                                 Zone.builder()
                                         .performance(performance)
-                                        .zoneName(zoneElement.getZoneName())
+                                        .zoneName(zoneElement.zoneName())
                                         .build())
                 .toList();
     }

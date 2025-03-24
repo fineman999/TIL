@@ -25,4 +25,8 @@ public class ZoneRepository {
     public Optional<Zone> findById(Long zoneId) {
         return zoneJpaRepository.findById(zoneId);
     }
+
+    public List<Zone> findAll() {
+        return zoneJpaRepository.findAll();
+    }
 }
