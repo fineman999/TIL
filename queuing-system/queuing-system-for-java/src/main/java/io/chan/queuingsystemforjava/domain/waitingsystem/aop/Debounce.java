@@ -1,4 +1,4 @@
-package io.chan.queuingsystemforjava.waitingsystem;
+package io.chan.queuingsystemforjava.domain.waitingsystem.aop;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

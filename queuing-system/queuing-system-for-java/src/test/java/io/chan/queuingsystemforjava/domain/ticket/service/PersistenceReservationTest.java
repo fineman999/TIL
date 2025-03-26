@@ -3,9 +3,7 @@ package io.chan.queuingsystemforjava.domain.ticket.service;
 import io.chan.queuingsystemforjava.common.error.TicketingException;
 import io.chan.queuingsystemforjava.domain.ticket.dto.request.SeatSelectionRequest;
 import io.chan.queuingsystemforjava.domain.ticket.dto.request.TicketPaymentRequest;
-import io.chan.queuingsystemforjava.domain.ticket.proxy.OptimisticReservationServiceProxy;
-import io.chan.queuingsystemforjava.domain.ticket.proxy.PessimisticReservationServiceProxy;
-import io.chan.queuingsystemforjava.global.config.ReservationServiceContainer;
+import io.chan.queuingsystemforjava.global.config.ReservationServiceConfig;
 import io.chan.queuingsystemforjava.support.BaseIntegrationTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -33,7 +31,7 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Import({ ReservationServiceContainer.class})
+@Import({ ReservationServiceConfig.class})
 public class PersistenceReservationTest extends BaseIntegrationTest {
     private static final Logger log = LoggerFactory.getLogger(PersistenceReservationTest.class);
 

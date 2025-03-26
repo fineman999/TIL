@@ -12,6 +12,8 @@ public enum ErrorCode {
     CONFLICT(HttpStatus.CONFLICT, "C409", "서버 리소스와 충돌이 발생했습니다."),
     VALIDATION_FAILED(HttpStatus.UNPROCESSABLE_ENTITY, "C422", "유효성 검증에 실패하였습니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C500", "서버 내부 에러입니다."),
+    INVALID_AUTHENTICATION(HttpStatus.UNAUTHORIZED, "C401-1", "인증 정보가 올바르지 않습니다."),
+    INVALID_PRINCIPAL(HttpStatus.UNAUTHORIZED, "C401-2", "인증된 사용자가 아닙니다."),
 
     /*
        Member Error

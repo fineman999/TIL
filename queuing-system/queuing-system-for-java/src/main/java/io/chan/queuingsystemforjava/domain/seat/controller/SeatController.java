@@ -4,7 +4,7 @@ import io.chan.queuingsystemforjava.common.ItemResult;
 import io.chan.queuingsystemforjava.domain.seat.dto.response.SeatElement;
 import io.chan.queuingsystemforjava.domain.seat.dto.response.SeatGradeElement;
 import io.chan.queuingsystemforjava.domain.seat.service.SeatService;
-import io.chan.queuingsystemforjava.waitingsystem.Waiting;
+import io.chan.queuingsystemforjava.domain.waitingsystem.aop.Waiting;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

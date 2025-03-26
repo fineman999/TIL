@@ -1,8 +1,8 @@
 package io.chan.queuingsystemforjava.support.integration;
 
 
-import io.chan.queuingsystemforjava.waitingsystem.Debounce;
-import io.chan.queuingsystemforjava.waitingsystem.Waiting;
+import io.chan.queuingsystemforjava.domain.waitingsystem.aop.Debounce;
+import io.chan.queuingsystemforjava.domain.waitingsystem.aop.Waiting;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +41,7 @@ public class AspectTestConfig {
     static class TestController {
 
         @Waiting
-        @GetMapping("/api/waiting/test")
+        @GetMapping("/api/v1/waiting/test")
         public ResponseEntity<String> test() {
             return ResponseEntity.ok("test");
         }

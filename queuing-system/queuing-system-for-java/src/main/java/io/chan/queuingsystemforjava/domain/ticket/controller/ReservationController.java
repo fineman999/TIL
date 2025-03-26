@@ -4,7 +4,7 @@ import io.chan.queuingsystemforjava.common.LoginMember;
 import io.chan.queuingsystemforjava.domain.ticket.dto.request.SeatSelectionRequest;
 import io.chan.queuingsystemforjava.domain.ticket.dto.request.TicketPaymentRequest;
 import io.chan.queuingsystemforjava.domain.ticket.service.ReservationService;
-import io.chan.queuingsystemforjava.waitingsystem.Waiting;
+import io.chan.queuingsystemforjava.domain.waitingsystem.aop.Waiting;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;

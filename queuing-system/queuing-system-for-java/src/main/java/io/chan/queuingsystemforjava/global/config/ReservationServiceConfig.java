@@ -13,19 +13,17 @@ import io.chan.queuingsystemforjava.domain.ticket.service.ReservationTransaction
 import io.chan.queuingsystemforjava.domain.ticket.strategy.LockSeatStrategy;
 import io.chan.queuingsystemforjava.domain.ticket.strategy.OptimisticLockSeatStrategy;
 import io.chan.queuingsystemforjava.domain.ticket.strategy.PessimisticLockSeatStrategy;
-import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 @Configuration
-public class ReservationServiceContainer {
+public class ReservationServiceConfig {
 
     @Value("${ticketing.reservation.release-delay-seconds}")
     private int reservationReleaseDelay;
