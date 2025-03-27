@@ -90,3 +90,52 @@ operation::seat-controller-test/get-seat-grades[snippets='http-request,path-para
 === response
 
 operation::seat-controller-test/get-seat-grades[snippets='http-response,response-fields']
+
+= 티켓(Ticket)
+
+== 좌석 선택
+
+=== request
+
+operation::ticket-controller-test/select-seat[snippets='http-request,request-headers,request-fields']
+
+=== response
+
+operation::ticket-controller-test/select-seat[snippets='http-response']
+
+== 티켓 예약
+
+=== request
+
+operation::ticket-controller-test/reservation-ticket[snippets='http-request,request-headers,request-fields']
+
+=== response
+
+operation::ticket-controller-test/reservation-ticket[snippets='http-response']
+
+== 티켓 조회
+
+=== request
+
+operation::ticket-controller-test/select-my-tickets[snippets='http-request,request-headers']
+
+=== response
+operation::ticket-controller-test/select-my-tickets[snippets='http-response,response-fields']
+
+== 좌석 점유 해제
+operation::ticket-controller-test/release-seat[snippets='http-request,request-headers']
+
+=== response
+operation::ticket-controller-test/release-seat[snippets='http-response']
+
+= 대기열(WaitingSystem)
+
+== 남은 순번 조회
+
+=== request
+
+operation::waiting-controller-test/get-remaining-count[snippets='http-request,request-headers']
+
+=== response
+
+operation::waiting-controller-test/get-remaining-count[snippets='http-response,response-fields']
