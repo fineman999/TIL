@@ -28,8 +28,13 @@ public class WaitingMember {
         this.enteredAt = enteredAt;
     }
 
-    public WaitingMember create(String email, long performanceId) {
+    public static WaitingMember create(String email, long performanceId) {
         return new WaitingMember(email, performanceId);
+    }
+
+    public static WaitingMember create(
+            String email, long performanceId, long waitingCount, ZonedDateTime enteredAt) {
+        return new WaitingMember(email, performanceId, waitingCount, enteredAt);
     }
 
     public void updateWaitingInfo(long waitingCount, ZonedDateTime enteredAt) {

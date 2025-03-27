@@ -5,7 +5,7 @@ import io.chan.queuingsystemforjava.domain.member.MemberRole;
 import io.chan.queuingsystemforjava.domain.member.dto.response.CustomClaims;
 import io.chan.queuingsystemforjava.domain.member.service.JwtProvider;
 
-public class MockJwtProviderImpl implements JwtProvider {
+public class MockJwtProvider implements JwtProvider {
     private final String issuer;
     private final int expirationSeconds;
     private final String secretKey;
@@ -14,7 +14,7 @@ public class MockJwtProviderImpl implements JwtProvider {
     private static final String ADMIN_TOKEN = "mocked-jwt-token-for-admin";
     private static final String USER_TOKEN = "mocked-jwt-token-for-member";
 
-    public MockJwtProviderImpl(String issuer, int expirationSeconds, String secretKey) {
+    public MockJwtProvider(String issuer, int expirationSeconds, String secretKey) {
         this.issuer = issuer;
         this.expirationSeconds = expirationSeconds;
         this.secretKey = secretKey;

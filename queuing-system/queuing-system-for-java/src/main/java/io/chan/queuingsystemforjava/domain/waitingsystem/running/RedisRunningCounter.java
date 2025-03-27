@@ -3,36 +3,46 @@ package io.chan.queuingsystemforjava.domain.waitingsystem.running;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
+import java.util.Objects;
+
 public class RedisRunningCounter implements RunningCounter {
 
-    private static final String RUNNING_COUNTER_KEY = "running_counter:";
+    private static final String RUNNING_COUNTER_KEY_PREFIX = "running_counter::";
 
     private final ValueOperations<String, String> runningCounter;
 
     public RedisRunningCounter(StringRedisTemplate redisTemplate) {
-        if (redisTemplate == null) {
-            throw new IllegalArgumentException("redisTemplate must not be null");
-        }
+        Objects.requireNonNull(redisTemplate, "redisTemplate must not be null");
         this.runningCounter = redisTemplate.opsForValue();
     }
 
     @Override
     public void increment(long performanceId, int number) {
-        runningCounter.increment(getRunningCounterKey(performanceId), number);
+        String key = getRunningCounterKey(performanceId);
+        runningCounter.increment(key, number);
     }
 
     @Override
     public long getRunningCount(long performanceId) {
         String key = getRunningCounterKey(performanceId);
-        // 키가 없으면 0으로 초기화
-        Boolean wasSet = runningCounter.setIfAbsent(key, "0");
-        String rawRunningCount = runningCounter.get(key);
+        String rawRunningCount = runningCounter.getAndSet(key, "0"); // 키가 없으면 "0" 설정 후 반환
 
-        // null 체크 후 기본값 0 반환
-        return rawRunningCount != null ? Long.parseLong(rawRunningCount) : 0L;
+        return parseCount(rawRunningCount);
     }
 
     private String getRunningCounterKey(long performanceId) {
-        return RUNNING_COUNTER_KEY + performanceId;
+        return RUNNING_COUNTER_KEY_PREFIX + performanceId;
+    }
+
+    private long parseCount(String rawCount) {
+        if (rawCount == null) {
+            return 0L;
+        }
+        try {
+            return Long.parseLong(rawCount);
+        } catch (NumberFormatException e) {
+            // 로깅 추가 가능: log.warn("Invalid running count value: {}", rawCount, e);
+            return 0L;
+        }
     }
 }

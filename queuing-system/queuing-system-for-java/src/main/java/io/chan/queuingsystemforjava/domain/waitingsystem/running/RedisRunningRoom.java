@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class RedisRunningRoom implements RunningRoom {
 
     private static final int MAX_RUNNING_ROOM_SIZE = 100;
-    private static final String RUNNING_ROOM_KEY = "running_room:";
+    private static final String RUNNING_ROOM_KEY = "running_room::";
     private static final int EXPIRED_MINUTE = 5;
     private static final int MINIMUM_RUNNING_TIME = 30;
 

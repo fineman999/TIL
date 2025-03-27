@@ -8,14 +8,10 @@ import io.chan.queuingsystemforjava.domain.member.service.MemberService;
 import io.chan.queuingsystemforjava.domain.performance.service.AdminPerformanceService;
 import io.chan.queuingsystemforjava.domain.performance.service.UserPerformanceService;
 import io.chan.queuingsystemforjava.global.config.WebConfig;
-import io.chan.queuingsystemforjava.support.controller.DocsController;
-import io.chan.queuingsystemforjava.support.mock.MockJwtProviderImpl;
+import io.chan.queuingsystemforjava.support.mock.MockJwtProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -67,7 +63,7 @@ public abstract class BaseControllerTest {
     public static class RestDocsConfig {
         @Bean
         public JwtProvider jwtProvider() {
-            return new MockJwtProviderImpl("test", 3600, "thisisaverylongsecretkeyforjwtatleast32bytes!");
+            return new MockJwtProvider("test", 3600, "thisisaverylongsecretkeyforjwtatleast32bytes!");
         }
         @Bean
         public RestDocumentationResultHandler write() {
