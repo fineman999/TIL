@@ -29,7 +29,7 @@ public class DebounceAspect {
     private void debounceAnnotation() {}
 
     @Pointcut(
-            "execution(public void io.chan.queuingsystemforjava.domain.waitingsystem.service.WaitingSystem.moveUserToRunning(..))")
+            "execution(public void io.chan.queuingsystemforjava.domain.waitingsystem.service.WaitingSystem.processExpiredAndMoveUsersToRunning(..))")
     private void moveWaitingMemberToRunning() {}
 
     @Around("debounceAnnotation() || moveWaitingMemberToRunning()")

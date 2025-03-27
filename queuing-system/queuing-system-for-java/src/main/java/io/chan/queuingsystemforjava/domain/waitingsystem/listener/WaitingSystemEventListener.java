@@ -16,13 +16,13 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class WaitingEventListener {
+public class WaitingSystemEventListener {
 
     private final WaitingSystem waitingSystem;
 
     @EventListener(PollingEvent.class)
     public void moveUserToRunningRoom(PollingEvent event) {
-        waitingSystem.moveUserToRunning(event.performanceId());
+        waitingSystem.processExpiredAndMoveUsersToRunning(event.performanceId());
     }
 
     @EventListener(LastPollingEvent.class)

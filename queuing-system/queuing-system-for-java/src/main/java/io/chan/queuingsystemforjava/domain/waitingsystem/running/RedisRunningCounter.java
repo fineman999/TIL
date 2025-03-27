@@ -25,7 +25,7 @@ public class RedisRunningCounter implements RunningCounter {
     @Override
     public long getRunningCount(long performanceId) {
         String key = getRunningCounterKey(performanceId);
-        String rawRunningCount = runningCounter.getAndSet(key, "0"); // 키가 없으면 "0" 설정 후 반환
+        String rawRunningCount = runningCounter.get(key);
 
         return parseCount(rawRunningCount);
     }

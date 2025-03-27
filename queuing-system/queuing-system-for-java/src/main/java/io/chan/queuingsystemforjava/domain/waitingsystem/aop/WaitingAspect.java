@@ -69,8 +69,8 @@ public class WaitingAspect {
     // 대기 시스템 로직 처리
     private Object processWaitingLogic(ProceedingJoinPoint joinPoint, String email, long performanceId)
             throws Throwable {
-        if (waitingSystem.isReadyToHandle(email, performanceId)) {
-            return joinPoint.proceed(); // 준비되었다면 원래 요청 실행
+        if (waitingSystem.isInRunningRoom(email, performanceId)) {
+            return joinPoint.proceed(); // 이미 작업 중인 경우, 메서드 실행
         }
 
         waitingSystem.enterWaitingRoom(email, performanceId); // 대기실 입장

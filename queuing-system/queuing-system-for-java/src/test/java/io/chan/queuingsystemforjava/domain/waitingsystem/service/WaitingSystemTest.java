@@ -86,7 +86,7 @@ class WaitingSystemTest extends BaseIntegrationTest {
 
             // when
             // 남은 순번 조회
-            long remainingCount = waitingSystem.getRemainingCount(email, performanceId);
+            long remainingCount = waitingSystem.pollRemainingCountAndTriggerEvents(email, performanceId);
 
             // then
             // 남은 순번이 expected와 같은지 확인
@@ -102,7 +102,7 @@ class WaitingSystemTest extends BaseIntegrationTest {
             waitingSystem.enterWaitingRoom(email, performanceId);
 
             // when
-            waitingSystem.getRemainingCount(email, performanceId);
+            waitingSystem.pollRemainingCountAndTriggerEvents(email, performanceId);
 
             // then
             assertThat(eventPublisher.counter).hasValue(1);
@@ -139,7 +139,7 @@ class WaitingSystemTest extends BaseIntegrationTest {
             rawRunningRoom.add(getRunningRoomKey(performanceId), anotherEmail, now.toEpochSecond());
 
             // when
-            waitingSystem.moveUserToRunning(performanceId);
+            waitingSystem.processExpiredAndMoveUsersToRunning(performanceId);
 
             // then
             Set<String> emails = rawRunningRoom.range(getRunningRoomKey(performanceId), 0, -1);
@@ -159,7 +159,7 @@ class WaitingSystemTest extends BaseIntegrationTest {
             rawWaitingRoom.put(getWaitingRoomKey(performanceId), anotherEmail, String.valueOf(2));
 
             // when
-            waitingSystem.moveUserToRunning(performanceId);
+            waitingSystem.processExpiredAndMoveUsersToRunning(performanceId);
             // then
             Set<String> emails = rawWaitingRoom.keys(getWaitingRoomKey(performanceId));
             assertThat(emails).hasSize(1).containsExactly(anotherEmail);
@@ -175,7 +175,7 @@ class WaitingSystemTest extends BaseIntegrationTest {
             }
 
             // when
-            waitingSystem.moveUserToRunning(performanceId);
+            waitingSystem.processExpiredAndMoveUsersToRunning(performanceId);
 
             // then
             assertThat(runningManager.getRunningCount(performanceId)).isEqualTo(memberCount);
@@ -190,7 +190,7 @@ class WaitingSystemTest extends BaseIntegrationTest {
             for (int i = 0; i < 100; i++) {
                 waitingSystem.enterWaitingRoom("email" + i + "@email.com", performanceId);
             }
-            waitingSystem.moveUserToRunning(performanceId);
+            waitingSystem.processExpiredAndMoveUsersToRunning(performanceId);
 
             int memberCount = 25;
             for (int i = 0; i < memberCount; i++) {
@@ -198,7 +198,7 @@ class WaitingSystemTest extends BaseIntegrationTest {
             }
 
             // when
-            waitingSystem.moveUserToRunning(performanceId);
+            waitingSystem.processExpiredAndMoveUsersToRunning(performanceId);
 
             // then
             assertThat(runningManager.getRunningCount(performanceId)).isEqualTo(100);
@@ -225,7 +225,7 @@ class WaitingSystemTest extends BaseIntegrationTest {
             waitingSystem.pullOutRunningMember(email, performanceId);
 
             // then
-            assertThat(runningManager.isReadyToHandle(email, performanceId)).isFalse();
+            assertThat(runningManager.isInRunningRoom(email, performanceId)).isFalse();
             assertThatThrownBy(() -> waitingManager.getMemberWaitingCount(email, performanceId))
                     .isInstanceOf(TicketingException.class);
         }

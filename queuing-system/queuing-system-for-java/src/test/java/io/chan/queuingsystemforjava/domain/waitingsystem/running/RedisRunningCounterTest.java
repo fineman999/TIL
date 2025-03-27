@@ -1,73 +1,75 @@
 package io.chan.queuingsystemforjava.domain.waitingsystem.running;
 
-import io.chan.queuingsystemforjava.domain.waitingsystem.waiting.RedisWaitingCounter;
 import io.chan.queuingsystemforjava.support.BaseIntegrationTest;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-class RedisWaitingCounterTest extends BaseIntegrationTest {
-
-    @Autowired
-    private RedisWaitingCounter waitingCounter;
+class RedisRunningCounterTest extends BaseIntegrationTest {
 
     @Autowired
-    private StringRedisTemplate redisTemplate;
+    private RedisRunningCounter runningCounter;
+
+    @Autowired private StringRedisTemplate redisTemplate;
+
+    private ValueOperations<String, String> rawRunningCounter;
 
     @BeforeEach
     void setUp() {
+        rawRunningCounter = redisTemplate.opsForValue();
         redisTemplate.getConnectionFactory().getConnection().serverCommands().flushAll();
     }
 
+    private String getRunningCounterKey(long performanceId) {
+        return "running_counter::" + performanceId;
+    }
+
     @Nested
-    @DisplayName("다음 대기 순번 조회 시")
-    class GetNextCountTest {
-
-        private long performanceId;
-
-        @BeforeEach
-        void setUp() {
-            performanceId = 1;
-        }
+    @DisplayName("작업 대기 공간으로 이동한 인원 수 조회 시")
+    class GetRunningCountTest {
 
         @Test
-        @DisplayName("순번을 조회한다.")
-        void getCount() {
-            // given
-
-            // when
-            long nextCount = waitingCounter.getNextCount(performanceId);
-
-            // then
-            assertThat(nextCount).isEqualTo(1);
-        }
-
-        @Test
-        @DisplayName("동시 요청 상황에서 순번을 순차적으로 조회한다.")
-        void getCountIncrement() throws InterruptedException {
+        @DisplayName("카운터가 초기화되지 않았다면 0으로 초기화한다.")
+        void initializeCounter() {
             // given
             long performanceId = 1;
 
+            // when
+            long runningCount = runningCounter.getRunningCount(performanceId);
+
+            // then
+            assertThat(runningCount).isEqualTo(0);
+        }
+
+        @RepeatedTest(5)
+        @DisplayName("카운터가 초기화되었다면 0으로 초기화하지 않는다.")
+        void doNotReInitializeCounter() throws InterruptedException, ExecutionException {
+            // given
+            long performanceId = 1;
             int poolSize = 50;
-            CountDownLatch latch = new CountDownLatch(poolSize);
             ExecutorService executorService = Executors.newFixedThreadPool(poolSize);
+            CountDownLatch latch = new CountDownLatch(poolSize);
 
             // when
             for (int i = 0; i < poolSize; i++) {
+                int finalI = i;
                 executorService.execute(
                         () -> {
                             try {
-                                waitingCounter.getNextCount(performanceId);
+                                if (finalI % 2 == 0) {
+                                    rawRunningCounter.set(
+                                            getRunningCounterKey(performanceId), "10");
+                                } else {
+                                    runningCounter.getRunningCount(performanceId);
+                                }
                             } finally {
                                 latch.countDown();
                             }
@@ -76,33 +78,28 @@ class RedisWaitingCounterTest extends BaseIntegrationTest {
             latch.await();
 
             // then
-            assertThat(waitingCounter.getNextCount(performanceId)).isEqualTo(poolSize + 1);
+            long runningCount = runningCounter.getRunningCount(performanceId);
+            assertThat(runningCount).isEqualTo(10);
         }
+    }
+
+    @Nested
+    @DisplayName("카운터 증가 호출 시")
+    class IncrementTest {
 
         @Test
-        @DisplayName("각 공연은 대기 순번을 공유하지 않는다.")
-        void noSharedWaitingCounter() {
+        @DisplayName("주어진 값만큼 값을 증가시킨다.")
+        void increment() {
             // given
-            long performanceAId = 1;
-            int performanceAWaitedMemberCount = 5;
-            for (int i = 0; i < performanceAWaitedMemberCount; i++) {
-                waitingCounter.getNextCount(performanceAId);
-            }
-
-            long performanceBId = 2;
-            int performanceBWaitedMemberCount = 10;
-            for (int i = 0; i < performanceBWaitedMemberCount; i++) {
-                waitingCounter.getNextCount(performanceBId);
-            }
+            long performanceId = 1;
+            int number = 10;
 
             // when
-            long performanceANextCount = waitingCounter.getNextCount(performanceAId);
-            long performanceBNextCount = waitingCounter.getNextCount(performanceBId);
+            runningCounter.increment(performanceId, number);
 
             // then
-            assertThat(performanceANextCount).isNotEqualTo(performanceBNextCount);
-            assertThat(performanceANextCount).isEqualTo(performanceAWaitedMemberCount + 1);
-            assertThat(performanceBNextCount).isEqualTo(performanceBWaitedMemberCount + 1);
+            long runningCount = runningCounter.getRunningCount(performanceId);
+            assertThat(runningCount).isEqualTo(number);
         }
     }
 }

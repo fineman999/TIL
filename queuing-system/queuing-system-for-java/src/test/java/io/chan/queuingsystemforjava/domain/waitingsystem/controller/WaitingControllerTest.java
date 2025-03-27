@@ -34,7 +34,7 @@ class WaitingControllerTest extends BaseControllerTest {
     @DisplayName("남은 대기 순번 조회 API 호출 시")
     void getRemainingCount() throws Exception {
         // given
-        given(waitingSystem.getRemainingCount(anyString(), anyLong())).willReturn(1L);
+        given(waitingSystem.pollRemainingCountAndTriggerEvents(anyString(), anyLong())).willReturn(1L);
 
         // when
         ResultActions result =

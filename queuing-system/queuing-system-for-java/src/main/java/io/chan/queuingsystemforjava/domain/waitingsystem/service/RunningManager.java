@@ -3,7 +3,7 @@ package io.chan.queuingsystemforjava.domain.waitingsystem.service;
 import java.util.Set;
 
 public interface RunningManager {
-    boolean isReadyToHandle(String email, long performanceId);
+    boolean isInRunningRoom(String email, long performanceId);
 
     long getRunningCount(long performanceId);
 

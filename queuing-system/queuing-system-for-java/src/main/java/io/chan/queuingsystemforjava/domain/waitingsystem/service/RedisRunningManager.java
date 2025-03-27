@@ -13,7 +13,7 @@ public class RedisRunningManager implements RunningManager {
     private final RedisRunningCounter runningCounter;
 
     @Override
-    public boolean isReadyToHandle(String email, long performanceId) {
+    public boolean isInRunningRoom(String email, long performanceId) {
         return runningRoom.contains(email, performanceId);
     }
 

@@ -18,7 +18,7 @@ public class WaitingController {
     @GetMapping("/performances/{performanceId}/wait")
     public ResponseEntity<Map<String, Long>> getRemainingCount(
             @LoginMember String email, @PathVariable("performanceId") Long performanceId) {
-        long remainingCount = waitingSystem.getRemainingCount(email, performanceId);
+        long remainingCount = waitingSystem.pollRemainingCountAndTriggerEvents(email, performanceId);
         return ResponseEntity.ok(Map.of("remainingCount", remainingCount));
     }
 
