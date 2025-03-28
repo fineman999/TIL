@@ -1,6 +1,8 @@
 package io.chan.queuingsystemforjava.global.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.chan.queuingsystemforjava.common.error.ErrorCode;
+import io.chan.queuingsystemforjava.common.error.ErrorResponse;
 import io.chan.queuingsystemforjava.common.error.TicketingException;
 import io.chan.queuingsystemforjava.domain.member.dto.response.CustomClaims;
 import io.chan.queuingsystemforjava.domain.member.service.JwtProvider;
@@ -14,6 +16,7 @@ import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -35,12 +38,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
     if (Objects.nonNull(authHeader)) {
-      String accessToken = removeBearer(authHeader);
-      CustomClaims claims = jwtProvider.parseAccessToken(accessToken);
-      MemberContext memberContext =
-          (MemberContext) userDetailsService.loadUserByUsername(claims.email());
-      insertAuthentication(request, memberContext);
-      log.debug("JWT 인증 성공: email={}", claims.email());
+      try {
+        String accessToken = removeBearer(authHeader);
+        log.debug("Extracted access token: {}", accessToken);
+        CustomClaims claims = jwtProvider.parseAccessToken(accessToken);
+        MemberContext memberContext =
+                (MemberContext) userDetailsService.loadUserByUsername(claims.email());
+        insertAuthentication(request, memberContext);
+        log.debug("JWT 인증 성공: email={}", claims.email());
+      } catch (TicketingException e) {
+        log.warn("JWT 인증 실패: code={}, message={}", e.getErrorCode(), e.getMessage());
+        response.setStatus(e.getErrorCode().getHttpStatusValue());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.writeValue(response.getWriter(), ErrorResponse.of(e.getErrorCode()));
+        return;
+      }
     }
 
     filterChain.doFilter(request, response);

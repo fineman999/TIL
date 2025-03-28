@@ -6,10 +6,7 @@ import io.chan.queuingsystemforjava.domain.member.Member;
 import io.chan.queuingsystemforjava.domain.member.MemberRole;
 import io.chan.queuingsystemforjava.domain.member.dto.response.CustomClaims;
 import io.chan.queuingsystemforjava.domain.member.service.JwtProvider;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtParser;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -86,6 +83,8 @@ public class JwtProviderImpl implements JwtProvider {
             return new CustomClaims(memberId, email, memberRole);
         } catch (ExpiredJwtException e) {
             throw new TicketingException(ErrorCode.EXPIRED_TOKEN);
+        } catch (MalformedJwtException e) {
+            throw new TicketingException(ErrorCode.INVALID_TOKEN);
         } catch (RuntimeException e) {
             log.debug("액세스 토큰이 유효하지 않습니다. token={}", accessToken);
             throw new TicketingException(ErrorCode.INVALID_TOKEN);

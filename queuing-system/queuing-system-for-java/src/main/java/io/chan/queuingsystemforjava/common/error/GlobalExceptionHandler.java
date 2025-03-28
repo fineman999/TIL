@@ -22,13 +22,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse<Void>> handleAllExceptions(Exception e, HttpServletRequest request) {
-        if (MediaType.TEXT_EVENT_STREAM_VALUE.equals(request.getContentType())) {
+        logException("에러발생", e, e.getMessage(), "ERROR");
+        if (MediaType.TEXT_EVENT_STREAM_VALUE.equals(request.getHeader("Accept"))) {
             return ResponseEntity.ok()
                     .contentType(MediaType.TEXT_EVENT_STREAM)
                     .body(ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR));
-
         }
-        logException("에러발생", e, e.getMessage(), "ERROR");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR));
     }

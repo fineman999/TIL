@@ -21,8 +21,8 @@ spring:
 
 jwt:
   issuer: "http://localhost:8080"
-  access-expiry-seconds: 1800
-  refresh-expiry-seconds: 3600
+  access-expiry-seconds: 7200 # 2시간
+  refresh-expiry-seconds: 604800 # 7일
   secret-key: thisisjusttestaccesssecretsodontworry
 cors:
   allowed:

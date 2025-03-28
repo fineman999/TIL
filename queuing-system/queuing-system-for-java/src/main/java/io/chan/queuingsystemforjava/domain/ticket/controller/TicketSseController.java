@@ -20,6 +20,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @RestController
@@ -31,52 +32,68 @@ public class TicketSseController {
             new ConcurrentHashMap<>();
 
     private final ExecutorService broadcastExecutor = Executors.newFixedThreadPool(10);
-    private final ScheduledExecutorService keepAliveScheduler = Executors.newScheduledThreadPool(10); // 컨트롤러 수준에서 관리
-
+    private final ScheduledExecutorService keepAliveScheduler = Executors.newScheduledThreadPool(10);
 
     private final ObjectMapper objectMapper;
 
     @GetMapping(value = "/subscribe/performances/{performanceId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribePerformances(
             @LoginMember MemberContext memberContext, @PathVariable("performanceId") Long performanceId) {
-        SseEmitter emitter = new SseEmitter(300_000L); // 5분
+        SseEmitter emitter = new SseEmitter(300_000L); // 5분 타임아웃
         String memberEmail = memberContext.getUsername();
         ConcurrentMap<String, SseEmitter> performanceEmitters =
                 emitters.computeIfAbsent(performanceId, k -> new ConcurrentHashMap<>());
         performanceEmitters.put(memberEmail, emitter);
 
+        // Keep-Alive 작업 제어를 위한 플래그
+        AtomicBoolean isActive = new AtomicBoolean(true);
+
         // Keep-Alive 작업 스케줄링
         ScheduledFuture<?> keepAliveTask = keepAliveScheduler.scheduleAtFixedRate(() -> {
-            try {
-                emitter.send(SseEmitter.event().comment("keep-alive"));
-                log.debug("Keep-alive 전송 - 공연 ID: {}, 이메일: {}", performanceId, memberEmail);
-            } catch (IOException e) {
-                log.error("Keep-alive 전송 실패 - 공연 ID: {}, 이메일: {}", performanceId, memberEmail, e);
-                removeEmitter(performanceId, memberEmail);
+            if (isActive.get()) {
+                try {
+                    emitter.send(SseEmitter.event().comment("keep-alive"));
+                    log.debug("Keep-alive 전송 - 공연 ID: {}, 이메일: {}", performanceId, memberEmail);
+                } catch (IOException e) {
+                    log.info("Keep-alive 전송 실패 - 클라이언트 연결 종료 - 공연 ID: {}, 이메일: {}", performanceId, memberEmail);
+                    isActive.set(false);
+                    removeEmitter(performanceId, memberEmail);
+                }
             }
         }, 0, 15, TimeUnit.SECONDS);
 
         emitter.onCompletion(() -> {
-            keepAliveTask.cancel(false); // 작업 취소
+            isActive.set(false);
+            keepAliveTask.cancel(false);
             removeEmitter(performanceId, memberEmail);
+            log.debug("Emitter 완료 - 공연 ID: {}, 이메일: {}", performanceId, memberEmail);
         });
+
         emitter.onTimeout(() -> {
+            isActive.set(false);
             keepAliveTask.cancel(false);
             sendErrorEvent(emitter, performanceId, memberEmail, "Connection timed out");
             removeEmitter(performanceId, memberEmail);
+            log.info("Emitter 타임아웃 - 공연 ID: {}, 이메일: {}", performanceId, memberEmail);
         });
+
         emitter.onError(e -> {
+            isActive.set(false);
             keepAliveTask.cancel(false);
             sendErrorEvent(emitter, performanceId, memberEmail, "An error occurred: " + e.getMessage());
             removeEmitter(performanceId, memberEmail);
+            log.error("Emitter 에러 - 공연 ID: {}, 이메일: {}, 에러: {}", performanceId, memberEmail, e.getMessage());
         });
 
         try {
             emitter.send(SseEmitter.event().name("INIT").data("공연 " + performanceId + "에 연결되었습니다"));
+            log.debug("초기 연결 성공 - 공연 ID: {}, 이메일: {}", performanceId, memberEmail);
         } catch (IOException e) {
+            isActive.set(false);
             keepAliveTask.cancel(false);
             sendErrorEvent(emitter, performanceId, memberEmail, "Failed to initialize connection");
             removeEmitter(performanceId, memberEmail);
+            log.error("초기 연결 실패 - 공연 ID: {}, 이메일: {}", performanceId, memberEmail, e);
         }
 
         return emitter;
@@ -120,7 +137,7 @@ public class TicketSseController {
             log.debug("공연 ID: {}, 이메일: {}로 이벤트 전송 - 상태: {}", performanceId, email, status);
         } catch (IOException e) {
             log.info("클라이언트 연결 종료 감지 - 공연 ID: {}, 이메일: {}", performanceId, email);
-            removeEmitter(performanceId, email); // 즉시 제거
+            removeEmitter(performanceId, email);
         } catch (Exception e) {
             log.error("이벤트 전송 중 예상치 못한 오류 - 공연 ID: {}, 이메일: {}", performanceId, email, e);
             removeEmitter(performanceId, email);
@@ -131,9 +148,10 @@ public class TicketSseController {
         try {
             emitter.send(SseEmitter.event().name("ERROR").data(errorMessage));
             emitter.complete();
+            log.debug("에러 이벤트 전송 성공 - 공연 ID: {}, 이메일: {}, 메시지: {}", performanceId, memberEmail, errorMessage);
         } catch (IOException e) {
             log.info("클라이언트 연결이 이미 종료됨 - 공연 ID: {}, 이메일: {}", performanceId, memberEmail);
-            emitter.complete(); // 에러 전송 실패 시 바로 완료
+            emitter.complete();
         }
     }
 
@@ -164,13 +182,14 @@ public class TicketSseController {
                     emitter.send(SseEmitter.event().comment("ping"));
                     return false;
                 } catch (IOException e) {
-                    log.debug("비활성 이미터 제거 - 공연 ID: {}, 이메일: {}", performanceId, entry.getKey());
+                    log.info("비활성 이미터 제거 - 공연 ID: {}, 이메일: {}", performanceId, entry.getKey());
                     emitter.complete();
                     return true;
                 }
             });
             if (performanceEmitters.isEmpty()) {
                 emitters.remove(performanceId);
+                log.debug("공연 ID: {}에 대한 모든 이미터가 제거되었습니다", performanceId);
             }
         });
     }
