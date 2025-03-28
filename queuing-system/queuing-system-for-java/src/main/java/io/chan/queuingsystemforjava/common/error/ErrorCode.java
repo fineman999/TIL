@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "C400", "올바르지 않은 요청입니다."),
+    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "C400-1", "입력값이 올바르지 않습니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "C401", "인증되지 않은 사용자 요청입니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "C403", "권한이 없습니다."),
     NOT_FOUND(HttpStatus.NOT_FOUND, "C404", "존재하지 않는 리소스입니다."),

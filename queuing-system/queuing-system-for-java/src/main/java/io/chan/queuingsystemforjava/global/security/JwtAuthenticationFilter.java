@@ -50,6 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         log.warn("JWT 인증 실패: code={}, message={}", e.getErrorCode(), e.getMessage());
         response.setStatus(e.getErrorCode().getHttpStatusValue());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(response.getWriter(), ErrorResponse.of(e.getErrorCode()));
         return;

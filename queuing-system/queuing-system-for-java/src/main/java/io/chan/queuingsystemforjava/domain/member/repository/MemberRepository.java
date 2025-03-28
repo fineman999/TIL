@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -30,5 +31,9 @@ public class MemberRepository {
     public Optional<Member> findById(final Long aLong) {
         return memberJpaRepository.findById(aLong);
 
+    }
+
+    public List<Member> findAll() {
+        return memberJpaRepository.findAll();
     }
 }

@@ -6,6 +6,7 @@ import io.chan.queuingsystemforjava.domain.member.Member;
 import io.chan.queuingsystemforjava.domain.member.MemberRole;
 import io.chan.queuingsystemforjava.domain.member.dto.request.CreateMemberRequest;
 import io.chan.queuingsystemforjava.domain.member.dto.response.CreateMemberResponse;
+import io.chan.queuingsystemforjava.domain.member.dto.response.GetAllUsersResponse;
 import io.chan.queuingsystemforjava.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,5 +31,9 @@ public class MemberService {
 
         memberRepository.save(member);
         return CreateMemberResponse.of(member.getMemberId());
+    }
+
+    public GetAllUsersResponse getAllUsers() {
+        return GetAllUsersResponse.of(memberRepository.findAll());
     }
 }
