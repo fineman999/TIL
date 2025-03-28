@@ -4,6 +4,7 @@ import io.chan.queuingsystemforjava.common.ItemResult;
 import io.chan.queuingsystemforjava.common.LoginMember;
 import io.chan.queuingsystemforjava.domain.ticket.dto.response.TicketElement;
 import io.chan.queuingsystemforjava.domain.ticket.service.TicketService;
+import io.chan.queuingsystemforjava.global.security.MemberContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +19,8 @@ public class TicketController {
 
     @GetMapping("/members/tickets")
     public ResponseEntity<ItemResult<TicketElement>> selectMyTickets(
-            @LoginMember String memberEmail) {
+            @LoginMember MemberContext memberContext) {
+        String memberEmail = memberContext.getUsername();
         ItemResult<TicketElement> tickets = ticketService.selectMyTicket(memberEmail);
         return ResponseEntity.ok().body(tickets);
     }

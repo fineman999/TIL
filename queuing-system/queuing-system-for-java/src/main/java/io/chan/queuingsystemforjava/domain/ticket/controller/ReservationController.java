@@ -5,6 +5,7 @@ import io.chan.queuingsystemforjava.domain.ticket.dto.request.SeatSelectionReque
 import io.chan.queuingsystemforjava.domain.ticket.dto.request.TicketPaymentRequest;
 import io.chan.queuingsystemforjava.domain.ticket.service.ReservationService;
 import io.chan.queuingsystemforjava.domain.waitingsystem.aop.Waiting;
+import io.chan.queuingsystemforjava.global.security.MemberContext;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +26,9 @@ public class ReservationController {
 
     @PostMapping("/seats/release")
     public ResponseEntity<Void> releaseSeat(
-            @LoginMember String memberEmail,
+            @LoginMember MemberContext memberContext,
             @RequestBody @Valid SeatSelectionRequest seatSelectionRequest) {
+        String memberEmail = memberContext.getUsername();
         reservationService.releaseSeat(memberEmail, seatSelectionRequest);
         return ResponseEntity.ok().build();
     }
@@ -34,8 +36,9 @@ public class ReservationController {
     @Waiting
     @PostMapping("/seats/select")
     public ResponseEntity<Void> selectSeat(
-            @LoginMember String memberEmail,
+            @LoginMember MemberContext memberContext,
             @RequestBody @Valid SeatSelectionRequest seatSelectionRequest) {
+        String memberEmail = memberContext.getUsername();
         reservationService.selectSeat(memberEmail, seatSelectionRequest);
         return ResponseEntity.ok().build();
     }
@@ -43,8 +46,9 @@ public class ReservationController {
     @Waiting
     @PostMapping("/tickets")
     public ResponseEntity<Void> reservationTicket(
-            @LoginMember String memberEmail,
+            @LoginMember MemberContext memberContext,
             @RequestBody @Valid TicketPaymentRequest ticketPaymentRequest) {
+        String memberEmail = memberContext.getUsername();
         reservationService.reservationTicket(memberEmail, ticketPaymentRequest);
         return ResponseEntity.ok().build();
     }
