@@ -3,13 +3,19 @@ package io.chan.queuingsystemforjava.domain.ticket.controller;
 import io.chan.queuingsystemforjava.domain.ticket.dto.request.SeatSelectionRequest;
 import io.chan.queuingsystemforjava.domain.ticket.dto.request.TicketPaymentRequest;
 import io.chan.queuingsystemforjava.domain.ticket.service.ReservationService;
+import io.chan.queuingsystemforjava.global.security.AuthenticationToken;
+import io.chan.queuingsystemforjava.global.security.MemberContext;
 import io.chan.queuingsystemforjava.support.BaseControllerTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -25,11 +31,20 @@ class ReservationControllerTest extends BaseControllerTest {
 
     @MockitoBean(name = "persistencePessimisticReservationService")
     private ReservationService reservationService;
+    @MockitoBean
+    private SecurityContext securityContext;
 
+    @MockitoBean
+    private AuthenticationToken authenticationToken;
 
     public static final String PERFORMANCE_ID = "performanceId";
-    
 
+    @BeforeEach
+    void setUp() {
+        Mockito.when(authenticationToken.getPrincipal()).thenReturn(userMemberContext);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authenticationToken);
+        SecurityContextHolder.setContext(securityContext);
+    }
     @Test
     @DisplayName("자리 선택 API 호출 시")
     void selectSeat() throws Exception {

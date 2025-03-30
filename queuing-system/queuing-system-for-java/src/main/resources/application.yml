@@ -12,6 +12,9 @@ spring:
         dev
       prod:
         prod
+  threads:
+    virtual:
+      enabled: true
 server:
   shutdown: graceful
 management:

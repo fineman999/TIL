@@ -18,7 +18,9 @@ spring:
   datasource:
     hikari:
       max-lifetime: 10
-
+  threads:
+    virtual:
+      enabled: true
 jwt:
   issuer: "http://localhost:8080"
   access-expiry-seconds: 7200 # 2시간

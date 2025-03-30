@@ -53,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.setCharacterEncoding("UTF-8");
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(response.getWriter(), ErrorResponse.of(e.getErrorCode()));
-        return;
+        throw e; // return 대신 예외를 throw
       }
     }
 

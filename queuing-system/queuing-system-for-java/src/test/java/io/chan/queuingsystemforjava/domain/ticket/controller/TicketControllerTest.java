@@ -6,12 +6,17 @@ import io.chan.queuingsystemforjava.domain.seat.dto.response.SeatGradeElement;
 import io.chan.queuingsystemforjava.domain.ticket.dto.response.TicketElement;
 import io.chan.queuingsystemforjava.domain.ticket.dto.response.TicketSeatDetail;
 import io.chan.queuingsystemforjava.domain.ticket.service.TicketService;
+import io.chan.queuingsystemforjava.global.security.AuthenticationToken;
 import io.chan.queuingsystemforjava.support.BaseControllerTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -33,6 +38,18 @@ class TicketControllerTest extends BaseControllerTest {
 
     @MockitoBean
     private TicketService ticketService;
+    @MockitoBean
+    private SecurityContext securityContext;
+
+    @MockitoBean
+    private AuthenticationToken authenticationToken;
+
+    @BeforeEach
+    void setUp() {
+        Mockito.when(authenticationToken.getPrincipal()).thenReturn(userMemberContext);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authenticationToken);
+        SecurityContextHolder.setContext(securityContext);
+    }
 
     @Test
     @DisplayName("티켓 조회 API 호출 시")

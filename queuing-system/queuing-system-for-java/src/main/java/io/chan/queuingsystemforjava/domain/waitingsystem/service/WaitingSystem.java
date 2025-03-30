@@ -1,9 +1,11 @@
 package io.chan.queuingsystemforjava.domain.waitingsystem.service;
 
+import io.chan.queuingsystemforjava.common.event.Event;
 import io.chan.queuingsystemforjava.common.event.EventPublisher;
 import io.chan.queuingsystemforjava.domain.waitingsystem.dto.LastPollingEvent;
 import io.chan.queuingsystemforjava.domain.waitingsystem.dto.PollingEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 
 import java.util.Map;
 import java.util.Set;
@@ -34,12 +36,17 @@ public class WaitingSystem {
         PollingEvent pollingEvent =
                 pollingEventCache.computeIfAbsent(performanceId, PollingEvent::new);
         // processExpiredAndMoveUsersToRunning를 비동기로 호출한다.
-        eventPublisher.publish(pollingEvent);
+        publishEventAsync(pollingEvent); // 비동기 호출
         if (remainingCount <= 0) {
             // updateRunningMemberExpiredTime 메서드를 비동기로 호출
-            eventPublisher.publish(new LastPollingEvent(email, performanceId));
+            publishEventAsync(new LastPollingEvent(email, performanceId)); // 비동기 호출
         }
         return remainingCount;
+    }
+
+    @Async
+    public void publishEventAsync(Event event) {
+        eventPublisher.publish(event);
     }
 
     public void processExpiredAndMoveUsersToRunning(long performanceId) {
