@@ -17,8 +17,11 @@ import io.chan.queuingsystemforjava.domain.ticket.repository.TicketRepository;
 import io.chan.queuingsystemforjava.domain.ticket.strategy.LockSeatStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -41,7 +44,7 @@ public class ReservationTransactionService implements ReservationService {
     private final ReservationManager reservationManager;
     private final int reservationReleaseDelay;
 
-    private final ScheduledExecutorService scheduler;
+    private final TaskScheduler scheduler;
 
     @Override
     @Transactional
@@ -63,10 +66,12 @@ public class ReservationTransactionService implements ReservationService {
         // 좌석 선택 이벤트 발행
         eventPublisher.publish(new SeatEvent(memberEmail, seatId, SeatEvent.EventType.SELECT));
 
+        // Instant를 사용해 reservationReleaseDelay 초 후 실행
+        Instant releaseTime = Instant.now().plusSeconds(reservationReleaseDelay);
         scheduler.schedule(
                 () -> reservationManager.releaseSeat(member, seatId),
-                reservationReleaseDelay,
-                TimeUnit.SECONDS);
+                releaseTime
+        );
     }
 
     @Override

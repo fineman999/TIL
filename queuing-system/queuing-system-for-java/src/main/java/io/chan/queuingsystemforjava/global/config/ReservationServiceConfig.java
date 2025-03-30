@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -28,7 +30,8 @@ public class ReservationServiceConfig {
     @Value("${ticketing.reservation.release-delay-seconds}")
     private int reservationReleaseDelay;
 
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5);
+    // 일반 스레드 풀 생성
+//    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5);
 
 //    @Bean
 //    @Primary
@@ -100,7 +103,9 @@ public class ReservationServiceConfig {
             MemberRepository memberRepository,
             SeatRepository seatRepository,
             EventPublisher eventPublisher,
-            ReservationManager reservationManager) {
+            ReservationManager reservationManager,
+            TaskScheduler taskScheduler
+            ) {
         LockSeatStrategy lockSeatStrategy = new OptimisticLockSeatStrategy(seatRepository);
         return new ReservationTransactionService(
                 ticketRepository,
@@ -110,7 +115,7 @@ public class ReservationServiceConfig {
                 eventPublisher,
                 reservationManager,
                 reservationReleaseDelay,
-                scheduler
+                taskScheduler
         );
     }
 
@@ -122,7 +127,9 @@ public class ReservationServiceConfig {
             MemberRepository memberRepository,
             SeatRepository seatRepository,
             EventPublisher eventPublisher,
-            ReservationManager reservationManager) {
+            ReservationManager reservationManager,
+            TaskScheduler scheduler
+            ) {
         LockSeatStrategy lockSeatStrategy = new PessimisticLockSeatStrategy(seatRepository);
         return new ReservationTransactionService(
                 ticketRepository,

@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 /**
@@ -18,7 +19,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  *  자바 가상 스레드를 이용하므로 I/O 바운드는 스레드 풀을 사용하지 않고 사용. 그러므로 CPU 바운드 작업에 대한 스레드 풀을 설정함.
  */
 @Configuration
-@EnableAsync
+@EnableAsync // 비동기 처리 활성화
+@EnableScheduling // TaskScheduler 자동 생성 활성화
 @RequiredArgsConstructor
 public class AsyncConfig implements AsyncConfigurer {
 

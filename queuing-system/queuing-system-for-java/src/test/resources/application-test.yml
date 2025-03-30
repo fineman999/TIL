@@ -32,4 +32,4 @@ cors:
 
 ticketing:
   reservation:
-    release-delay-seconds: 10
+    release-delay-seconds: 10 # 10초 후에 예약이 해제된다. (테스트용)
