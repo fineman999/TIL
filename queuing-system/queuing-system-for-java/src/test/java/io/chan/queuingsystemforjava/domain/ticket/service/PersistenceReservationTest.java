@@ -43,6 +43,10 @@ public class PersistenceReservationTest extends BaseIntegrationTest {
     @Qualifier("pessimisticReservationServiceProxy")
     private ReservationService pessimisticReservationService;
 
+    @Autowired
+    @Qualifier("distributedLockReservationServiceProxy")
+    private ReservationService distributedLockReservationService;
+
     private final String memberEmail = "test@gmail.com";
     private final Long seatId = 1L;
 
@@ -72,10 +76,21 @@ public class PersistenceReservationTest extends BaseIntegrationTest {
             }
         }
 
+        @Nested
+        @DisplayName("분산 락을 사용하면")
+        class DistributedLockTest {
+            @Test
+            @DisplayName("여러개의 동시 요청 중 한 명만 좌석을 성공적으로 선택해야 한다.")
+            void selectSeat_optimistic() throws InterruptedException {
+                selectSeat_ConcurrencyTest(distributedLockReservationService);
+            }
+        }
+
+
         private void selectSeat_ConcurrencyTest(ReservationService reservationService)
                 throws InterruptedException {
             // Given
-            int numRequests = 100;
+            int numRequests = 1000;
             CountDownLatch latch = new CountDownLatch(1);
             ExecutorService executor = Executors.newFixedThreadPool(numRequests);
 
@@ -165,11 +180,21 @@ public class PersistenceReservationTest extends BaseIntegrationTest {
             }
         }
 
+        @Nested
+        @DisplayName("분산 락을 사용하면")
+        class DistributedLockTest {
+            @Test
+            @DisplayName("하나의 결제만 성공한다.")
+            void reservationTicket_distributed() throws InterruptedException {
+                reservationTicket_ConcurrencyTest(distributedLockReservationService);
+            }
+        }
+
         @DisplayName("동시에 여러 요청이 오면 하나의 요청만 성공한다.")
         void reservationTicket_ConcurrencyTest(ReservationService reservationService)
                 throws InterruptedException {
             // Given
-            int numRequests = 100;
+            int numRequests = 1000;
             CountDownLatch latch = new CountDownLatch(1);
             ExecutorService executor = Executors.newFixedThreadPool(numRequests);
 

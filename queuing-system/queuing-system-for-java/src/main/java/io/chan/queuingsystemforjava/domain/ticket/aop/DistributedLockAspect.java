@@ -24,10 +24,9 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class DistributedLockAspect {
   private static final String LOCK_PREFIX = "lock::"; // 상수 클래스 분리 고려
-
-  private final AopForTransaction aopForTransaction;
   private final RedissonClient redissonClient;
 
+  private final AopForTransaction aopForTransaction;
   @Pointcut("@annotation(io.chan.queuingsystemforjava.domain.ticket.aop.DistributedLock)")
   public void distributedLockAnnotation() {}
 
@@ -42,7 +41,7 @@ public class DistributedLockAspect {
       if (!acquireLock(rLock, distributedLock.waitTime(), distributedLock.leaseTime(), distributedLock.timeUnit())) {
         throw new LockTimeoutException("Failed to acquire lock for key: " + key);
       }
-      return aopForTransaction.proceed(joinPoint);
+      return aopForTransaction.proceed(joinPoint);  // (3)
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt(); // 인터럽트 상태 복원
       throw new InterruptedException("Lock acquisition interrupted for key: " + key);

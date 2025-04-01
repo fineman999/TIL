@@ -4,15 +4,19 @@ import io.chan.queuingsystemforjava.common.event.EventPublisher;
 import io.chan.queuingsystemforjava.domain.member.repository.MemberRepository;
 import io.chan.queuingsystemforjava.domain.payment.PaymentProcessor;
 import io.chan.queuingsystemforjava.domain.seat.repository.SeatRepository;
+import io.chan.queuingsystemforjava.domain.ticket.proxy.DistributeLockReservationServiceProxy;
 import io.chan.queuingsystemforjava.domain.ticket.proxy.OptimisticReservationServiceProxy;
 import io.chan.queuingsystemforjava.domain.ticket.proxy.PessimisticReservationServiceProxy;
+import io.chan.queuingsystemforjava.domain.ticket.proxy.RedissonReservationServiceProxy;
 import io.chan.queuingsystemforjava.domain.ticket.repository.TicketRepository;
 import io.chan.queuingsystemforjava.domain.ticket.service.ReservationManager;
 import io.chan.queuingsystemforjava.domain.ticket.service.ReservationService;
 import io.chan.queuingsystemforjava.domain.ticket.service.ReservationTransactionService;
 import io.chan.queuingsystemforjava.domain.ticket.strategy.LockSeatStrategy;
+import io.chan.queuingsystemforjava.domain.ticket.strategy.NaiveSeatStrategy;
 import io.chan.queuingsystemforjava.domain.ticket.strategy.OptimisticLockSeatStrategy;
 import io.chan.queuingsystemforjava.domain.ticket.strategy.PessimisticLockSeatStrategy;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -30,37 +34,6 @@ public class ReservationServiceConfig {
     @Value("${ticketing.reservation.release-delay-seconds}")
     private int reservationReleaseDelay;
 
-    // 일반 스레드 풀 생성
-//    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5);
-
-//    @Bean
-//    @Primary
-//    public ReservationService newRedisReservationService(
-//            MemberRepository memberRepository,
-//            SeatRepository seatRepository,
-//            StringRedisTemplate redisTemplate) {
-//        return new NewRedisReservationService(memberRepository, seatRepository, redisTemplate, reservationReleaseDelay);
-//    }
-
-
-//    @Bean
-//    public ReservationService redissonReservationServiceProxy(
-//            RedissonClient redissonClient,
-//            @Qualifier("cacheReservationTransactionService")
-//                    ReservationTransactionService cacheReservationTransactionService) {
-//        return new RedissonReservationServiceProxy(
-//                redissonClient, cacheReservationTransactionService);
-//    }
-
-//    @Bean
-//    public ReservationService lettuceReservationServiceProxy(
-//            LettuceRepository lettuceRepository,
-//            @Qualifier("cacheReservationTransactionService")
-//                    ReservationTransactionService cacheReservationTransactionService) {
-//        return new LettuceReservationServiceProxy(
-//                lettuceRepository, cacheReservationTransactionService);
-//    }
-
     @Bean
     ReservationService optimisticReservationServiceProxy(
             @Qualifier("persistenceOptimisticReservationService")
@@ -74,27 +47,22 @@ public class ReservationServiceConfig {
                     ReservationTransactionService persistencePessimisticReservationService) {
         return new PessimisticReservationServiceProxy(persistencePessimisticReservationService);
     }
+    @Bean
+    ReservationService distributedLockReservationServiceProxy(
+            @Qualifier("distributedLockReservationService")
+                    ReservationTransactionService distributedLockReservationService) {
+        return new DistributeLockReservationServiceProxy(distributedLockReservationService);
+    }
 
-//    @Bean
-//    public ReservationTransactionService cacheReservationTransactionService(
-//            TicketRepository ticketRepository,
-//            PaymentProcessor paymentProcessor,
-//            MemberRepository memberRepository,
-//            SeatRepository seatRepository,
-//            EventPublisher eventPublisher,
-//            ReservationManager reservationManager) {
-//        LockSeatStrategy lockSeatStrategy = new NaiveSeatStrategy(seatRepository);
-//        return new ReservationTransactionService(
-//                ticketRepository,
-//                memberRepository,
-//                paymentProcessor,
-//                lockSeatStrategy,
-//                eventPublisher,
-//                reservationManager,
-//                reservationReleaseDelay,
-//                scheduler
-//        );
-//    }
+
+    @Bean
+    public ReservationService redissonReservationServiceProxy(
+            RedissonClient redissonClient,
+            @Qualifier("distributedLockReservationService")
+            ReservationTransactionService cacheReservationTransactionService) {
+        return new RedissonReservationServiceProxy(
+                redissonClient, cacheReservationTransactionService);
+    }
 
     @Bean
     public ReservationTransactionService persistenceOptimisticReservationService(
@@ -131,6 +99,29 @@ public class ReservationServiceConfig {
             TaskScheduler scheduler
             ) {
         LockSeatStrategy lockSeatStrategy = new PessimisticLockSeatStrategy(seatRepository);
+        return new ReservationTransactionService(
+                ticketRepository,
+                memberRepository,
+                paymentProcessor,
+                lockSeatStrategy,
+                eventPublisher,
+                reservationManager,
+                reservationReleaseDelay,
+                scheduler
+        );
+    }
+
+    @Bean
+    public ReservationTransactionService distributedLockReservationService(
+            TicketRepository ticketRepository,
+            PaymentProcessor paymentProcessor,
+            MemberRepository memberRepository,
+            SeatRepository seatRepository,
+            EventPublisher eventPublisher,
+            ReservationManager reservationManager,
+            TaskScheduler scheduler
+            ) {
+        LockSeatStrategy lockSeatStrategy = new NaiveSeatStrategy(seatRepository);
         return new ReservationTransactionService(
                 ticketRepository,
                 memberRepository,
