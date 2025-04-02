@@ -32,7 +32,6 @@ export function userScenario() {
     const user = users[userIndex]; // 고유 유저 선택
     const username = user.id;
 
-    console.log(`[${username}] Starting user scenario...`);
 
     // 1. 어드민 로그인 (유저가 어드민으로 로그인)
     const loginRes = http.post(`${BASE_URL}/api/v1/users/login/admin`, JSON.stringify({
@@ -42,8 +41,6 @@ export function userScenario() {
         headers: {'Content-Type': 'application/json'},
         tags: {page_name: 'user_login'},
     });
-
-    console.log(`[${username}] Login response: ${loginRes.status} - ${JSON.stringify(loginRes.json())}`);
 
     const loginSuccess = check(loginRes, {
         'login successful': (res) => res.status === 200 && res.json('accessToken') !== '',
@@ -61,92 +58,75 @@ export function userScenario() {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
     };
-
-    // 2. 대기 등록
-    const waitingRes = http.post(`${BASE_URL}/api/v1/waiting-lists`, JSON.stringify({
-        isRemote: false,
-        reservationSettingId: 1
-    }), {
+    // 대기 등록 번호 조회
+    const statusRes = http.get(`${BASE_URL}/api/v1/users/me/waiting-lists?reservationSettingId=1`, {
         headers: headers,
-        tags: {name: 'waiting_register'},
+        tags: {name: 'waiting_status'},
     });
 
-    console.log(`[${username}] Waiting register response: ${waitingRes.status} - ${JSON.stringify(waitingRes.json())}`);
 
-    const waitingSuccess = check(waitingRes, {
-        'waiting register successful': (res) => res.status === 201,
+    const statusSuccess = check(statusRes, {
+        'status check successful': (res) => res.status === 200,
     });
 
-    if (!waitingSuccess) {
-        console.error(`[${username}] Waiting register failed: ${waitingRes.status} - ${waitingRes.body}`);
-        errorCounter.add(1, {error_api_name: 'waiting_register'});
-        return;
-    }
-
-    const waitingId = waitingRes.json('id'); // 대기 ID 추출 (응답에 따라 수정 필요)
-    console.log(`[${username}] Waiting ID: ${waitingId}`);
-
-    // 3. 슬랙 알림 등록
-    const slackRes = http.post(`${BASE_URL}/api/v1/slack`, JSON.stringify({}), {
-        headers: headers,
-        tags: {name: 'slack_register'},
-    });
-
-    console.log(`[${username}] Slack register response: ${slackRes.status} - ${JSON.stringify(slackRes.json())}`);
-
-    check(slackRes, {
-        'slack register successful': (res) => res.status === 200,
-    });
-
-    // 4. 대기 현황 조회 (1초마다 폴링, COMPLETED 시 종료)
-    while (true) {
-        const statusRes = http.get(`${BASE_URL}/api/v1/users/me/waiting-lists`, {
+    // 대기 등록하면 대기 상태가 'WAITING'으로 변경되어 다시 대기 등록하지 않음
+    if (!statusSuccess || statusRes.json().status !== 'WAITING') {
+        // 3. 대기 등록
+        const waitingRes = http.post(`${BASE_URL}/api/v1/waiting-lists`, JSON.stringify({
+            isRemote: false,
+            reservationSettingId: 1
+        }), {
             headers: headers,
-            tags: {name: 'waiting_status'},
+            tags: {name: 'waiting_register'},
         });
 
-        console.log(`[${username}] Status check response: ${statusRes.status} - ${JSON.stringify(statusRes.json())}`);
-
-        const statusSuccess = check(statusRes, {
-            'status check successful': (res) => res.status === 200,
+        const waitingSuccess = check(waitingRes, {
+            'waiting register successful': (res) => res.status === 201,
         });
 
-        if (!statusSuccess) {
-            console.error(`[${username}] Status check failed: ${statusRes.status} - ${statusRes.body}`);
-            errorCounter.add(1, {error_api_name: 'status_check'});
-            break;
+        if (!waitingSuccess) {
+            console.error(`[${username}] Waiting register failed: ${waitingRes.status} - ${waitingRes.body}`);
+            errorCounter.add(1, {error_api_name: 'waiting_register'});
+            return;
         }
 
-        const waitingStatus = statusRes.json('status'); // status 필드 추출
-        console.log(`[${username}] Current waiting status: ${waitingStatus}`);
+        const waitingId = waitingRes.json('id'); // 대기 ID 추출 (응답에 따라 수정 필요)
 
-        if (waitingStatus === 'COMPLETED') {
-            console.info(`[${username}] Waiting status is COMPLETED. Terminating polling.`);
-            break; // status가 COMPLETED면 폴링 종료
-        }
+        // 3. 슬랙 알림 등록
+        const slackRes = http.post(`${BASE_URL}/api/v1/auth/slack`, {
+            headers: headers,
+            tags: {name: 'slack_register'},
+        });
 
-        sleep(1); // 1초 대기
+        check(slackRes, {
+            'slack register successful': (res) => res.status === 200,
+        });
     }
+
+    const waitingStatus = statusRes.json('status'); // status 필드 추출
+
+    if (waitingStatus === 'COMPLETED') {
+        console.info(`[${username}] Waiting status is COMPLETED. Terminating polling.`);
+    }
+
+    sleep(1); // 1초 대기
 }
 
 // 어드민 시나리오 (단일 어드민 실행)
 export function adminScenario() {
-    const adminUser = users[0]; // 첫 번째 유저를 어드민으로 사용
 
-    console.log('[Admin] Starting admin scenario...');
-    // 10초 뒤에 실행하기
-    sleep(10);
+    // // 1분 뒤에 실행하기
+    // sleep(60);
 
     // 1. 어드민 로그인
     const loginRes = http.post(`${BASE_URL}/api/v1/users/login/admin`, JSON.stringify({
-        id: adminUser.id,
+        id: "hwchoi22",
         password: "test1234",
     }), {
         headers: {'Content-Type': 'application/json'},
         tags: {page_name: 'admin_login'},
     });
 
-    console.log(`[Admin] Login response: ${loginRes.status} - ${JSON.stringify(loginRes.json())}`);
 
     const loginSuccess = check(loginRes, {
         'admin login successful': (res) => res.status === 200 && res.json('accessToken') !== '',
@@ -166,35 +146,28 @@ export function adminScenario() {
     };
 
     // 2. 대기 현황 조회 및 상태 변경 (1초 주기)
-    while (true) {
-        const waitingListRes = http.get(`${BASE_URL}/api/v1/waiting-lists`, {
-            headers: headers,
-            tags: {name: 'admin_waiting_list'},
-        });
+    const waitingListRes = http.get(`${BASE_URL}/api/v1/waiting-lists`, {
+        headers: headers,
+        tags: {name: 'admin_waiting_list'},
+    });
 
-        console.log(`[Admin] Waiting list response: ${waitingListRes.status} - ${JSON.stringify(waitingListRes.json())}`);
 
-        const listSuccess = check(waitingListRes, {
-            'waiting list successful': (res) => res.status === 200,
-        });
+    const listSuccess = check(waitingListRes, {
+        'waiting list successful': (res) => res.status === 200,
+    });
 
-        if (!listSuccess) {
-            console.error(`[Admin] Waiting list failed: ${waitingListRes.status} - ${waitingListRes.body}`);
-            errorCounter.add(1, {error_api_name: 'waiting_list'});
-            break;
-        }
+    if (!listSuccess) {
+        console.error(`[Admin] Waiting list failed: ${waitingListRes.status} - ${waitingListRes.body}`);
+        errorCounter.add(1, {error_api_name: 'waiting_list'});
+    }
 
-        const waitingList = waitingListRes.json('waitingList');
-        console.log(`[Admin] Waiting list data: ${JSON.stringify(waitingList)}`);
-        const waitingItem = waitingList.find(item => item.status === 'WAITING');
+    console.log(waitingListRes.json('waitingList'));
+    const waitingList = waitingListRes.json('waitingList');
+    const waitingItem = waitingList.find(item => item.status === 'WAITING');
 
-        if (!waitingItem) {
-            console.info('[Admin] No WAITING status found. Terminating.');
-            break;
-        }
-
-        console.log(`[Admin] Found WAITING item: ${JSON.stringify(waitingItem)}`);
-
+    if (!waitingItem) {
+        console.info('[Admin] No WAITING status found. Terminating.');
+    } else {
         // 3. 상태 변경
         const statusRes = http.put(`${BASE_URL}/api/v1/waiting-lists/${waitingItem.id}/status`, JSON.stringify({
             status: 'COMPLETED',
@@ -203,21 +176,20 @@ export function adminScenario() {
             tags: {name: 'status_update'},
         });
 
-        console.log(`[Admin] Status update response: ${statusRes.status} - ${JSON.stringify(statusRes.json())}`);
 
         check(statusRes, {
             'status update successful': (res) => res.status === 200,
         });
-
-        sleep(5); // 5초 대기
     }
+    sleep(1); // 5초 대기
 }
 
 // 기본 실행 함수: 유저와 어드민 시나리오 분리
 export default function () {
     if (__VU === 1) {
         adminScenario(); // 첫 번째 VU는 어드민 역할
-    } else {
+    }
+    else {
         userScenario(); // 나머지 VU는 유저 역할
     }
 }
