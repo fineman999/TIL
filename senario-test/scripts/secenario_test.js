@@ -61,7 +61,8 @@ export default function () {
         return;
     }
 
-    const accessToken = loginRes.json('accessToken');
+    const accessToken =
+        loginRes.json('accessToken');
 
     // 게임 점수 저장 API 호출
     const score = Math.floor(Math.random() * (500 - 10 + 1)) + 10;
