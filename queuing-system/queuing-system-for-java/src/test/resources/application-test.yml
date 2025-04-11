@@ -33,3 +33,8 @@ cors:
 ticketing:
   reservation:
     release-delay-seconds: 10 # 10초 후에 예약이 해제된다. (테스트용)
+
+payment:
+  secret-key: test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6
+  base-url: https://api.tosspayments.com
+  confirm-endpoint: /confirm

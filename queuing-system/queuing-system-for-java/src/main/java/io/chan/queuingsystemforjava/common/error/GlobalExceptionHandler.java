@@ -40,6 +40,14 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(errorCode));
     }
 
+    @ExceptionHandler(PaymentException.class)
+    public ResponseEntity<ErrorResponse<Void>> handlePaymentException(PaymentException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        logException("결제오류", e, errorCode.getMessage(), "WARN");
+        return ResponseEntity.status(errorCode.getHttpStatusValue())
+                .body(ErrorResponse.of(errorCode));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse<List<ValidationErrorDetail>>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         ErrorResponse<List<ValidationErrorDetail>> errorResponse = ErrorResponse.of(e);

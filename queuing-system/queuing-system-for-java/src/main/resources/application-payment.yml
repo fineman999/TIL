@@ -1,0 +1,4 @@
+payment:
+  secret-key: thisisjusttestaccesssecretsodontworry
+  base-url: https://api.tosspayments.com
+  confirm-endpoint: /confirm

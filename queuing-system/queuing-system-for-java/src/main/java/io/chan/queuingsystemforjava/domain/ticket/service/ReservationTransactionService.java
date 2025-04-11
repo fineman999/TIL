@@ -17,14 +17,11 @@ import io.chan.queuingsystemforjava.domain.ticket.repository.TicketRepository;
 import io.chan.queuingsystemforjava.domain.ticket.strategy.LockSeatStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.UUID;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 예약 트랜잭션 서비스
@@ -121,7 +118,7 @@ public class ReservationTransactionService implements ReservationService {
         }
 
         seat.markAsPendingPayment();
-        paymentProcessor.processPayment(new PaymentRequest());
+        paymentProcessor.processPayment(new PaymentRequest("paymentId", seat.getSeatCode(),0L));
         seat.markAsPaid();
         PaymentEvent paymentEvent = new PaymentEvent(loginMember.getEmail());
         eventPublisher.publish(paymentEvent);

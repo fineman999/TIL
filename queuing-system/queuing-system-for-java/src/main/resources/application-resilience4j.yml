@@ -1,0 +1,13 @@
+resilience4j:
+  retry:
+    instances:
+      paymentRetry:
+        max-attempts: 3 # 최대 3회 재시도
+        wait-duration: 1s # 1초 대기 후 재시도
+        enable-exponential-backoff: true # 지수 백오프 활성화(1초 → 2초 → 4초)
+        exponential-backoff-multiplier: 2 # 2배씩 증가
+        retry-exceptions:
+          - io.chan.queuingsystemforjava.common.error.TicketingException
+        ignore-exceptions:
+          - java.lang.IllegalArgumentException
+          - java.lang.IllegalStateException
