@@ -3,7 +3,6 @@ package io.chan.queuingsystemforjava.domain.payment.exception;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.chan.queuingsystemforjava.common.error.ErrorCode;
 import io.chan.queuingsystemforjava.common.error.PaymentException;
-import io.chan.queuingsystemforjava.common.error.PaymentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpRequest;
@@ -24,25 +23,26 @@ public class PaymentExceptionInterceptor implements ClientHttpRequestInterceptor
 
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-        try {
-            ClientHttpResponse response = execution.execute(request, body);
-            if (response.getStatusCode().isError()) {
-                String errorBody = new String(response.getBody().readAllBytes());
-                logger.error("Payment API failed for request {} with status {}: {}",
-                        request.getURI(), response.getStatusCode().value(), errorBody);
+        ClientHttpResponse response = execution.execute(request, body);
+        if (response.getStatusCode().isError()) {
+            String errorBody = new String(response.getBody().readAllBytes());
+            logger.error("Payment API failed for request {} with status {}: {}",
+                    request.getURI(), response.getStatusCode().value(), errorBody);
 
-                ErrorCode errorCode = mapToErrorCode(response.getStatusCode().value(), errorBody);
-                throw new PaymentException(errorCode,
-                        String.format("Status: %d, Body: %s", response.getStatusCode().value(), errorBody));
+            ErrorCode errorCode = mapToErrorCode(response.getStatusCode().value(), errorBody);
+            switch (errorCode) {
+                case INVALID_REQUEST:
+                    throw new IllegalArgumentException("Invalid payment request: " + errorBody);
+                case ALREADY_PROCESSED_PAYMENT:
+                    throw new IllegalStateException("Payment already processed: " + errorBody);
+                case PROVIDER_ERROR:
+                case FAILED_INTERNAL_SYSTEM_PROCESSING:
+                    throw new PaymentException(errorCode, "Retryable error: " + errorBody);
+                default:
+                    throw new PaymentException(errorCode, "Payment error: " + errorBody);
             }
-            return response;
-        } catch (IOException e) {
-            logger.error("Failed to communicate with payment service for request {}", request.getURI(), e);
-            throw new PaymentException(ErrorCode.PAYMENT_ERROR, "Failed to communicate with payment service", e);
-        } catch (Exception e) {
-            logger.error("Unexpected error during payment request {}", request.getURI(), e);
-            throw new PaymentException(ErrorCode.PAYMENT_ERROR, "Unexpected error during payment request", e);
         }
+        return response;
     }
 
     private ErrorCode mapToErrorCode(int statusCode, String errorBody) {

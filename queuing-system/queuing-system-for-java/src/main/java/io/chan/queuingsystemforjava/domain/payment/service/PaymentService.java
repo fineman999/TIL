@@ -17,14 +17,10 @@ public class PaymentService {
     @Retry(name = "paymentRetry", fallbackMethod = "fallback")
     public PaymentResponse confirmPayment(String paymentKey, String orderId, long amount) {
         PaymentRequest request = new PaymentRequest(paymentKey, orderId, amount);
-        try {
-            return paymentApiClient.confirmPayment(request);
-        } catch (Exception e) {
-            return fallback(e);
-        }
+        return paymentApiClient.confirmPayment(request);
     }
 
-    private PaymentResponse fallback(Throwable t) {
+    public PaymentResponse fallback(String paymentKey, String orderId, long amount, Throwable t) {
         throw new RuntimeException("Payment confirmation failed after retries: " + t.getMessage(), t);
     }
 }
