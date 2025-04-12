@@ -62,7 +62,7 @@ public class Seat extends BaseEntity {
     }
 
     public void markAsPendingPayment() {
-        if (!seatStatus.isSelected()) {
+        if (seatStatus.isNotSelected()) {
             throw new TicketingException(ErrorCode.INVALID_SEAT_STATUS);
         }
         this.seatStatus = SeatStatus.PENDING_PAYMENT;
@@ -75,14 +75,29 @@ public class Seat extends BaseEntity {
         this.seatStatus = SeatStatus.PAID;
     }
 
-    public boolean isAssignedByMember(Member loginMember) {
-        return loginMember.getMemberId().equals(member.getMemberId());
+    public boolean isNotAssignedByMember(Member loginMember) {
+        return !loginMember.getMemberId().equals(member.getMemberId());
     }
 
     public void releaseSeat(Member loginMember) {
-        if (!seatStatus.isSelected() || !isAssignedByMember(loginMember)) {
+        if (seatStatus.isNotSelected() || isNotAssignedByMember(loginMember)) {
             return;
         }
         this.seatStatus = SeatStatus.SELECTABLE;
+    }
+
+    public void checkSeatStatusSelected(final Member member) {
+        if (seatStatus.isNotSelected() || isNotAssignedByMember(member)) {
+            throw new TicketingException(ErrorCode.INVALID_SEAT_STATUS);
+        }
+    }
+
+    public void checkSeatStatusPendingPayment(final Member loginMember) {
+        if (!seatStatus.isPendingPayment()) {
+            throw new TicketingException(ErrorCode.INVALID_SEAT_STATUS);
+        }
+        if (isNotAssignedByMember(loginMember)) {
+            throw new TicketingException(ErrorCode.NOT_SELECTABLE_SEAT);
+        }
     }
 }

@@ -10,8 +10,8 @@ public enum SeatStatus {
         return this == SELECTABLE;
     }
 
-    public boolean isSelected() {
-        return this == SELECTED;
+    public boolean isNotSelected() {
+        return this != SELECTED;
     }
 
     public boolean isPendingPayment() {

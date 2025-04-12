@@ -124,7 +124,8 @@ public enum ErrorCode {
     // 500 Internal Server Error
     FAILED_PAYMENT_INTERNAL_SYSTEM_PROCESSING(HttpStatus.INTERNAL_SERVER_ERROR, "PAYMENT_500_FAILED", "Payment has not been completed. please try again"),
     FAILED_INTERNAL_SYSTEM_PROCESSING(HttpStatus.INTERNAL_SERVER_ERROR, "PAYMENT_500_SYSTEM", "Internal system processing operation has failed"),
-    UNKNOWN_PAYMENT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "PAYMENT_500_UNKNOWN", "Payment failed. If the same problem occurs, please contact your bank or credit card company");
+    UNKNOWN_PAYMENT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "PAYMENT_500_UNKNOWN", "Payment failed. If the same problem occurs, please contact your bank or credit card company"),
+    INVALID_TICKET_STATUS(HttpStatus.INTERNAL_SERVER_ERROR, "T500-1", "티켓 상태가 올바르지 않습니다.");
     ErrorCode(HttpStatus httpStatus, String code, String message) {
         this.httpStatus = httpStatus;
         this.code = code;

@@ -113,11 +113,10 @@ public class ReservationTransactionService implements ReservationService {
     }
 
     private void processPayment(Seat seat, Member loginMember) {
-        if (!seat.isAssignedByMember(loginMember)) {
+        if (seat.isNotAssignedByMember(loginMember)) {
             throw new TicketingException(ErrorCode.NOT_SELECTABLE_SEAT);
         }
-
-        seat.markAsPendingPayment();
+        seat.checkSeatStatusPendingPayment(loginMember);
         paymentProcessor.processPayment(new PaymentRequest("paymentId", seat.getSeatCode(),0L));
         seat.markAsPaid();
         PaymentEvent paymentEvent = new PaymentEvent(loginMember.getEmail());
