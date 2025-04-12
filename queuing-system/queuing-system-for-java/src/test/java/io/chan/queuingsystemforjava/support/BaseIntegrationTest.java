@@ -1,8 +1,7 @@
 package io.chan.queuingsystemforjava.support;
 
+import io.chan.queuingsystemforjava.QueuingSystemForJavaApplication;
 import io.chan.queuingsystemforjava.domain.member.service.JwtProvider;
-import io.chan.queuingsystemforjava.global.config.CorsConfig;
-import io.chan.queuingsystemforjava.global.config.SecurityConfig;
 import io.chan.queuingsystemforjava.global.security.JwtProviderImpl;
 import io.chan.queuingsystemforjava.support.integration.AspectTestConfig;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,7 +12,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.utility.TestcontainersConfiguration;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        classes = QueuingSystemForJavaApplication.class)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Import({AspectTestConfig.class, TestcontainersConfiguration.class}) // TestcontainersConfiguration 추가

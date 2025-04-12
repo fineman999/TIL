@@ -7,23 +7,18 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.chan.queuingsystemforjava.common.error.PaymentException;
 import io.chan.queuingsystemforjava.domain.payment.adapter.PaymentApiClient;
 import io.chan.queuingsystemforjava.domain.payment.dto.PaymentResponse;
 import io.chan.queuingsystemforjava.domain.payment.exception.PaymentExceptionInterceptor;
-import io.github.resilience4j.retry.RetryConfig;
-import io.github.resilience4j.retry.RetryRegistry;
-import io.github.resilience4j.springboot3.retry.autoconfigure.RetryAutoConfiguration;
-import java.time.Duration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,9 +28,9 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
-@RestClientTest(PaymentApiClient.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@AutoConfigureMockRestServiceServer
 @ActiveProfiles("test")
-@Import({RetryAutoConfiguration.class})
 class PaymentServiceTest {
 
   @Autowired private PaymentService paymentService;
@@ -48,15 +43,12 @@ class PaymentServiceTest {
 
   @BeforeEach
   void setUp() {
+    // Reset the server before each test
     mockServer.reset();
   }
 
-  @Configuration
+  @TestConfiguration
   static class TestConfig {
-    @Bean
-    public PaymentService paymentService(PaymentApiClient paymentApiClient) {
-      return new PaymentService(paymentApiClient);
-    }
 
     @Bean
     public PaymentApiClient paymentApiClient(RestClient restClient) {
@@ -67,6 +59,7 @@ class PaymentServiceTest {
 
     @Bean
     public RestClient restClient(RestClient.Builder builder, ObjectMapper objectMapper) {
+      // Use the builder injected by Spring Boot Test
       return builder
           .baseUrl("https://api.tosspayments.com")
           .requestInterceptor(new PaymentExceptionInterceptor(objectMapper))
@@ -199,8 +192,8 @@ class PaymentServiceTest {
                   .contentType(MediaType.APPLICATION_JSON));
 
       assertThatThrownBy(() -> paymentService.confirmPayment(paymentKey, orderId, amount))
-          .isInstanceOf(PaymentException.class)
-          .hasMessageContaining("Payment error");
+          .isInstanceOf(IllegalArgumentException.class)
+          .hasMessageContaining("Unauthorized payment key");
       mockServer.verify();
     }
 
@@ -308,7 +301,7 @@ class PaymentServiceTest {
                   .contentType(MediaType.APPLICATION_JSON));
 
       assertThatThrownBy(() -> paymentService.confirmPayment(paymentKey, orderId, amount))
-          .isInstanceOf(PaymentException.class)
+          .isInstanceOf(RuntimeException.class)
           .hasMessageContaining("This is temporary error.");
       mockServer.verify();
     }

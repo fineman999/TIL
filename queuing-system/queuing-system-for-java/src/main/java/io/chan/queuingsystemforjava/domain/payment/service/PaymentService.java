@@ -21,6 +21,9 @@ public class PaymentService {
     }
 
     public PaymentResponse fallback(String paymentKey, String orderId, long amount, Throwable t) {
+        if (t instanceof IllegalArgumentException || t instanceof IllegalStateException) {
+            throw (RuntimeException) t; // 원래 예외를 그대로 던짐
+        }
         throw new RuntimeException("Payment confirmation failed after retries: " + t.getMessage(), t);
     }
 }
