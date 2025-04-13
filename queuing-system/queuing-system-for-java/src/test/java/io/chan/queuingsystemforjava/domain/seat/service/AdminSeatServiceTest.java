@@ -21,6 +21,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
+import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -97,18 +98,18 @@ class AdminSeatServiceTest {
             assertThat(seatGrade1.getPerformance().getPerformanceId())
                     .isEqualTo(performance.getPerformanceId());
             assertThat(seatGrade1.getGradeName()).isEqualTo("Grade1");
-            assertThat(seatGrade1.getPrice()).isEqualTo(10000L);
+            assertThat(seatGrade1.getPrice()).isEqualTo(BigDecimal.valueOf(10000L));
 
             assertThat(seatGrade2.getPerformance().getPerformanceId())
                     .isEqualTo(performance.getPerformanceId());
             assertThat(seatGrade2.getGradeName()).isEqualTo("Grade2");
-            assertThat(seatGrade2.getPrice()).isEqualTo(20000L);
+            assertThat(seatGrade2.getPrice()).isEqualTo(BigDecimal.valueOf(20000L));
         }
 
         private SeatGradeCreationRequest makeRequest() {
 
-            SeatGradeCreationElement seatGrade1 = new SeatGradeCreationElement(10000L, "Grade1");
-            SeatGradeCreationElement seatGrade2 = new SeatGradeCreationElement(20000L, "Grade2");
+            SeatGradeCreationElement seatGrade1 = new SeatGradeCreationElement(BigDecimal.valueOf(10000L), "Grade1");
+            SeatGradeCreationElement seatGrade2 = new SeatGradeCreationElement(BigDecimal.valueOf(20000L), "Grade2");
 
             return new SeatGradeCreationRequest(List.of(seatGrade1, seatGrade2));
         }
@@ -129,13 +130,13 @@ class AdminSeatServiceTest {
             SeatGrade seatGrade1 =
                     SeatGrade.builder()
                             .performance(performance)
-                            .price(10000L)
+                            .price(BigDecimal.valueOf(10000L))
                             .gradeName("Grade1")
                             .build();
             SeatGrade seatGrade2 =
                     SeatGrade.builder()
                             .performance(performance)
-                            .price(20000L)
+                            .price(BigDecimal.valueOf(20000L))
                             .gradeName("Grade2")
                             .build();
             testEntityManager.persistAndFlush(seatGrade1);

@@ -21,7 +21,9 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,6 +51,11 @@ public class PersistenceReservationTest extends BaseIntegrationTest {
 
     private final String memberEmail = "test@gmail.com";
     private final Long seatId = 1L;
+
+    private final String paymentKey = UUID.randomUUID().toString();
+
+    private final String orderId = "ORDER_1_1_20241212";
+    private final BigDecimal price = BigDecimal.valueOf(10000);
 
     @Nested
     @DisplayName("티켓 예매를 위해 좌석을 선택할 때")
@@ -213,6 +220,9 @@ public class PersistenceReservationTest extends BaseIntegrationTest {
                                                             reservationService,
                                                             memberEmail,
                                                             seatId,
+                                                            paymentKey,
+                                                            orderId,
+                                                            price,
                                                             successfulReservations,
                                                             failedReservations);
                                                 } catch (InterruptedException e) {
@@ -234,10 +244,13 @@ public class PersistenceReservationTest extends BaseIntegrationTest {
                 ReservationService reservationService,
                 String memberEmail,
                 Long seatId,
+                String paymentKey,
+                String orderId,
+                BigDecimal price,
                 AtomicInteger successfulReservations,
                 AtomicInteger failedReservations) {
             try {
-                TicketPaymentRequest ticketPaymentRequest = new TicketPaymentRequest(seatId);
+                TicketPaymentRequest ticketPaymentRequest = new TicketPaymentRequest(seatId, paymentKey, orderId, price);
                 reservationService.reservationTicket(memberEmail, ticketPaymentRequest);
                 successfulReservations.incrementAndGet();
             } catch (Exception e) {

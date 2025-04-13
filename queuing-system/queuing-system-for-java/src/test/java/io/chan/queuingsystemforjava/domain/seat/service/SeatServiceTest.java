@@ -22,6 +22,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
+import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -92,13 +93,13 @@ public class SeatServiceTest {
         SeatGrade seatGrade1 =
                 SeatGrade.builder()
                         .performance(performance)
-                        .price(10000L)
+                        .price(BigDecimal.valueOf(10000L))
                         .gradeName("Grade1")
                         .build();
         SeatGrade seatGrade2 =
                 SeatGrade.builder()
                         .performance(performance)
-                        .price(20000L)
+                        .price(BigDecimal.valueOf(20000L))
                         .gradeName("Grade2")
                         .build();
         testEntityManager.persistAndFlush(seatGrade1);
@@ -122,6 +123,7 @@ public class SeatServiceTest {
                             .seatCode("A01")
                             .zone(zone)
                             .seatGrade(seatGrade1)
+                            .seatGradeId(seatGrade1.getSeatGradeId())
                             .build();
 
             seat2 =
@@ -130,6 +132,7 @@ public class SeatServiceTest {
                             .seatCode("A01")
                             .zone(zone)
                             .seatGrade(seatGrade2)
+                            .seatGradeId(seatGrade2.getSeatGradeId())
                             .build();
         }
 

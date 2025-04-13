@@ -13,6 +13,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -89,8 +90,8 @@ public class SeatControllerTest extends BaseControllerTest {
 
         List<SeatGradeElement> seatGradeElements =
                 List.of(
-                        new SeatGradeElement(1L, "Grade1", 10000L),
-                        new SeatGradeElement(2L, "Grade2", 20000L));
+                        new SeatGradeElement(1L, "Grade1", BigDecimal.valueOf(10000L)),
+                        new SeatGradeElement(2L, "Grade2", BigDecimal.valueOf(20000L)));
 
         given(seatService.getSeatGrades(anyLong())).willReturn(ItemResult.of(seatGradeElements));
 

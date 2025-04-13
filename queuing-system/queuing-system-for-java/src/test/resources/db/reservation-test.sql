@@ -2,6 +2,9 @@ DELETE
 FROM tickets
 WHERE ticket_id > 0;
 DELETE
+FROM orders
+WHERE id > 0;
+DELETE
 FROM seats
 WHERE seat_id > 0;
 DELETE
@@ -37,4 +40,8 @@ VALUES (1, 'Grade1', 10000, 1, NOW(), NOW());
 
 -- Seat 테이블에 데이터 삽입
 INSERT INTO seats (seat_id, seat_code, seat_status, member_id, zone_id, seat_grade_id, version, created_at, updated_at)
-VALUES (1, 'A01', 'SELECTED', 1, 1, 1, 1, NOW(), NOW());
+VALUES (1, 'A01', 'PENDING_PAYMENT', 1, 1, 1, 1, NOW(), NOW());
+
+-- Order 테이블에 데이터 삽입
+INSERT INTO orders (id, order_id, amount, customer_email, customer_mobile_phone, customer_name, order_name, status, performance_id, seat_id, created_at, updated_at)
+VALUES (1, 'ORDER_1_1_20241212', 10000, 'test@gmail.com', '010-1234-5678', '홍길동', '주문명', 'PENDING', 1, 1, NOW(), NOW());

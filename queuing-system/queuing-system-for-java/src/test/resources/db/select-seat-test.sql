@@ -2,6 +2,9 @@ DELETE
 FROM tickets
 WHERE ticket_id > 0;
 DELETE
+FROM orders
+WHERE id > 0;
+DELETE
 FROM seats
 WHERE seat_id > 0;
 DELETE

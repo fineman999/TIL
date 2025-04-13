@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -57,7 +58,7 @@ class TicketControllerTest extends BaseControllerTest {
         // given
         PerformanceElement performanceElement =
                 new PerformanceElement(1L, "흠뻑쇼", "서울", ZonedDateTime.now());
-        SeatGradeElement seatGradeElement = new SeatGradeElement(1L, "VIP", 160000L);
+        SeatGradeElement seatGradeElement = new SeatGradeElement(1L, "VIP", BigDecimal.valueOf(160000));
         TicketSeatDetail seatElement = new TicketSeatDetail(2L, "A01", seatGradeElement);
         TicketElement ticketElement =
                 new TicketElement(UUID.randomUUID(), performanceElement, seatElement);

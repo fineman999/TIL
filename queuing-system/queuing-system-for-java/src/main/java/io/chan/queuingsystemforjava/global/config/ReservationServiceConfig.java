@@ -2,7 +2,9 @@ package io.chan.queuingsystemforjava.global.config;
 
 import io.chan.queuingsystemforjava.common.event.EventPublisher;
 import io.chan.queuingsystemforjava.domain.member.repository.MemberRepository;
+import io.chan.queuingsystemforjava.domain.order.repository.OrderRepository;
 import io.chan.queuingsystemforjava.domain.payment.PaymentProcessor;
+import io.chan.queuingsystemforjava.domain.seat.repository.SeatGradeRepository;
 import io.chan.queuingsystemforjava.domain.seat.repository.SeatRepository;
 import io.chan.queuingsystemforjava.domain.ticket.proxy.DistributeLockReservationServiceProxy;
 import io.chan.queuingsystemforjava.domain.ticket.proxy.OptimisticReservationServiceProxy;
@@ -69,7 +71,9 @@ public class ReservationServiceConfig {
             TicketRepository ticketRepository,
             PaymentProcessor paymentProcessor,
             MemberRepository memberRepository,
+            SeatGradeRepository seatGradeRepository,
             SeatRepository seatRepository,
+            OrderRepository orderRepository,
             EventPublisher eventPublisher,
             ReservationManager reservationManager,
             TaskScheduler taskScheduler
@@ -78,7 +82,9 @@ public class ReservationServiceConfig {
         return new ReservationTransactionService(
                 ticketRepository,
                 memberRepository,
+                seatGradeRepository,
                 paymentProcessor,
+                orderRepository,
                 lockSeatStrategy,
                 eventPublisher,
                 reservationManager,
@@ -93,6 +99,8 @@ public class ReservationServiceConfig {
             TicketRepository ticketRepository,
             PaymentProcessor paymentProcessor,
             MemberRepository memberRepository,
+            SeatGradeRepository seatGradeRepository,
+            OrderRepository orderRepository,
             SeatRepository seatRepository,
             EventPublisher eventPublisher,
             ReservationManager reservationManager,
@@ -102,7 +110,9 @@ public class ReservationServiceConfig {
         return new ReservationTransactionService(
                 ticketRepository,
                 memberRepository,
+                seatGradeRepository,
                 paymentProcessor,
+                orderRepository,
                 lockSeatStrategy,
                 eventPublisher,
                 reservationManager,
@@ -116,6 +126,8 @@ public class ReservationServiceConfig {
             TicketRepository ticketRepository,
             PaymentProcessor paymentProcessor,
             MemberRepository memberRepository,
+            SeatGradeRepository seatGradeRepository,
+            OrderRepository orderRepository,
             SeatRepository seatRepository,
             EventPublisher eventPublisher,
             ReservationManager reservationManager,
@@ -125,7 +137,9 @@ public class ReservationServiceConfig {
         return new ReservationTransactionService(
                 ticketRepository,
                 memberRepository,
+                seatGradeRepository,
                 paymentProcessor,
+                orderRepository,
                 lockSeatStrategy,
                 eventPublisher,
                 reservationManager,

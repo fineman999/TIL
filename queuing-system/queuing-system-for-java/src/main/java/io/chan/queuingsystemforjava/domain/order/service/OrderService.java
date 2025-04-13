@@ -11,7 +11,10 @@ import io.chan.queuingsystemforjava.domain.order.repository.OrderRepository;
 import io.chan.queuingsystemforjava.domain.performance.Performance;
 import io.chan.queuingsystemforjava.domain.performance.repository.PerformanceRepository;
 import io.chan.queuingsystemforjava.domain.seat.Seat;
+import io.chan.queuingsystemforjava.domain.seat.SeatGrade;
 import io.chan.queuingsystemforjava.domain.seat.SeatStatus;
+import io.chan.queuingsystemforjava.domain.seat.repository.SeatGradeRepository;
+import io.chan.queuingsystemforjava.domain.seat.repository.SeatRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderService {
   private final OrderRepository orderRepository;
   private final PerformanceRepository performanceRepository;
+  private final SeatRepository seatRepository;
+  private final SeatGradeRepository seatGradeRepository;
 
   @Transactional
   public OrderResponse createOrder(OrderRequest request, Member member) {
@@ -32,9 +37,17 @@ public class OrderService {
 
     // 좌석 조회 및 락
     Seat seat =
-        orderRepository
-            .findSeatByIdWithLock(request.seatId())
+        seatRepository
+            .findByIdWithOptimistic(request.seatId())
             .orElseThrow(() -> new TicketingException(ErrorCode.NOT_FOUND_SEAT));
+
+    // 좌석 등급 조회
+
+    final SeatGrade seatGrade = seatGradeRepository
+            .findById(seat.getSeatGradeId())
+            .orElseThrow(() -> new TicketingException(ErrorCode.NOT_FOUND_SEAT_GRADE));
+
+
 
     // 좌석 상태를 확인하고 자신이 선점하고 있는지 확인
     seat.checkSeatStatusSelected(member);
@@ -48,7 +61,7 @@ public class OrderService {
             request.orderId(),
             performance,
             seat,
-            request.amount(),
+            seatGrade.getPrice(),
             request.customerEmail(),
             request.customerName(),
             request.customerMobilePhone(),

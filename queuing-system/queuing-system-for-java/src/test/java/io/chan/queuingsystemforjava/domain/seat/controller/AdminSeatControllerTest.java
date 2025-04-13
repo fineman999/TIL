@@ -16,6 +16,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -112,8 +113,8 @@ public class AdminSeatControllerTest extends BaseControllerTest {
 
     private String makeRequest() throws JsonProcessingException {
 
-        SeatGradeCreationElement seatGrade1 = new SeatGradeCreationElement(10000L, "Grade1");
-        SeatGradeCreationElement seatGrade2 = new SeatGradeCreationElement(20000L, "Grade2");
+        SeatGradeCreationElement seatGrade1 = new SeatGradeCreationElement(BigDecimal.valueOf(10000L), "Grade1");
+        SeatGradeCreationElement seatGrade2 = new SeatGradeCreationElement(BigDecimal.valueOf(20000L), "Grade2");
 
         SeatGradeCreationRequest request = new SeatGradeCreationRequest(List.of(seatGrade1, seatGrade2));
 

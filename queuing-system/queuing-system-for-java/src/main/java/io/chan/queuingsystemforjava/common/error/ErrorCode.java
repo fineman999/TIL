@@ -43,7 +43,7 @@ public enum ErrorCode {
        Seat Grade Error
     */
     NOT_FOUND_SEAT_GRADE(HttpStatus.NOT_FOUND, "SG404-1", "존재하지 않는 구역입니다."),
-
+    NOT_MATCH_AMOUNT(HttpStatus.BAD_REQUEST, "SG400-1", "금액이 일치하지 않습니다."),
     /*
        Seat Error
     */

@@ -31,8 +31,11 @@ public class Seat extends BaseEntity {
     private Zone zone;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seat_grade_id", nullable = false)
+    @JoinColumn(name = "seat_grade_id", nullable = false, updatable = false, insertable = false)
     private SeatGrade seatGrade;
+
+    @Column(name = "seat_grade_id", nullable = false)
+    private Long seatGradeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -47,6 +50,16 @@ public class Seat extends BaseEntity {
     private SeatStatus seatStatus = SeatStatus.SELECTABLE;
 
     @Version private Long version;
+
+    public static Seat create(Zone zone, SeatGrade seatGrade, String seatCode) {
+        return Seat.builder()
+                .zone(zone)
+                .seatGrade(seatGrade)
+                .seatGradeId(seatGrade.getSeatGradeId())
+                .seatCode(seatCode)
+                .seatStatus(SeatStatus.SELECTABLE)
+                .build();
+    }
 
     public boolean isSelectable() {
         return seatStatus.isSelectable();

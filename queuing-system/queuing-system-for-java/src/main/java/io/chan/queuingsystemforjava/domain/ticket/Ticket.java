@@ -52,7 +52,7 @@ public class Ticket extends BaseEntity {
 
     private UUID ticketSerialNumber;
 
-    public static Ticket create(final Member member, final Seat seat, final String paymentKey, final BigDecimal amount) {
+    public static Ticket create(final Member member, final Seat seat, final String paymentKey, final BigDecimal amount, final Order order) {
         return Ticket.builder()
                 .member(member)
                 .seat(seat)
@@ -60,6 +60,7 @@ public class Ticket extends BaseEntity {
                 .amount(amount)
                 .status(TicketStatus.ISSUED)
                 .ticketSerialNumber(UUID.randomUUID())
+                .order(order)
                 .build();
     }
 

@@ -49,8 +49,11 @@ public class Order extends BaseEntity {
     private Performance performance;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seat_id", nullable = false)
+    @JoinColumn(name = "seat_id", nullable = false, insertable = false, updatable = false)
     private Seat seat;
+
+    @Column(name = "seat_id", nullable = false)
+    private Long seatId;
 
     @Column(name = "amount", nullable = false)
     private BigDecimal amount;
@@ -79,6 +82,7 @@ public class Order extends BaseEntity {
                 .orderId(orderId)
                 .performance(performance)
                 .seat(seat)
+                .seatId(seat.getSeatId())
                 .amount(amount)
                 .customerEmail(customerEmail)
                 .customerName(customerName)

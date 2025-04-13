@@ -1,6 +1,8 @@
 package io.chan.queuingsystemforjava.domain.order.service;
 
-import io.chan.queuingsystemforjava.common.ItemResult;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import io.chan.queuingsystemforjava.common.error.ErrorCode;
 import io.chan.queuingsystemforjava.common.error.TicketingException;
 import io.chan.queuingsystemforjava.domain.member.Member;
@@ -15,9 +17,13 @@ import io.chan.queuingsystemforjava.domain.performance.repository.PerformanceRep
 import io.chan.queuingsystemforjava.domain.seat.Seat;
 import io.chan.queuingsystemforjava.domain.seat.SeatGrade;
 import io.chan.queuingsystemforjava.domain.seat.SeatStatus;
+import io.chan.queuingsystemforjava.domain.seat.repository.SeatGradeRepository;
 import io.chan.queuingsystemforjava.domain.seat.repository.SeatRepository;
 import io.chan.queuingsystemforjava.domain.zone.Zone;
 import io.chan.queuingsystemforjava.domain.zone.repository.ZoneRepository;
+import java.math.BigDecimal;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -27,20 +33,14 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
-import java.math.BigDecimal;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 @DataJpaTest
 @Import({
         OrderService.class,
         OrderRepository.class,
         PerformanceRepository.class,
         SeatRepository.class,
-        ZoneRepository.class
+        ZoneRepository.class,
+        SeatGradeRepository.class
 })
 public class OrderServiceTest {
     @Autowired
@@ -99,8 +99,8 @@ public class OrderServiceTest {
         SeatGrade seatGrade1 =
                 SeatGrade.builder()
                         .performance(performance)
-                        .price(10000L)
                         .gradeName("Grade1")
+                        .price(new BigDecimal("100.00"))
                         .build();
         testEntityManager.persistAndFlush(seatGrade1);
 
@@ -115,6 +115,7 @@ public class OrderServiceTest {
                 .zone(zone)
                 .seatStatus(SeatStatus.SELECTED)
                 .seatGrade(seatGrade1)
+                .seatGradeId(seatGrade1.getSeatGradeId())
                 .build();
 
         testEntityManager.persistAndFlush(seat);
@@ -131,7 +132,6 @@ public class OrderServiceTest {
                     "ORDER_" + performance.getPerformanceId() + "_" + seat.getSeatId() + "_16987654321",
                     performance.getPerformanceId(),
                     seat.getSeatId(),
-                    new BigDecimal("50000.00"),
                     "customer@example.com",
                     "김고객",
                     "01012341234",
@@ -156,12 +156,14 @@ public class OrderServiceTest {
             assertThat(savedOrder.getOrderId()).isEqualTo(request.orderId());
             assertThat(savedOrder.getPerformance().getPerformanceId()).isEqualTo(request.performanceId());
             assertThat(savedOrder.getSeat().getSeatId()).isEqualTo(request.seatId());
-            assertThat(savedOrder.getAmount()).isEqualTo(request.amount());
             assertThat(savedOrder.getStatus()).isEqualTo(OrderStatus.PENDING);
 
             // 좌석 상태 확인
             Seat updatedSeat = testEntityManager.find(Seat.class, seat.getSeatId());
             assertThat(updatedSeat.getSeatStatus()).isEqualTo(SeatStatus.PENDING_PAYMENT);
+
+            // 금액 확인
+            assertThat(updatedSeat.getSeatGrade().getPrice()).isEqualTo(seatGrade1.getPrice());
         }
 
         @Test
@@ -172,7 +174,6 @@ public class OrderServiceTest {
                     request.orderId(),
                     -1L, // 잘못된 공연 ID
                     request.seatId(),
-                    request.amount(),
                     request.customerEmail(),
                     request.customerName(),
                     request.customerMobilePhone(),
@@ -194,7 +195,6 @@ public class OrderServiceTest {
                     request.orderId(),
                     request.performanceId(),
                     -1L, // 잘못된 좌석 ID
-                    request.amount(),
                     request.customerEmail(),
                     request.customerName(),
                     request.customerMobilePhone(),

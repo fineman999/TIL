@@ -5,9 +5,13 @@ import io.chan.queuingsystemforjava.common.event.EventPublisher;
 import io.chan.queuingsystemforjava.common.error.TicketingException;
 import io.chan.queuingsystemforjava.domain.member.Member;
 import io.chan.queuingsystemforjava.domain.member.repository.MemberRepository;
+import io.chan.queuingsystemforjava.domain.order.Order;
+import io.chan.queuingsystemforjava.domain.order.repository.OrderRepository;
 import io.chan.queuingsystemforjava.domain.payment.PaymentProcessor;
 import io.chan.queuingsystemforjava.domain.payment.dto.PaymentRequest;
 import io.chan.queuingsystemforjava.domain.seat.Seat;
+import io.chan.queuingsystemforjava.domain.seat.SeatGrade;
+import io.chan.queuingsystemforjava.domain.seat.repository.SeatGradeRepository;
 import io.chan.queuingsystemforjava.domain.ticket.Ticket;
 import io.chan.queuingsystemforjava.domain.ticket.dto.event.PaymentEvent;
 import io.chan.queuingsystemforjava.domain.ticket.dto.event.SeatEvent;
@@ -17,6 +21,7 @@ import io.chan.queuingsystemforjava.domain.ticket.repository.TicketRepository;
 import io.chan.queuingsystemforjava.domain.ticket.strategy.LockSeatStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +40,9 @@ import java.util.UUID;
 public class ReservationTransactionService implements ReservationService {
     private final TicketRepository ticketRepository;
     private final MemberRepository memberRepository;
+    private final SeatGradeRepository seatGradeRepository;
     private final PaymentProcessor paymentProcessor;
+    private final OrderRepository orderRepository;
     private final LockSeatStrategy lockSeatStrategy;
     private final EventPublisher eventPublisher;
     private final ReservationManager reservationManager;
@@ -100,14 +107,29 @@ public class ReservationTransactionService implements ReservationService {
                         .findByEmail(memberEmail)
                         .orElseThrow(() -> new TicketingException(ErrorCode.NOT_FOUND_MEMBER));
 
+        // TODO: toss 결제 API 연동
         processPayment(seat, loginMember);
 
-        Ticket ticket =
-                Ticket.builder()
-                        .ticketSerialNumber(UUID.randomUUID())
-                        .seat(seat)
-                        .member(loginMember)
-                        .build();
+        SeatGrade seatGrade =
+                seatGradeRepository
+                        .findById(seat.getSeatGradeId())
+                        .orElseThrow(() -> new TicketingException(ErrorCode.NOT_FOUND_SEAT_GRADE));
+        if (seatGrade.isNotMatchAmount(ticketPaymentRequest.amount())) {
+            throw new TicketingException(ErrorCode.NOT_MATCH_AMOUNT);
+        }
+
+        Order order =
+                orderRepository
+                        .findByOrderId(ticketPaymentRequest.orderId())
+                        .orElseThrow(() -> new TicketingException(ErrorCode.NOT_FOUND_PERFORMANCE));
+
+        Ticket ticket = Ticket.create(
+                loginMember,
+                seat,
+                ticketPaymentRequest.paymentKey(),
+                seatGrade.getPrice(),
+                order
+        );
 
         ticketRepository.save(ticket);
     }
