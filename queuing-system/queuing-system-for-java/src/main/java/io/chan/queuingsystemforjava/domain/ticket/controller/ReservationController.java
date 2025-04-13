@@ -1,6 +1,7 @@
 package io.chan.queuingsystemforjava.domain.ticket.controller;
 
 import io.chan.queuingsystemforjava.common.LoginMember;
+import io.chan.queuingsystemforjava.domain.ticket.dto.TicketPaymentResponse;
 import io.chan.queuingsystemforjava.domain.ticket.dto.request.SeatSelectionRequest;
 import io.chan.queuingsystemforjava.domain.ticket.dto.request.TicketPaymentRequest;
 import io.chan.queuingsystemforjava.domain.ticket.service.ReservationService;
@@ -42,11 +43,11 @@ public class ReservationController {
 
     @Waiting
     @PostMapping("/tickets")
-    public ResponseEntity<Void> reservationTicket(
+    public ResponseEntity<TicketPaymentResponse> reservationTicket(
             @LoginMember MemberContext memberContext,
             @RequestBody @Valid TicketPaymentRequest ticketPaymentRequest) {
         String memberEmail = memberContext.getUsername();
-        reservationService.reservationTicket(memberEmail, ticketPaymentRequest);
-        return ResponseEntity.ok().build();
+        final TicketPaymentResponse ticketPaymentResponse = reservationService.reservationTicket(memberEmail, ticketPaymentRequest);
+        return ResponseEntity.ok(ticketPaymentResponse);
     }
 }

@@ -1,6 +1,7 @@
 package io.chan.queuingsystemforjava.domain.ticket.proxy;
 
 import io.chan.queuingsystemforjava.domain.ticket.aop.DistributedLock;
+import io.chan.queuingsystemforjava.domain.ticket.dto.TicketPaymentResponse;
 import io.chan.queuingsystemforjava.domain.ticket.dto.request.SeatSelectionRequest;
 import io.chan.queuingsystemforjava.domain.ticket.dto.request.TicketPaymentRequest;
 import io.chan.queuingsystemforjava.domain.ticket.service.ReservationTransactionService;
@@ -19,8 +20,8 @@ public class DistributeLockReservationServiceProxy implements ReservationService
     }
 
     @Override
-    public void reservationTicket(String memberEmail, TicketPaymentRequest ticketPaymentRequest) {
-        reservationTransactionService.reservationTicket(memberEmail, ticketPaymentRequest);
+    public TicketPaymentResponse reservationTicket(String memberEmail, TicketPaymentRequest ticketPaymentRequest) {
+        return reservationTransactionService.reservationTicket(memberEmail, ticketPaymentRequest);
     }
 
     @DistributedLock(key = "'seatId-' + #seatSelectionRequest.seatId()", waitTime = 5, leaseTime = 10)

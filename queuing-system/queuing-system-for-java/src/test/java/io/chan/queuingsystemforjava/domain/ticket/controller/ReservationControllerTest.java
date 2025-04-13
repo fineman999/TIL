@@ -1,5 +1,7 @@
 package io.chan.queuingsystemforjava.domain.ticket.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -7,6 +9,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import io.chan.queuingsystemforjava.domain.ticket.dto.TicketPaymentResponse;
 import io.chan.queuingsystemforjava.domain.ticket.dto.request.SeatSelectionRequest;
 import io.chan.queuingsystemforjava.domain.ticket.dto.request.TicketPaymentRequest;
 import io.chan.queuingsystemforjava.domain.ticket.service.ReservationService;
@@ -80,6 +83,12 @@ class ReservationControllerTest extends BaseControllerTest {
     BigDecimal price = new BigDecimal("100.00");
     // given
     TicketPaymentRequest request = new TicketPaymentRequest(1L, "1234567890123456", orderId, price);
+
+    TicketPaymentResponse response = TicketPaymentResponse.create(1L);
+
+    given(reservationService.reservationTicket(any(String.class), any(TicketPaymentRequest.class)))
+        .willReturn(response);
+
 
     // when
     ResultActions result =

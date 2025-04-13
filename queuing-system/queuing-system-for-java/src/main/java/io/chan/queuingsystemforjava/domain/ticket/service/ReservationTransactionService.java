@@ -13,6 +13,7 @@ import io.chan.queuingsystemforjava.domain.seat.Seat;
 import io.chan.queuingsystemforjava.domain.seat.SeatGrade;
 import io.chan.queuingsystemforjava.domain.seat.repository.SeatGradeRepository;
 import io.chan.queuingsystemforjava.domain.ticket.Ticket;
+import io.chan.queuingsystemforjava.domain.ticket.dto.TicketPaymentResponse;
 import io.chan.queuingsystemforjava.domain.ticket.dto.event.PaymentEvent;
 import io.chan.queuingsystemforjava.domain.ticket.dto.event.SeatEvent;
 import io.chan.queuingsystemforjava.domain.ticket.dto.request.SeatSelectionRequest;
@@ -21,12 +22,10 @@ import io.chan.queuingsystemforjava.domain.ticket.repository.TicketRepository;
 import io.chan.queuingsystemforjava.domain.ticket.strategy.LockSeatStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.UUID;
 
 /**
  * 예약 트랜잭션 서비스
@@ -95,7 +94,7 @@ public class ReservationTransactionService implements ReservationService {
 
     @Override
     @Transactional
-    public void reservationTicket(String memberEmail, TicketPaymentRequest ticketPaymentRequest) {
+    public TicketPaymentResponse reservationTicket(String memberEmail, TicketPaymentRequest ticketPaymentRequest) {
         Long seatId = ticketPaymentRequest.seatId();
         Seat seat =
                 lockSeatStrategy
@@ -123,6 +122,8 @@ public class ReservationTransactionService implements ReservationService {
                         .findByOrderId(ticketPaymentRequest.orderId())
                         .orElseThrow(() -> new TicketingException(ErrorCode.NOT_FOUND_PERFORMANCE));
 
+        order.markAsCompleted();
+
         Ticket ticket = Ticket.create(
                 loginMember,
                 seat,
@@ -131,7 +132,9 @@ public class ReservationTransactionService implements ReservationService {
                 order
         );
 
-        ticketRepository.save(ticket);
+        ticket = ticketRepository.save(ticket);
+
+        return TicketPaymentResponse.create(ticket.getTicketId());
     }
 
     private void processPayment(Seat seat, Member loginMember) {

@@ -9,7 +9,6 @@ import io.chan.queuingsystemforjava.domain.seat.repository.SeatRepository;
 import io.chan.queuingsystemforjava.domain.ticket.proxy.DistributeLockReservationServiceProxy;
 import io.chan.queuingsystemforjava.domain.ticket.proxy.OptimisticReservationServiceProxy;
 import io.chan.queuingsystemforjava.domain.ticket.proxy.PessimisticReservationServiceProxy;
-import io.chan.queuingsystemforjava.domain.ticket.proxy.RedissonReservationServiceProxy;
 import io.chan.queuingsystemforjava.domain.ticket.repository.TicketRepository;
 import io.chan.queuingsystemforjava.domain.ticket.service.ReservationManager;
 import io.chan.queuingsystemforjava.domain.ticket.service.ReservationService;
@@ -18,17 +17,12 @@ import io.chan.queuingsystemforjava.domain.ticket.strategy.LockSeatStrategy;
 import io.chan.queuingsystemforjava.domain.ticket.strategy.NaiveSeatStrategy;
 import io.chan.queuingsystemforjava.domain.ticket.strategy.OptimisticLockSeatStrategy;
 import io.chan.queuingsystemforjava.domain.ticket.strategy.PessimisticLockSeatStrategy;
-import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.EnableScheduling;
-
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 @Configuration
 public class ReservationServiceConfig {
@@ -56,15 +50,6 @@ public class ReservationServiceConfig {
         return new DistributeLockReservationServiceProxy(distributedLockReservationService);
     }
 
-
-    @Bean
-    public ReservationService redissonReservationServiceProxy(
-            RedissonClient redissonClient,
-            @Qualifier("distributedLockReservationService")
-            ReservationTransactionService cacheReservationTransactionService) {
-        return new RedissonReservationServiceProxy(
-                redissonClient, cacheReservationTransactionService);
-    }
 
     @Bean
     public ReservationTransactionService persistenceOptimisticReservationService(

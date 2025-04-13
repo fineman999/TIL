@@ -2,6 +2,7 @@ package io.chan.queuingsystemforjava.domain.ticket.proxy;
 
 import io.chan.queuingsystemforjava.common.error.ErrorCode;
 import io.chan.queuingsystemforjava.common.error.TicketingException;
+import io.chan.queuingsystemforjava.domain.ticket.dto.TicketPaymentResponse;
 import io.chan.queuingsystemforjava.domain.ticket.dto.request.SeatSelectionRequest;
 import io.chan.queuingsystemforjava.domain.ticket.dto.request.TicketPaymentRequest;
 import io.chan.queuingsystemforjava.domain.ticket.service.ReservationTransactionService;
@@ -26,9 +27,9 @@ public class PessimisticReservationServiceProxy implements ReservationServicePro
     }
 
     @Override
-    public void reservationTicket(String memberEmail, TicketPaymentRequest ticketPaymentRequest) {
+    public TicketPaymentResponse reservationTicket(String memberEmail, TicketPaymentRequest ticketPaymentRequest) {
         try {
-            reservationTransactionService.reservationTicket(memberEmail, ticketPaymentRequest);
+            return reservationTransactionService.reservationTicket(memberEmail, ticketPaymentRequest);
         } catch (PessimisticLockingFailureException | LockTimeoutException e) {
             log.error(e.getMessage(), e);
             throw new TicketingException(ErrorCode.NOT_SELECTABLE_SEAT);

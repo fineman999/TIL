@@ -5,7 +5,6 @@ import io.chan.queuingsystemforjava.domain.ticket.Ticket;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -13,8 +12,8 @@ import java.util.List;
 public class TicketRepository {
     private final TicketJpaRepository ticketJpaRepository;
 
-    public void save(Ticket ticket) {
-        ticketJpaRepository.save(ticket);
+    public Ticket save(Ticket ticket) {
+        return ticketJpaRepository.save(ticket);
     }
 
     public List<Ticket> findAllByMember(Member member) {
