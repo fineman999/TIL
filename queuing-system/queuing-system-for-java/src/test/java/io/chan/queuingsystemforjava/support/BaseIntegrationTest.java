@@ -2,6 +2,8 @@ package io.chan.queuingsystemforjava.support;
 
 import io.chan.queuingsystemforjava.QueuingSystemForJavaApplication;
 import io.chan.queuingsystemforjava.domain.member.service.JwtProvider;
+import io.chan.queuingsystemforjava.domain.payment.processor.PaymentProcessor;
+import io.chan.queuingsystemforjava.domain.payment.processor.SimulatedPaymentProcessor;
 import io.chan.queuingsystemforjava.global.security.JwtProviderImpl;
 import io.chan.queuingsystemforjava.support.integration.AspectTestConfig;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -9,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.utility.TestcontainersConfiguration;
 

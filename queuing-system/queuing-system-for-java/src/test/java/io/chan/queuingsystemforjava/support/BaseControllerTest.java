@@ -78,6 +78,7 @@ public abstract class BaseControllerTest {
           preprocessRequest(prettyPrint()),
           preprocessResponse(prettyPrint()));
     }
+
   }
 
   @BeforeEach

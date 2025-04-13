@@ -40,9 +40,6 @@ public class Ticket extends BaseEntity {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @Column(name = "payment_key")
-    private String paymentKey;
-
     @Column(name = "amount", nullable = false)
     private BigDecimal amount;
 
@@ -52,11 +49,10 @@ public class Ticket extends BaseEntity {
 
     private UUID ticketSerialNumber;
 
-    public static Ticket create(final Member member, final Seat seat, final String paymentKey, final BigDecimal amount, final Order order) {
+    public static Ticket create(final Member member, final Seat seat, final BigDecimal amount, final Order order) {
         return Ticket.builder()
                 .member(member)
                 .seat(seat)
-                .paymentKey(paymentKey)
                 .amount(amount)
                 .status(TicketStatus.ISSUED)
                 .ticketSerialNumber(UUID.randomUUID())

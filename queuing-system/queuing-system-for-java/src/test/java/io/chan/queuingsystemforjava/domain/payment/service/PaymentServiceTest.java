@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.chan.queuingsystemforjava.domain.payment.adapter.PaymentApiClient;
 import io.chan.queuingsystemforjava.domain.payment.dto.PaymentResponse;
 import io.chan.queuingsystemforjava.domain.payment.exception.PaymentExceptionInterceptor;
+import io.chan.queuingsystemforjava.domain.payment.processor.PaymentProcessor;
+import io.chan.queuingsystemforjava.domain.payment.processor.SimulatedPaymentProcessor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -28,6 +30,8 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
+import java.math.BigDecimal;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockRestServiceServer
 @ActiveProfiles("test")
@@ -39,7 +43,7 @@ class PaymentServiceTest {
 
   private final String paymentKey = "5EnNZRJGvaBX7zk2yd8ydw26XvwXkLrx9POLqKQjmAw4b0e1";
   private final String orderId = "a4CWyWY5m89PNh7xJwhk1";
-  private final long amount = 1000;
+  private final BigDecimal amount = BigDecimal.valueOf(1000L);
 
   @BeforeEach
   void setUp() {
@@ -65,6 +69,11 @@ class PaymentServiceTest {
           .requestInterceptor(new PaymentExceptionInterceptor(objectMapper))
           .build();
     }
+
+    @Bean
+    public PaymentProcessor paymentProcessor() {
+      return new SimulatedPaymentProcessor();
+    }
   }
 
   @Nested
@@ -75,49 +84,49 @@ class PaymentServiceTest {
     @DisplayName("결제 확인이 성공적으로 완료된다")
     void confirmPayment_Success() {
       String successJson =
-          """
-                {
-                    "mId": "tosspayments",
-                    "paymentKey": "%s",
-                    "orderId": "%s",
-                    "orderName": "토스 티셔츠 외 2건",
-                    "status": "DONE",
-                    "requestedAt": "2024-02-13T12:17:57+09:00",
-                    "approvedAt": "2024-02-13T12:18:14+09:00",
-                    "useEscrow": false,
-                    "currency": "KRW",
-                    "totalAmount": %d,
-                    "balanceAmount": %d,
-                    "suppliedAmount": 909,
-                    "vat": 91,
-                    "taxFreeAmount": 0,
-                    "method": "카드",
-                    "card": {
-                        "issuerCode": "71",
-                        "acquirerCode": "71",
-                        "number": "12345678****000*",
-                        "installmentPlanMonths": 0,
-                        "isInterestFree": false,
-                        "approveNo": "00000000",
-                        "cardType": "신용",
-                        "ownerType": "개인",
-                        "acquireStatus": "READY",
-                        "amount": 1000
-                    },
-                    "easyPay": {
-                        "provider": "토스페이",
-                        "amount": 0,
-                        "discountAmount": 0
-                    },
-                    "receipt": {
-                        "url": "https://dashboard.tosspayments.com/receipt/redirection"
-                    },
-                    "checkout": {
-                        "url": "https://api.tosspayments.com/v1/payments/%s/checkout"
-                    }
-                }
-                """
-              .formatted(paymentKey, orderId, amount, amount, paymentKey);
+              """
+              {
+                  "mId": "tosspayments",
+                  "paymentKey": "%s",
+                  "orderId": "%s",
+                  "orderName": "토스 티셔츠 외 2건",
+                  "status": "DONE",
+                  "requestedAt": "2024-02-13T12:17:57+09:00",
+                  "approvedAt": "2024-02-13T12:18:14+09:00",
+                  "useEscrow": false,
+                  "currency": "KRW",
+                  "totalAmount": %s,
+                  "balanceAmount": %s,
+                  "suppliedAmount": 909,
+                  "vat": 91,
+                  "taxFreeAmount": 0,
+                  "method": "카드",
+                  "card": {
+                      "issuerCode": "71",
+                      "acquirerCode": "71",
+                      "number": "12345678****000*",
+                      "installmentPlanMonths": 0,
+                      "isInterestFree": false,
+                      "approveNo": "00000000",
+                      "cardType": "신용",
+                      "ownerType": "개인",
+                      "acquireStatus": "READY",
+                      "amount": 1000
+                  },
+                  "easyPay": {
+                      "provider": "토스페이",
+                      "amount": 0,
+                      "discountAmount": 0
+                  },
+                  "receipt": {
+                      "url": "https://dashboard.tosspayments.com/receipt/redirection"
+                  },
+                  "checkout": {
+                      "url": "https://api.tosspayments.com/v1/payments/%s/checkout"
+                  }
+              }
+              """
+                      .formatted(paymentKey, orderId, amount.toString(), amount.toString(), paymentKey);
 
       mockServer
           .expect(requestTo("https://api.tosspayments.com/v1/payments/confirm"))
@@ -205,49 +214,49 @@ class PaymentServiceTest {
                 {"code":"PROVIDER_ERROR","message":"This is temporary error."}
                 """;
       String successJson =
-          """
-                {
-                    "mId": "tosspayments",
-                    "paymentKey": "%s",
-                    "orderId": "%s",
-                    "orderName": "토스 티셔츠 외 2건",
-                    "status": "DONE",
-                    "requestedAt": "2024-02-13T12:17:57+09:00",
-                    "approvedAt": "2024-02-13T12:18:14+09:00",
-                    "useEscrow": false,
-                    "currency": "KRW",
-                    "totalAmount": %d,
-                    "balanceAmount": %d,
-                    "suppliedAmount": 909,
-                    "vat": 91,
-                    "taxFreeAmount": 0,
-                    "method": "카드",
-                    "card": {
-                        "issuerCode": "71",
-                        "acquirerCode": "71",
-                        "number": "12345678****000*",
-                        "installmentPlanMonths": 0,
-                        "isInterestFree": false,
-                        "approveNo": "00000000",
-                        "cardType": "신용",
-                        "ownerType": "개인",
-                        "acquireStatus": "READY",
-                        "amount": 1000
-                    },
-                    "easyPay": {
-                        "provider": "토스페이",
-                        "amount": 0,
-                        "discountAmount": 0
-                    },
-                    "receipt": {
-                        "url": "https://dashboard.tosspayments.com/receipt/redirection"
-                    },
-                    "checkout": {
-                        "url": "https://api.tosspayments.com/v1/payments/%s/checkout"
-                    }
-                }
-                """
-              .formatted(paymentKey, orderId, amount, amount, paymentKey);
+              """
+              {
+                  "mId": "tosspayments",
+                  "paymentKey": "%s",
+                  "orderId": "%s",
+                  "orderName": "토스 티셔츠 외 2건",
+                  "status": "DONE",
+                  "requestedAt": "2024-02-13T12:17:57+09:00",
+                  "approvedAt": "2024-02-13T12:18:14+09:00",
+                  "useEscrow": false,
+                  "currency": "KRW",
+                  "totalAmount": %s,
+                  "balanceAmount": %s,
+                  "suppliedAmount": 909,
+                  "vat": 91,
+                  "taxFreeAmount": 0,
+                  "method": "카드",
+                  "card": {
+                      "issuerCode": "71",
+                      "acquirerCode": "71",
+                      "number": "12345678****000*",
+                      "installmentPlanMonths": 0,
+                      "isInterestFree": false,
+                      "approveNo": "00000000",
+                      "cardType": "신용",
+                      "ownerType": "개인",
+                      "acquireStatus": "READY",
+                      "amount": 1000
+                  },
+                  "easyPay": {
+                      "provider": "토스페이",
+                      "amount": 0,
+                      "discountAmount": 0
+                  },
+                  "receipt": {
+                      "url": "https://dashboard.tosspayments.com/receipt/redirection"
+                  },
+                  "checkout": {
+                      "url": "https://api.tosspayments.com/v1/payments/%s/checkout"
+                  }
+              }
+              """
+                      .formatted(paymentKey, orderId, amount.toString(), amount.toString(), paymentKey);
 
       mockServer
           .expect(requestTo("https://api.tosspayments.com/v1/payments/confirm"))

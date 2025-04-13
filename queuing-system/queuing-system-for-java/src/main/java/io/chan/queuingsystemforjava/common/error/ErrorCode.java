@@ -69,6 +69,11 @@ public enum ErrorCode {
      */
     PAYMENT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "PAYMENT_500", "Unknown payment error"),
 
+    /**
+     * Order Error
+     */
+    NOT_FOUND_ORDER(HttpStatus.NOT_FOUND, "ORDER_404", "존재하지 않는 주문입니다."),
+
     // 400 Bad Request
     ALREADY_PROCESSED_PAYMENT(HttpStatus.BAD_REQUEST, "PAYMENT_400_ALREADY_PROCESSED", "This is a payment that has already been processed"),
     PROVIDER_ERROR(HttpStatus.BAD_REQUEST, "PAYMENT_400_PROVIDER", "This is temporary error. Please try again in a few minutes"),

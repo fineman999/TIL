@@ -1,4 +1,4 @@
-package io.chan.queuingsystemforjava.domain.payment;
+package io.chan.queuingsystemforjava.domain.payment.processor;
 
 import io.chan.queuingsystemforjava.domain.payment.dto.PaymentRequest;
 

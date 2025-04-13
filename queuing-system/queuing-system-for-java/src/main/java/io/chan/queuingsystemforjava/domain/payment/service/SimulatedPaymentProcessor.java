@@ -1,13 +1,9 @@
-package io.chan.queuingsystemforjava.domain.payment;
+package io.chan.queuingsystemforjava.domain.payment.service;
 
 import io.chan.queuingsystemforjava.domain.payment.dto.PaymentRequest;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-
+import io.chan.queuingsystemforjava.domain.payment.processor.PaymentProcessor;
 import java.util.Random;
 
-@Component
-@Slf4j
 public class SimulatedPaymentProcessor implements PaymentProcessor {
     @Override
     public void processPayment(PaymentRequest paymentRequest) {
@@ -34,7 +30,6 @@ public class SimulatedPaymentProcessor implements PaymentProcessor {
             Thread.sleep(delay);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            log.error("Simulated payment error", e);
             throw new RuntimeException();
         }
     }
