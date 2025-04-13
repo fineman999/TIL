@@ -12,24 +12,30 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SeatJpaRepository extends JpaRepository<Seat, Long> {
-    List<Seat> findByZone(Zone zone);
-
-    @Query(
-            """
+  @Query(
+      """
 			SELECT s FROM Seat s
 			JOIN FETCH s.zone z
+			JOIN FETCH s.seatGrade sg
+			WHERE s.zone = :zone
+			""")
+  List<Seat> findByZone(Zone zone);
+
+  @Query(
+      """
+			SELECT s FROM Seat s
+			JOIN FETCH s.zone z
+			JOIN FETCH s.seatGrade sg
 			JOIN FETCH z.performance p
 			WHERE p.performanceId = :performanceId
 			""")
-    List<Seat> findByPerformanceId(@Param("performanceId") long performanceId);
+  List<Seat> findByPerformanceId(@Param("performanceId") long performanceId);
 
-	@Query("SELECT s FROM Seat as s WHERE s.seatId = :seatId")
-	@Lock(LockModeType.OPTIMISTIC)
-	Optional<Seat> findByIdWithOptimistic(@Param("seatId") Long seatId);
+  @Query("SELECT s FROM Seat as s WHERE s.seatId = :seatId")
+  @Lock(LockModeType.OPTIMISTIC)
+  Optional<Seat> findByIdWithOptimistic(@Param("seatId") Long seatId);
 
-	@Query("SELECT s FROM Seat as s WHERE s.seatId = :seatId")
-	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	Optional<Seat> findByIdWithPessimistic(@Param("seatId") Long seatId);
-
-
+  @Query("SELECT s FROM Seat as s WHERE s.seatId = :seatId")
+  @Lock(LockModeType.PESSIMISTIC_WRITE)
+  Optional<Seat> findByIdWithPessimistic(@Param("seatId") Long seatId);
 }

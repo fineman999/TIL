@@ -159,6 +159,9 @@ public class SeatServiceTest {
         private void assertSeatElement(SeatElement seatElement, Seat expectedSeat) {
             assertThat(seatElement.seatId()).isEqualTo(expectedSeat.getSeatId());
             assertThat(seatElement.seatCode()).isEqualTo(expectedSeat.getSeatCode());
+            assertThat(seatElement.seatAvailable()).isEqualTo(expectedSeat.isSelectable());
+            assertThat(seatElement.price()).isEqualTo(expectedSeat.getSeatGrade().getPrice());
+            assertThat(seatElement.gradeName()).isEqualTo(expectedSeat.getSeatGrade().getGradeName());
         }
     }
 

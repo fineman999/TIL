@@ -41,9 +41,11 @@ public class SeatControllerTest extends BaseControllerTest {
         // Given
         long performanceId = 1L;
         long zoneId = 2L;
+        BigDecimal seatPrice = BigDecimal.valueOf(10000L);
+        String seatGradeName = "VIP";
 
         List<SeatElement> seatElements =
-                List.of(new SeatElement(1L, "A01", true), new SeatElement(2L, "B01", false));
+                List.of(new SeatElement(1L, "A01", true, seatPrice, seatGradeName), new SeatElement(2L, "B01", false, seatPrice, seatGradeName));
 
         given(seatService.getSeats(anyLong())).willReturn(ItemResult.of(seatElements));
 
@@ -79,7 +81,13 @@ public class SeatControllerTest extends BaseControllerTest {
                                                 .description("좌석 코드"),
                                         fieldWithPath("items[].seatAvailable")
                                                 .type(JsonFieldType.BOOLEAN)
-                                                .description("좌석 선택 가능 여부"))));
+                                                .description("좌석 선택 가능 여부"),
+                                        fieldWithPath("items[].price")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("좌석 가격"),
+                                        fieldWithPath("items[].gradeName")
+                                                .type(JsonFieldType.STRING)
+                                                .description("좌석 등급 이름"))));
     }
 
     @Test
