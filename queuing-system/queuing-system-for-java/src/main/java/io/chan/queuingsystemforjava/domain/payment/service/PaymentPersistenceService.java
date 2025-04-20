@@ -32,7 +32,7 @@ public class PaymentPersistenceService {
         // Order 조회
         Order order = orderRepository.findByOrderId(response.orderId())
                 .orElseThrow(() -> new TicketingException(ErrorCode.NOT_FOUND_ORDER));
-
+        order.markAsCompleted();
         // PaymentResponse -> Payment 변환
         Payment payment = objectMapper.convertValue(response, Payment.class);
         // 연관관계 수동 설정

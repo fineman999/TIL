@@ -1,5 +1,6 @@
 package io.chan.queuingsystemforjava.domain.payment;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.chan.queuingsystemforjava.common.entity.BaseEntity;
 import io.chan.queuingsystemforjava.domain.order.Order;
 import io.chan.queuingsystemforjava.global.utils.DateUtils;
@@ -17,6 +18,7 @@ import java.time.ZonedDateTime;
 @Getter
 @Builder
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE payments SET deleted_at = NOW() WHERE payment_key = ?")
 @SQLRestriction("deleted_at IS NULL")

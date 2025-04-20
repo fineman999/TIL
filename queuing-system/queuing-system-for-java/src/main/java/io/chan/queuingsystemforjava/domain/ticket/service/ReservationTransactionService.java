@@ -116,7 +116,6 @@ public class ReservationTransactionService implements ReservationService {
             .orElseThrow(() -> new TicketingException(ErrorCode.NOT_FOUND_PERFORMANCE));
 
     processPayment(seat, loginMember, ticketPaymentRequest.paymentKey(), order);
-    order.markAsCompleted();
 
     Ticket ticket = Ticket.create(loginMember, seat, seatGrade.getPrice(), order);
 

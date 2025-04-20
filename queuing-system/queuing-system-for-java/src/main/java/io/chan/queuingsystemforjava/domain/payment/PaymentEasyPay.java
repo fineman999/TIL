@@ -1,5 +1,6 @@
 package io.chan.queuingsystemforjava.domain.payment;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.chan.queuingsystemforjava.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 @Getter
 @Builder
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE payment_easy_pays SET deleted_at = NOW() WHERE id = ?")
 @SQLRestriction("deleted_at IS NULL")

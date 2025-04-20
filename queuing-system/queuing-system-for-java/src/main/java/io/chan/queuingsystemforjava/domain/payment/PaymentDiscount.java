@@ -1,5 +1,6 @@
 package io.chan.queuingsystemforjava.domain.payment;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.chan.queuingsystemforjava.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,6 +12,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Getter
 @Builder
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE payment_discounts SET deleted_at = NOW() WHERE id = ?")
 @SQLRestriction("deleted_at IS NULL")
