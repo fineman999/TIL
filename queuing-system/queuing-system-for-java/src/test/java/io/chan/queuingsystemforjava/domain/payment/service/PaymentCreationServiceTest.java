@@ -1,7 +1,5 @@
 package io.chan.queuingsystemforjava.domain.payment.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.chan.queuingsystemforjava.common.error.ErrorCode;
 import io.chan.queuingsystemforjava.common.error.TicketingException;
@@ -12,7 +10,6 @@ import io.chan.queuingsystemforjava.domain.order.OrderStatus;
 import io.chan.queuingsystemforjava.domain.order.repository.OrderRepository;
 import io.chan.queuingsystemforjava.domain.payment.*;
 import io.chan.queuingsystemforjava.domain.payment.dto.PaymentResponse;
-import io.chan.queuingsystemforjava.domain.payment.repository.*;
 import io.chan.queuingsystemforjava.domain.performance.Performance;
 import io.chan.queuingsystemforjava.domain.performance.repository.PerformanceRepository;
 import io.chan.queuingsystemforjava.domain.seat.Seat;
@@ -44,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
 @Import({
-  PaymentPersistenceService.class,
+  PaymentCreationService.class,
   OrderRepository.class,
   PerformanceRepository.class,
   SeatRepository.class,
@@ -52,9 +49,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
   SeatGradeRepository.class,
   ObjectMapperConfig.class
 })
-public class PaymentPersistenceServiceTest {
+public class PaymentCreationServiceTest {
   @Autowired private TestEntityManager testEntityManager;
-  @Autowired private PaymentPersistenceService paymentPersistenceService;
+  @Autowired private PaymentCreationService paymentCreationService;
   @Autowired private OrderRepository orderRepository;
   @Autowired private PerformanceRepository performanceRepository;
   @Autowired private SeatRepository seatRepository;
@@ -139,7 +136,7 @@ public class PaymentPersistenceServiceTest {
             "김고객",
             "01012341234",
             "공연 티켓 - 좌석 A01",
-            OrderStatus.PENDING);
+            OrderStatus.PENDING, member);
     testEntityManager.persistAndFlush(order);
   }
 
@@ -237,7 +234,7 @@ public class PaymentPersistenceServiceTest {
     @DisplayName("모든 중첩 객체를 포함한 결제 정보가 성공적으로 저장되고 주문 상태가 완료로 변경된다")
     void savePayment_successWithAllNestedObjects() {
       // When
-      paymentPersistenceService.savePayment(paymentResponse);
+      paymentCreationService.savePayment(paymentResponse);
 
       // Then
       Payment savedPayment =
@@ -404,7 +401,7 @@ public class PaymentPersistenceServiceTest {
           assertThrows(
               TicketingException.class,
               () -> {
-                paymentPersistenceService.savePayment(invalidResponse);
+                paymentCreationService.savePayment(invalidResponse);
               });
       assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.NOT_FOUND_ORDER);
     }
@@ -461,7 +458,7 @@ public class PaymentPersistenceServiceTest {
               null);
 
       // When
-      paymentPersistenceService.savePayment(minimalResponse);
+      paymentCreationService.savePayment(minimalResponse);
 
       // Then
       Payment savedPayment =

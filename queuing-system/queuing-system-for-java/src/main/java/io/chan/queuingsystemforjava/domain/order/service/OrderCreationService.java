@@ -12,7 +12,6 @@ import io.chan.queuingsystemforjava.domain.performance.Performance;
 import io.chan.queuingsystemforjava.domain.performance.repository.PerformanceRepository;
 import io.chan.queuingsystemforjava.domain.seat.Seat;
 import io.chan.queuingsystemforjava.domain.seat.SeatGrade;
-import io.chan.queuingsystemforjava.domain.seat.SeatStatus;
 import io.chan.queuingsystemforjava.domain.seat.repository.SeatGradeRepository;
 import io.chan.queuingsystemforjava.domain.seat.repository.SeatRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class OrderService {
+public class OrderCreationService {
   private final OrderRepository orderRepository;
   private final PerformanceRepository performanceRepository;
   private final SeatRepository seatRepository;
@@ -66,7 +65,9 @@ public class OrderService {
             request.customerName(),
             request.customerMobilePhone(),
             request.orderName(),
-            OrderStatus.PENDING);
+            OrderStatus.PENDING,
+                member
+                );
 
     // 주문 저장
     orderRepository.save(order);

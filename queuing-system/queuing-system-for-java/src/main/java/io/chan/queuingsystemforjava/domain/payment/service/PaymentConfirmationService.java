@@ -9,10 +9,10 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 
 @Service
-public class PaymentService {
+public class PaymentConfirmationService {
     private final PaymentApiClient paymentApiClient;
 
-    public PaymentService(PaymentApiClient paymentApiClient) {
+    public PaymentConfirmationService(PaymentApiClient paymentApiClient) {
         this.paymentApiClient = paymentApiClient;
     }
 

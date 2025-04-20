@@ -1,6 +1,7 @@
 package io.chan.queuingsystemforjava.domain.order;
 
 import io.chan.queuingsystemforjava.common.entity.BaseEntity;
+import io.chan.queuingsystemforjava.domain.member.Member;
 import io.chan.queuingsystemforjava.domain.performance.Performance;
 import io.chan.queuingsystemforjava.domain.seat.Seat;
 import jakarta.persistence.*;
@@ -49,6 +50,10 @@ public class Order extends BaseEntity {
     private Performance performance;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seat_id", nullable = false, insertable = false, updatable = false)
     private Seat seat;
 
@@ -77,7 +82,7 @@ public class Order extends BaseEntity {
 
     public static Order create(final String orderId, final Performance performance, final Seat seat, final BigDecimal amount,
                                final String customerEmail, final String customerName, final String customerMobilePhone,
-                               final String orderName, final OrderStatus status) {
+                               final String orderName, final OrderStatus status, final Member member) {
         return Order.builder()
                 .orderId(orderId)
                 .performance(performance)
@@ -89,6 +94,7 @@ public class Order extends BaseEntity {
                 .customerMobilePhone(customerMobilePhone)
                 .orderName(orderName)
                 .status(status)
+                .member(member)
                 .build();
     }
 

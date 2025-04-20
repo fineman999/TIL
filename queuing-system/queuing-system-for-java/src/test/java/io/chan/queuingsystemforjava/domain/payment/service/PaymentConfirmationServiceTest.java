@@ -35,9 +35,9 @@ import java.math.BigDecimal;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockRestServiceServer
 @ActiveProfiles("test")
-class PaymentServiceTest {
+class PaymentConfirmationServiceTest {
 
-  @Autowired private PaymentService paymentService;
+  @Autowired private PaymentConfirmationService paymentConfirmationService;
 
   @Autowired private MockRestServiceServer mockServer;
 
@@ -133,7 +133,7 @@ class PaymentServiceTest {
           .andExpect(method(HttpMethod.POST))
           .andRespond(withSuccess(successJson, MediaType.APPLICATION_JSON));
 
-      PaymentResponse response = paymentService.confirmPayment(paymentKey, orderId, amount);
+      PaymentResponse response = paymentConfirmationService.confirmPayment(paymentKey, orderId, amount);
 
       assertThat(response).isNotNull();
       assertThat(response.status()).isEqualTo("DONE");
@@ -158,7 +158,7 @@ class PaymentServiceTest {
                   .body(errorJson)
                   .contentType(MediaType.APPLICATION_JSON));
 
-      assertThatThrownBy(() -> paymentService.confirmPayment(paymentKey, orderId, amount))
+      assertThatThrownBy(() -> paymentConfirmationService.confirmPayment(paymentKey, orderId, amount))
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessageContaining("Invalid payment request");
       mockServer.verify();
@@ -179,7 +179,7 @@ class PaymentServiceTest {
                   .body(errorJson)
                   .contentType(MediaType.APPLICATION_JSON));
 
-      assertThatThrownBy(() -> paymentService.confirmPayment(paymentKey, orderId, amount))
+      assertThatThrownBy(() -> paymentConfirmationService.confirmPayment(paymentKey, orderId, amount))
           .isInstanceOf(IllegalStateException.class)
           .hasMessageContaining("Payment already processed");
       mockServer.verify();
@@ -200,7 +200,7 @@ class PaymentServiceTest {
                   .body(errorJson)
                   .contentType(MediaType.APPLICATION_JSON));
 
-      assertThatThrownBy(() -> paymentService.confirmPayment(paymentKey, orderId, amount))
+      assertThatThrownBy(() -> paymentConfirmationService.confirmPayment(paymentKey, orderId, amount))
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessageContaining("Unauthorized payment key");
       mockServer.verify();
@@ -270,7 +270,7 @@ class PaymentServiceTest {
           .andExpect(method(HttpMethod.POST))
           .andRespond(withSuccess(successJson, MediaType.APPLICATION_JSON));
 
-      PaymentResponse response = paymentService.confirmPayment(paymentKey, orderId, amount);
+      PaymentResponse response = paymentConfirmationService.confirmPayment(paymentKey, orderId, amount);
 
       assertThat(response).isNotNull();
       assertThat(response.status()).isEqualTo("DONE");
@@ -309,7 +309,7 @@ class PaymentServiceTest {
                   .body(errorJson)
                   .contentType(MediaType.APPLICATION_JSON));
 
-      assertThatThrownBy(() -> paymentService.confirmPayment(paymentKey, orderId, amount))
+      assertThatThrownBy(() -> paymentConfirmationService.confirmPayment(paymentKey, orderId, amount))
           .isInstanceOf(RuntimeException.class)
           .hasMessageContaining("This is temporary error.");
       mockServer.verify();

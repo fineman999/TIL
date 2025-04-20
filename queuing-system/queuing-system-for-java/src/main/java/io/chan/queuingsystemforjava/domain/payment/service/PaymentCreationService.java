@@ -14,10 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class PaymentPersistenceService {
+public class PaymentCreationService {
     private final PaymentJpaRepository paymentJpaRepository;
-    private final PaymentJpaCardRepository paymentCardJpaRepository;
-    private final PaymentJpaEasyPayRepository paymentEasyPayJpaRepository;
+    private final PaymentCardJpaRepository paymentCardJpaRepository;
+    private final PaymentEasyPayJpaRepository paymentEasyPayJpaRepository;
     private final PaymentCashReceiptJpaRepository paymentReceiptRepository;
     private final PaymentVirtualAccountJpaRepository paymentVirtualAccountJpaRepository;
     private final PaymentDiscountJpaRepository paymentDiscountJpaRepository;

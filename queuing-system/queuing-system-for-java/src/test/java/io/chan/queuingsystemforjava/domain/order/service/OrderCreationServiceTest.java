@@ -35,18 +35,18 @@ import org.springframework.context.annotation.Import;
 
 @DataJpaTest
 @Import({
-        OrderService.class,
+        OrderCreationService.class,
         OrderRepository.class,
         PerformanceRepository.class,
         SeatRepository.class,
         ZoneRepository.class,
         SeatGradeRepository.class
 })
-public class OrderServiceTest {
+public class OrderCreationServiceTest {
     @Autowired
     private TestEntityManager testEntityManager;
     @Autowired
-    private OrderService orderService;
+    private OrderCreationService orderCreationService;
     @Autowired
     private PerformanceRepository performanceRepository;
     @Autowired
@@ -143,7 +143,7 @@ public class OrderServiceTest {
         @DisplayName("주문이 성공적으로 생성된다")
         void createOrder_success() {
             // When
-            OrderResponse response = orderService.createOrder(request, member);
+            OrderResponse response = orderCreationService.createOrder(request, member);
 
             // Then
             assertThat(response).isNotNull();
@@ -182,7 +182,7 @@ public class OrderServiceTest {
 
             // When & Then
             TicketingException exception = assertThrows(TicketingException.class, () -> {
-                orderService.createOrder(invalidRequest, member);
+                orderCreationService.createOrder(invalidRequest, member);
             });
             assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.NOT_FOUND_PERFORMANCE);
         }
@@ -203,7 +203,7 @@ public class OrderServiceTest {
 
             // When & Then
             TicketingException exception = assertThrows(TicketingException.class, () -> {
-                orderService.createOrder(invalidRequest, member);
+                orderCreationService.createOrder(invalidRequest, member);
             });
             assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.NOT_FOUND_SEAT);
         }
@@ -217,7 +217,7 @@ public class OrderServiceTest {
 
             // When & Then
             TicketingException exception = assertThrows(TicketingException.class, () -> {
-                orderService.createOrder(request, member);
+                orderCreationService.createOrder(request, member);
             });
             assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_SEAT_STATUS);
         }

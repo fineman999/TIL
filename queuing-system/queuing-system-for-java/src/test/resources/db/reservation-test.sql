@@ -43,5 +43,14 @@ INSERT INTO seats (seat_id, seat_code, seat_status, member_id, zone_id, seat_gra
 VALUES (1, 'A01', 'PENDING_PAYMENT', 1, 1, 1, 1, NOW(), NOW());
 
 -- Order 테이블에 데이터 삽입
-INSERT INTO orders (id, order_id, amount, customer_email, customer_mobile_phone, customer_name, order_name, status, performance_id, seat_id, created_at, updated_at)
-VALUES (1, 'ORDER_1_1_20241212', 10000, 'test@gmail.com', '010-1234-5678', '홍길동', '주문명', 'PENDING', 1, 1, NOW(), NOW());
+-- orders 데이터 삽입 시 member_id 포함
+INSERT INTO orders (
+    id, order_id, amount, customer_email, customer_mobile_phone,
+    customer_name, order_name, status, performance_id, seat_id,
+    member_id, created_at, updated_at
+)
+VALUES (
+           1, 'ORDER_1_1_20241212', 10000, 'test@gmail.com', '010-1234-5678',
+           '홍길동', '주문명', 'PENDING', 1, 1,
+           1, NOW(), NOW()
+       );

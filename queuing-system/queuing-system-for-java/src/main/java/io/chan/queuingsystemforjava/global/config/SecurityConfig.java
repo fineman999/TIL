@@ -26,7 +26,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
     public static final String API_ENDPOINT = "/api/**";
-    private static final String[] API_VERIFICATION_CODE_ENDPOINT = {"/api/v1/auth/**"};
+    private static final String[] API_VERIFICATION_CODE_ENDPOINT = {"/api/v1/auth/**", "/api/v1/orders/**"};
     public static final String LOGIN = "/api/v1/login";
     private final CorsConfigurationSource corsConfigurationSource;
 
@@ -54,7 +54,7 @@ public class SecurityConfig {
                                         .requestMatchers("/actuator/health")
                                         .permitAll()
                                         .requestMatchers(API_VERIFICATION_CODE_ENDPOINT)
-                                        .hasAnyAuthority("ADMIN", "MANAGER")
+                                        .hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
                                         .requestMatchers("/api/v1/**")
                                         .permitAll()
                                         .anyRequest()
