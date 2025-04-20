@@ -129,7 +129,7 @@ public class ReservationTransactionService implements ReservationService {
       throw new TicketingException(ErrorCode.NOT_SELECTABLE_SEAT);
     }
     seat.checkSeatStatusPendingPayment(loginMember);
-    paymentProcessor.processPayment(new PaymentRequest(paymentKey, seat.getSeatCode(), order.getAmount()));
+    paymentProcessor.processPayment(new PaymentRequest(paymentKey, order.getOrderId(), order.getAmount()));
     seat.markAsPaid();
     // 줄서기 종료
     PaymentEvent paymentEvent = new PaymentEvent(loginMember.getEmail());

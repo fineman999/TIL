@@ -2,11 +2,13 @@ package io.chan.queuingsystemforjava.common.error;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -54,6 +56,28 @@ public class GlobalExceptionHandler {
         logException("API요청오류", e, e.getMessage(), "INFO");
         return ResponseEntity.badRequest().body(errorResponse);
     }
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse<UnrecognizedPropertyErrorDetail>> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        String message = "올바르지 않은 요청입니다.";
+        String fieldName = "";
+
+        if (ex.getCause() instanceof UnrecognizedPropertyException) {
+            UnrecognizedPropertyException cause = (UnrecognizedPropertyException) ex.getCause();
+            fieldName = cause.getPropertyName();
+            message = String.format("알 수 없는 필드 '%s'가 요청에 포함되어 있습니다", fieldName);
+        }
+
+        logException("API요청오류", ex, message, "INFO");
+
+        UnrecognizedPropertyErrorDetail detail = new UnrecognizedPropertyErrorDetail(fieldName);
+
+        return ResponseEntity
+                .status(ErrorCode.INVALID_INPUT_VALUE.getHttpStatus())
+                .body(ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, detail));
+    }
+
+    // UnrecognizedPropertyErrorDetail record 추가
+    private record UnrecognizedPropertyErrorDetail(String fieldName) {}
 
     private void logException(String prefix, Exception e, String message, String logLevel) {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
