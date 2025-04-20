@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -18,5 +19,13 @@ public class TicketRepository {
 
     public List<Ticket> findAllByMember(Member member) {
         return ticketJpaRepository.findAllByMember(member);
+    }
+
+    public Optional<Ticket> findById(final Long id) {
+        return ticketJpaRepository.findById(id);
+    }
+
+    public Optional<Ticket> findByIdWithOrder(final Long ticketId) {
+        return ticketJpaRepository.findByTicketIdWithOrder(ticketId);
     }
 }

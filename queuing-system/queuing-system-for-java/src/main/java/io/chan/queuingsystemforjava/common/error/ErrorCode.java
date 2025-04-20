@@ -65,6 +65,11 @@ public enum ErrorCode {
     NOT_CONTAINS_PERFORMANCE_INFO(HttpStatus.BAD_REQUEST, "W400-1", "공연 정보가 포함되어 있지 않습니다"),
 
     /*
+        Ticket Error
+     */
+    NOT_FOUND_TICKET(HttpStatus.NOT_FOUND, "T404-1", "티켓을 찾을 수 없습니다."),
+    UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "W401-1", "티켓의 소유자가 아닙니다."),
+    /*
       Toss Error
      */
     PAYMENT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "PAYMENT_500", "Unknown payment error"),

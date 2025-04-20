@@ -9,4 +9,8 @@ public enum OrderStatus {
     public boolean isPending() {
         return this == PENDING;
     }
+
+    public boolean isCompleted() {
+        return this == COMPLETED;
+    }
 }

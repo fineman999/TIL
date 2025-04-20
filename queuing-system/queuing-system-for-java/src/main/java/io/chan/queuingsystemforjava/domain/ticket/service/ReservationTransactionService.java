@@ -1,14 +1,14 @@
 package io.chan.queuingsystemforjava.domain.ticket.service;
 
 import io.chan.queuingsystemforjava.common.error.ErrorCode;
-import io.chan.queuingsystemforjava.common.event.EventPublisher;
 import io.chan.queuingsystemforjava.common.error.TicketingException;
+import io.chan.queuingsystemforjava.common.event.EventPublisher;
 import io.chan.queuingsystemforjava.domain.member.Member;
 import io.chan.queuingsystemforjava.domain.member.repository.MemberRepository;
 import io.chan.queuingsystemforjava.domain.order.Order;
 import io.chan.queuingsystemforjava.domain.order.repository.OrderRepository;
-import io.chan.queuingsystemforjava.domain.payment.processor.PaymentProcessor;
 import io.chan.queuingsystemforjava.domain.payment.dto.PaymentRequest;
+import io.chan.queuingsystemforjava.domain.payment.processor.PaymentProcessor;
 import io.chan.queuingsystemforjava.domain.seat.Seat;
 import io.chan.queuingsystemforjava.domain.seat.SeatGrade;
 import io.chan.queuingsystemforjava.domain.seat.repository.SeatGradeRepository;
@@ -20,12 +20,11 @@ import io.chan.queuingsystemforjava.domain.ticket.dto.request.SeatSelectionReque
 import io.chan.queuingsystemforjava.domain.ticket.dto.request.TicketPaymentRequest;
 import io.chan.queuingsystemforjava.domain.ticket.repository.TicketRepository;
 import io.chan.queuingsystemforjava.domain.ticket.strategy.LockSeatStrategy;
+import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Instant;
 
 /**
  * 예약 트랜잭션 서비스

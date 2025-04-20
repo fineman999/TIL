@@ -1,0 +1,42 @@
+package io.chan.queuingsystemforjava.domain.payment.dto;
+
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.util.List;
+
+public record PaymentCancelResponse(
+    String mId,
+    String lastTransactionKey,
+    String paymentKey,
+    String orderId,
+    String orderName,
+    Integer taxExemptionAmount,
+    String status,
+    OffsetDateTime requestedAt,
+    OffsetDateTime approvedAt,
+    boolean useEscrow,
+    boolean cultureExpense,
+    PaymentResponse.Card card,
+    PaymentResponse.VirtualAccount virtualAccount,
+    PaymentResponse.Transfer transfer,
+    PaymentResponse.MobilePhone mobilePhone,
+    PaymentResponse.GiftCertificate giftCertificate,
+    PaymentResponse.CashReceipt cashReceipt,
+    List<PaymentResponse.CashReceipt> cashReceipts,
+    PaymentResponse.Discount discount,
+    List<PaymentResponse.Cancel> cancels,
+    String type,
+    PaymentResponse.EasyPay easyPay,
+    String country,
+    boolean isPartialCancelable,
+    PaymentResponse.Receipt receipt,
+    PaymentResponse.Checkout checkout,
+    String currency,
+    BigDecimal totalAmount,
+    BigDecimal balanceAmount,
+    BigDecimal suppliedAmount,
+    BigDecimal vat,
+    BigDecimal taxFreeAmount,
+    String method,
+    String version
+) {}

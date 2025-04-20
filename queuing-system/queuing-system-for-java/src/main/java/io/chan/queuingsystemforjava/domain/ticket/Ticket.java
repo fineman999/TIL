@@ -72,4 +72,8 @@ public class Ticket extends BaseEntity {
         }
         this.status = TicketStatus.CANCELLED;
     }
+
+    public boolean isOwnedBy(final Member member) {
+        return this.member.equals(member);
+    }
 }

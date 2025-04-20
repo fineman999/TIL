@@ -104,4 +104,11 @@ public class Order extends BaseEntity {
         }
         this.status = OrderStatus.COMPLETED;
     }
+
+    public void markAsCancelled() {
+        if (!status.isCompleted()) {
+            throw new IllegalStateException("Order is not in a state that can be cancelled.");
+        }
+        this.status = OrderStatus.CANCELLED;
+    }
 }
