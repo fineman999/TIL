@@ -14,7 +14,15 @@ public class OrderRepository {
         return orderJpaRepository.findByOrderId(orderId);
     }
 
+    public Optional<Order> findByOrderIdWithPessimistic(String orderId) {
+        return orderJpaRepository.findByOrderIdWithPessimistic(orderId);
+    }
+
     public Order save(Order order) {
         return orderJpaRepository.save(order);
+    }
+
+    public Optional<Order> findByIdWithPessimistic(Long id) {
+        return orderJpaRepository.findByIdWithPessimistic(id);
     }
 }

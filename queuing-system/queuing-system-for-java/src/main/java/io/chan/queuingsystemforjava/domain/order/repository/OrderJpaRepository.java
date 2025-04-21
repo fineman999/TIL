@@ -8,9 +8,11 @@ import java.util.Optional;
 
 import io.chan.queuingsystemforjava.domain.order.OrderStatus;
 import io.lettuce.core.dynamic.annotation.Param;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
 public interface OrderJpaRepository extends JpaRepository<Order, Long> {
@@ -41,4 +43,11 @@ public interface OrderJpaRepository extends JpaRepository<Order, Long> {
         """)
     Optional<Order> findByOrderIdWithDetails(@Param("orderId") String orderId);
 
+    @Query("SELECT o FROM Order as o WHERE o.id = :id")
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Order> findByIdWithPessimistic(Long id);
+
+    @Query("SELECT o FROM Order as o WHERE o.orderId = :orderId")
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Order> findByOrderIdWithPessimistic(String orderId);
 }

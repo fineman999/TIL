@@ -33,12 +33,18 @@ public class Ticket extends BaseEntity {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seat_id", nullable = false)
+    @JoinColumn(name = "seat_id", nullable = false, updatable = false, insertable = false)
     private Seat seat;
 
+    @Column(name = "seat_id", nullable = false)
+    private Long seatId;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "order_id", nullable = false, updatable = false, insertable = false)
     private Order order;
+
+    @Column(name = "order_id", nullable = false)
+    private Long orderId;
 
     @Column(name = "amount", nullable = false)
     private BigDecimal amount;
@@ -53,10 +59,12 @@ public class Ticket extends BaseEntity {
         return Ticket.builder()
                 .member(member)
                 .seat(seat)
+                .seatId(seat.getSeatId())
                 .amount(amount)
                 .status(TicketStatus.ISSUED)
                 .ticketSerialNumber(UUID.randomUUID())
                 .order(order)
+                .orderId(order.getId())
                 .build();
     }
 

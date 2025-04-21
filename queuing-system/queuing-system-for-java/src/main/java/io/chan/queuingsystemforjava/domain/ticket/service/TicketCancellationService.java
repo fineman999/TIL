@@ -4,22 +4,21 @@ import io.chan.queuingsystemforjava.common.error.ErrorCode;
 import io.chan.queuingsystemforjava.common.error.TicketingException;
 import io.chan.queuingsystemforjava.common.event.EventPublisher;
 import io.chan.queuingsystemforjava.domain.member.Member;
-import io.chan.queuingsystemforjava.domain.member.repository.MemberRepository;
 import io.chan.queuingsystemforjava.domain.order.Order;
 import io.chan.queuingsystemforjava.domain.order.repository.OrderRepository;
+import io.chan.queuingsystemforjava.domain.payment.Payment;
 import io.chan.queuingsystemforjava.domain.payment.dto.PaymentCancelRequest;
 import io.chan.queuingsystemforjava.domain.payment.dto.PaymentCancelResponse;
 import io.chan.queuingsystemforjava.domain.payment.repository.IdempotencyRedisRepository;
+import io.chan.queuingsystemforjava.domain.payment.repository.PaymentJpaRepository;
 import io.chan.queuingsystemforjava.domain.payment.service.PaymentCancellationService;
 import io.chan.queuingsystemforjava.domain.seat.Seat;
-import io.chan.queuingsystemforjava.domain.seat.SeatGrade;
 import io.chan.queuingsystemforjava.domain.ticket.Ticket;
-import io.chan.queuingsystemforjava.domain.ticket.dto.TicketPaymentResponse;
 import io.chan.queuingsystemforjava.domain.ticket.dto.event.SeatEvent;
 import io.chan.queuingsystemforjava.domain.ticket.dto.request.TicketCancelRequest;
-import io.chan.queuingsystemforjava.domain.ticket.dto.request.TicketPaymentRequest;
 import io.chan.queuingsystemforjava.domain.ticket.dto.response.TicketCancelResponse;
 import io.chan.queuingsystemforjava.domain.ticket.repository.TicketRepository;
+import io.chan.queuingsystemforjava.domain.ticket.strategy.LockSeatStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,23 +27,28 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TicketCancellationService {
     private final TicketRepository ticketRepository;
-    private final OrderRepository orderRepository;
+    private final PaymentJpaRepository paymentJpaRepository;
     private final PaymentCancellationService paymentCancellationService;
     private final IdempotencyRedisRepository idempotencyRedisRepository;
     private final EventPublisher eventPublisher;
+    private final OrderRepository orderRepository;
+    private final LockSeatStrategy lockSeatStrategy;
 
-    // TODO: 현재 결제 취소 진행중,,,(seat 동시성 보장을 위해 seat 락 걸어서 호출하기)
     @Transactional
     public TicketCancelResponse cancelTicket(Member member, TicketCancelRequest cancelRequest) {
-        Ticket ticket = ticketRepository.findByIdWithOrder(cancelRequest.ticketId())
+        Ticket ticket = ticketRepository.findByIdWithPessimistic(cancelRequest.ticketId())
                 .orElseThrow(() -> new TicketingException(ErrorCode.NOT_FOUND_TICKET));
-
         if (!ticket.isOwnedBy(member)) {
             throw new TicketingException(ErrorCode.UNAUTHORIZED_ACCESS, "Ticket does not belong to this member");
         }
 
-        Order order = orderRepository.findByOrderId(ticket.getOrder().getOrderId())
+        Order order = orderRepository.findByIdWithPessimistic(ticket.getOrderId())
                 .orElseThrow(() -> new TicketingException(ErrorCode.NOT_FOUND_PERFORMANCE));
+        Seat seat = lockSeatStrategy.getSeatWithLock(order.getSeatId())
+                .orElseThrow(() -> new TicketingException(ErrorCode.NOT_FOUND_SEAT));
+
+        Payment payment = paymentJpaRepository.findByOrder(order)
+                .orElseThrow(() -> new TicketingException(ErrorCode.NOT_FOUND_PAYMENT));
 
         PaymentCancelRequest paymentCancelRequest = new PaymentCancelRequest(
                 cancelRequest.cancelReason(),
@@ -55,7 +59,7 @@ public class TicketCancellationService {
                         cancelRequest.refundReceiveAccount().holderName()
                 ) : null,
                 cancelRequest.taxFreeAmount(),
-                "KRW"
+                payment.getCurrency()
         );
 
         String idempotencyKey = idempotencyRedisRepository.generateIdempotencyKey();
@@ -67,7 +71,6 @@ public class TicketCancellationService {
         );
 
         ticket.markAsCancelled();
-        Seat seat = ticket.getSeat();
         seat.releaseSeat(member);
         order.markAsCancelled();
 

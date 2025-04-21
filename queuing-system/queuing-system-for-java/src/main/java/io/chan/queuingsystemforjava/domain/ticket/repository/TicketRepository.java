@@ -28,4 +28,8 @@ public class TicketRepository {
     public Optional<Ticket> findByIdWithOrder(final Long ticketId) {
         return ticketJpaRepository.findByTicketIdWithOrder(ticketId);
     }
+
+    public Optional<Ticket> findByIdWithPessimistic(final Long ticketId) {
+        return ticketJpaRepository.findByTicketIdWithPessimistic(ticketId);
+    }
 }

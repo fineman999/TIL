@@ -13,6 +13,7 @@ import io.chan.queuingsystemforjava.domain.ticket.repository.TicketRepository;
 import io.chan.queuingsystemforjava.domain.ticket.service.ReservationManager;
 import io.chan.queuingsystemforjava.domain.ticket.service.ReservationService;
 import io.chan.queuingsystemforjava.domain.ticket.service.ReservationTransactionService;
+import io.chan.queuingsystemforjava.domain.ticket.service.TicketCancellationService;
 import io.chan.queuingsystemforjava.domain.ticket.strategy.LockSeatStrategy;
 import io.chan.queuingsystemforjava.domain.ticket.strategy.NaiveSeatStrategy;
 import io.chan.queuingsystemforjava.domain.ticket.strategy.OptimisticLockSeatStrategy;

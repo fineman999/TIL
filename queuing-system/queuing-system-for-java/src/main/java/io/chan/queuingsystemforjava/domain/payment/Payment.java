@@ -120,12 +120,4 @@ public class Payment extends BaseEntity {
                 .build();
     }
 
-    public void updateStatus(String status) {
-        this.status = status;
-    }
-
-    public void updateBalanceAmount(BigDecimal balanceAmount) {
-        this.balanceAmount = balanceAmount;
-    }
-
 }
