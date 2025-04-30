@@ -16,7 +16,7 @@ public class PaymentCancellationService {
     private final PaymentApiClient paymentApiClient;
     private final IdempotencyRedisRepository idempotencyRedisRepository;
 
-    @Retry(name = "paymentRetry", fallbackMethod = "cancelFallback")
+    @Retry(name = "cancelRetry", fallbackMethod = "cancelFallback")
     public PaymentCancelResponse cancelPayment(String paymentKey, PaymentCancelRequest request, String idempotencyKey) {
         validateCancelRequest(request);
         validateIdempotencyKey(idempotencyKey);
@@ -79,7 +79,7 @@ public class PaymentCancellationService {
     }
 
     public PaymentCancelResponse cancelFallback(String paymentKey, PaymentCancelRequest request, String idempotencyKey, Throwable t) {
-        if (t instanceof IllegalArgumentException || t instanceof IllegalStateException) {
+        if (t instanceof IllegalArgumentException || t instanceof IllegalStateException || t instanceof TicketingException) {
             throw (RuntimeException) t;
         }
         throw new TicketingException(ErrorCode.PAYMENT_ERROR, "Payment cancellation failed after retries: " + t.getMessage());

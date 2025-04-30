@@ -39,7 +39,7 @@ public class TicketCancellationService {
         Ticket ticket = ticketRepository.findByIdWithPessimistic(cancelRequest.ticketId())
                 .orElseThrow(() -> new TicketingException(ErrorCode.NOT_FOUND_TICKET));
         if (!ticket.isOwnedBy(member)) {
-            throw new TicketingException(ErrorCode.UNAUTHORIZED_ACCESS, "Ticket does not belong to this member");
+            throw new TicketingException(ErrorCode.UNAUTHORIZED_ACCESS);
         }
 
         Order order = orderRepository.findByIdWithPessimistic(ticket.getOrderId())
