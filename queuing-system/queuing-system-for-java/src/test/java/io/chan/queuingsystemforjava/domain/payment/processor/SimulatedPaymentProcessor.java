@@ -1,6 +1,9 @@
 package io.chan.queuingsystemforjava.domain.payment.processor;
 
+import io.chan.queuingsystemforjava.domain.payment.Payment;
 import io.chan.queuingsystemforjava.domain.payment.dto.PaymentRequest;
+import io.chan.queuingsystemforjava.domain.ticket.dto.request.TicketCancelRequest;
+
 import java.util.Random;
 
 public class SimulatedPaymentProcessor implements PaymentProcessor {
@@ -15,6 +18,12 @@ public class SimulatedPaymentProcessor implements PaymentProcessor {
         //        if (random.nextInt(100) < 5) {
         //            throw new TicketingException(ErrorCode.PAYMENT_FAILED);
         //        }
+    }
+
+    @Override
+    public void cancelPayment(TicketCancelRequest cancelRequest, Payment payment) {
+        Random random = new Random();
+        simulateRandomDelay(random);
     }
 
     private void simulateRandomDelay(Random random) {

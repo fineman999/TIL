@@ -3,6 +3,7 @@ package io.chan.queuingsystemforjava.domain.payment;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.chan.queuingsystemforjava.common.entity.BaseEntity;
 import io.chan.queuingsystemforjava.domain.order.Order;
+import io.chan.queuingsystemforjava.domain.payment.dto.PaymentCancelResponse;
 import io.chan.queuingsystemforjava.global.utils.DateUtils;
 import jakarta.persistence.*;
 import lombok.*;
@@ -118,6 +119,27 @@ public class Payment extends BaseEntity {
                 .taxExemptionAmount(taxExemptionAmount)
                 .country(country)
                 .build();
+    }
+
+    public void updateCancelPayment(PaymentCancelResponse cancelResponse) {
+        this.version = cancelResponse.version();
+        this.type = cancelResponse.type();
+        this.mId = cancelResponse.mId();
+        this.currency = cancelResponse.currency();
+        this.method = cancelResponse.method();
+        this.totalAmount = cancelResponse.totalAmount();
+        this.balanceAmount = cancelResponse.balanceAmount();
+        this.status = cancelResponse.status();
+        this.requestedAt = DateUtils.toZonedDateTime(cancelResponse.requestedAt());
+        this.approvedAt = DateUtils.toZonedDateTime(cancelResponse.approvedAt());
+        this.useEscrow = cancelResponse.useEscrow();
+        this.lastTransactionKey = cancelResponse.lastTransactionKey();
+        this.suppliedAmount = cancelResponse.suppliedAmount();
+        this.vat = cancelResponse.vat();
+        this.cultureExpense = cancelResponse.cultureExpense();
+        this.taxFreeAmount = cancelResponse.taxFreeAmount();
+        this.taxExemptionAmount = cancelResponse.taxExemptionAmount();
+        this.country = cancelResponse.country();
     }
 
 }

@@ -7,11 +7,8 @@ import io.chan.queuingsystemforjava.domain.member.Member;
 import io.chan.queuingsystemforjava.domain.order.Order;
 import io.chan.queuingsystemforjava.domain.order.repository.OrderRepository;
 import io.chan.queuingsystemforjava.domain.payment.Payment;
-import io.chan.queuingsystemforjava.domain.payment.dto.PaymentCancelRequest;
-import io.chan.queuingsystemforjava.domain.payment.dto.PaymentCancelResponse;
-import io.chan.queuingsystemforjava.domain.payment.repository.IdempotencyRedisRepository;
+import io.chan.queuingsystemforjava.domain.payment.processor.PaymentProcessor;
 import io.chan.queuingsystemforjava.domain.payment.repository.PaymentJpaRepository;
-import io.chan.queuingsystemforjava.domain.payment.service.PaymentCancellationService;
 import io.chan.queuingsystemforjava.domain.seat.Seat;
 import io.chan.queuingsystemforjava.domain.ticket.Ticket;
 import io.chan.queuingsystemforjava.domain.ticket.dto.event.SeatEvent;
@@ -28,12 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class TicketCancellationService {
     private final TicketRepository ticketRepository;
     private final PaymentJpaRepository paymentJpaRepository;
-    private final PaymentCancellationService paymentCancellationService;
-    private final IdempotencyRedisRepository idempotencyRedisRepository;
     private final EventPublisher eventPublisher;
     private final OrderRepository orderRepository;
     private final LockSeatStrategy lockSeatStrategy;
-
+    private final PaymentProcessor paymentProcessor;
     @Transactional
     public TicketCancelResponse cancelTicket(Member member, TicketCancelRequest cancelRequest) {
         Ticket ticket = ticketRepository.findByIdWithPessimistic(cancelRequest.ticketId())
@@ -50,25 +45,7 @@ public class TicketCancellationService {
         Payment payment = paymentJpaRepository.findByOrder(order)
                 .orElseThrow(() -> new TicketingException(ErrorCode.NOT_FOUND_PAYMENT));
 
-        PaymentCancelRequest paymentCancelRequest = new PaymentCancelRequest(
-                cancelRequest.cancelReason(),
-                cancelRequest.cancelAmount(),
-                cancelRequest.refundReceiveAccount() != null ? new PaymentCancelRequest.RefundReceiveAccount(
-                        cancelRequest.refundReceiveAccount().bank(),
-                        cancelRequest.refundReceiveAccount().accountNumber(),
-                        cancelRequest.refundReceiveAccount().holderName()
-                ) : null,
-                cancelRequest.taxFreeAmount(),
-                payment.getCurrency()
-        );
-
-        String idempotencyKey = idempotencyRedisRepository.generateIdempotencyKey();
-
-        PaymentCancelResponse cancelResponse = paymentCancellationService.cancelPayment(
-                cancelRequest.paymentKey(),
-                paymentCancelRequest,
-                idempotencyKey
-        );
+        paymentProcessor.cancelPayment(cancelRequest, payment);
 
         ticket.markAsCancelled();
         seat.releaseSeat(member);
@@ -76,7 +53,7 @@ public class TicketCancellationService {
 
         eventPublisher.publish(new SeatEvent(member.getEmail(), seat.getSeatId(), SeatEvent.EventType.RELEASE));
 
-        return new TicketCancelResponse(cancelResponse.paymentKey(), cancelResponse.lastTransactionKey());
+        return new TicketCancelResponse(ticket.getTicketId());
     }
 
 }

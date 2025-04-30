@@ -6,11 +6,15 @@ import io.chan.queuingsystemforjava.common.error.TicketingException;
 import io.chan.queuingsystemforjava.domain.order.Order;
 import io.chan.queuingsystemforjava.domain.order.repository.OrderRepository;
 import io.chan.queuingsystemforjava.domain.payment.*;
+import io.chan.queuingsystemforjava.domain.payment.dto.PaymentCancelResponse;
 import io.chan.queuingsystemforjava.domain.payment.dto.PaymentResponse;
 import io.chan.queuingsystemforjava.domain.payment.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +30,7 @@ public class PaymentCreationService {
     private final PaymentTransferJpaRepository paymentTransferJpaRepository;
     private final OrderRepository orderRepository;
     private final ObjectMapper objectMapper;
+    private final PaymentCancelJpaRepository paymentCancelRepository;
 
     @Transactional
     public void savePayment(PaymentResponse response) {
@@ -97,5 +102,43 @@ public class PaymentCreationService {
             transfer.setPayment(payment); // 연관관계 설정
             paymentTransferJpaRepository.save(transfer);
         }
+    }
+
+    @Transactional
+    public void savePaymentCancel(PaymentCancelResponse cancelResponse, Payment payment) {
+        if (payment == null) {
+            throw new TicketingException(ErrorCode.INVALID_REQUEST, "Payment cannot be null");
+        }
+        List<PaymentResponse.Cancel> cancels = cancelResponse.cancels();
+        if (cancels == null || cancels.isEmpty()) {
+            throw new TicketingException(ErrorCode.INVALID_REQUEST, "No cancel records found in response");
+        }
+
+        payment.updateCancelPayment(cancelResponse);
+        paymentJpaRepository.save(payment);
+
+        List<PaymentCancel> newPaymentCancels = new ArrayList<>();
+        for (PaymentResponse.Cancel cancel : cancels) {
+            PaymentCancel paymentCancel = PaymentCancel.create(
+                    payment,
+                    cancel.cancelAmount(),
+                    cancel.cancelReason(),
+                    cancel.taxFreeAmount(),
+                    cancel.taxExemptionAmount(),
+                    cancel.refundableAmount(),
+                    cancel.transferDiscountAmount(),
+                    cancel.easyPayDiscountAmount(),
+                    cancel.canceledAt(),
+                    cancel.transactionKey(),
+                    cancel.receiptKey(),
+                    cancel.cancelStatus(),
+                    cancel.cancelRequestId(),
+                    cancel.isPartialCancelable()
+            );
+            newPaymentCancels.add(paymentCancel);
+        }
+
+
+        paymentCancelRepository.saveAll(newPaymentCancels);
     }
 }
