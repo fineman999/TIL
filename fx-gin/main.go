@@ -7,19 +7,19 @@ import (
 	"fx-server/app/repository"
 	"fx-server/app/router"
 	"fx-server/app/service"
+	"fx-server/config"
+	"github.com/sirupsen/logrus"
 	"go.uber.org/fx"
+	"go.uber.org/fx/fxevent"
 	"log"
 	"net/http"
-	"os"
 )
 
 func main() {
 	app := fx.New(
 		fx.Provide(
 			// Logger 생성 함수 추가
-			func() *log.Logger {
-				return log.New(os.Stdout, "[fx-server] ", log.LstdFlags)
-			},
+			router.NewLogHandler,
 			// Gin 엔진
 			router.NewGinEngine,
 			router.NewNetwork,
@@ -32,6 +32,11 @@ func main() {
 			router.SetupRouter, // 라우터 설정
 			func(srv *http.Server) { // HTTP 서버 등록
 				log.Printf("HTTP Server is ready at %s", srv.Addr)
+			},
+		),
+		fx.WithLogger(
+			func(logger *logrus.Logger) fxevent.Logger {
+				return config.NewFxLogger(logger)
 			},
 		),
 	)

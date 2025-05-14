@@ -2,23 +2,37 @@ package router
 
 import (
 	"context"
-	"fmt"
 	"fx-server/app/controller"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"go.uber.org/fx"
-	"log"
 	"net/http"
 	"time"
 )
 
-func NewGinEngine(logger *log.Logger) *gin.Engine {
+func NewLogHandler(lc fx.Lifecycle) *logrus.Logger {
+	logger := logrus.New()
+	logger.SetFormatter(&logrus.TextFormatter{
+		FullTimestamp: true,
+	})
+	logger.SetLevel(logrus.DebugLevel)
+	lc.Append(fx.Hook{
+		OnStop: func(ctx context.Context) error {
+			logger.Infof("Closing logger at %s", time.Now().Format(time.RFC3339))
+			return nil
+		},
+	})
+	return logger
+}
+
+func NewGinEngine(logger *logrus.Logger) *gin.Engine {
 	engine := gin.New()
 	engine.Use(gin.LoggerWithWriter(logger.Writer(), "/actuator/health"))
 	engine.Use(gin.RecoveryWithWriter(logger.Writer()))
 	return engine
 }
 
-func NewNetwork(lc fx.Lifecycle, router *gin.Engine) *http.Server {
+func NewNetwork(lc fx.Lifecycle, router *gin.Engine, logger *logrus.Logger) *http.Server {
 	srv := &http.Server{
 		Addr:         ":" + "8080",
 		Handler:      router,
@@ -27,35 +41,35 @@ func NewNetwork(lc fx.Lifecycle, router *gin.Engine) *http.Server {
 	}
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			fmt.Printf("Starting server on port: %s\n", srv.Addr) // 비동기 블록 밖에서 로그 출력
+			logger.Printf("Starting server on port: %s\n", srv.Addr) // 비동기 블록 밖에서 로그 출력
 			go func() {
 				if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-					fmt.Printf("Server error: %v\n", err)
+					logger.Printf("Server error: %v\n", err)
 				}
 			}()
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			return endServer(srv)
+			return endServer(srv, logger)
 		},
 	})
 	return srv
 }
 
-func endServer(srv *http.Server) error {
+func endServer(srv *http.Server, logger *logrus.Logger) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	fmt.Printf("Starting graceful shutdown with 5-second timeout at %s\n", time.Now().Format(time.RFC3339))
+	logger.Printf("Starting graceful shutdown with 5-second timeout at %s\n", time.Now().Format(time.RFC3339))
 	err := srv.Shutdown(ctx)
 	if err != nil {
-		fmt.Printf("Graceful shutdown failed: %v at %s\n", err, time.Now().Format(time.RFC3339))
+		logger.Printf("Graceful shutdown failed: %v at %s\n", err, time.Now().Format(time.RFC3339))
 	} else {
-		fmt.Printf("Graceful shutdown completed at %s\n", time.Now().Format(time.RFC3339))
+		logger.Printf("Graceful shutdown completed at %s\n", time.Now().Format(time.RFC3339))
 	}
 	return srv.Shutdown(ctx)
 }
 
-func SetupRouter(r *gin.Engine, userController *controller.UserController, authMiddleware gin.HandlerFunc) {
+func SetupRouter(r *gin.Engine, userController *controller.UserController, authMiddleware gin.HandlerFunc, logger *logrus.Logger) {
 	v1 := r.Group("/api/v1")
 	{
 		users := v1.Group("/users")
@@ -69,9 +83,9 @@ func SetupRouter(r *gin.Engine, userController *controller.UserController, authM
 		}
 		// 테스트용 엔드포인트: 10초 지연
 		v1.GET("/test-delay", func(c *gin.Context) {
-			fmt.Println("Received test-delay request at", time.Now().Format(time.RFC3339))
+			logger.Println("Received test-delay request at", time.Now().Format(time.RFC3339))
 			time.Sleep(10 * time.Second) // 10초 대기
-			fmt.Println("Test-delay request completed at", time.Now().Format(time.RFC3339))
+			logger.Println("Test-delay request completed at", time.Now().Format(time.RFC3339))
 			c.JSON(http.StatusOK, gin.H{"message": "Delayed response"})
 		})
 	}
