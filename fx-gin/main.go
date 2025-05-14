@@ -62,6 +62,7 @@ var routerModule = fx.Module(
 		router.NewGinEngine,
 		router.NewNetwork,
 		middleware.NewAuthMiddleware,
+		router.NewSetupRouterParams,
 	),
 	fx.Invoke(
 		router.SetupRouter,

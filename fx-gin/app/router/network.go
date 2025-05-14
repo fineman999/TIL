@@ -69,7 +69,34 @@ func endServer(srv *http.Server, logger *logrus.Logger) error {
 	return srv.Shutdown(ctx)
 }
 
-func SetupRouter(r *gin.Engine, userController *controller.UserController, authMiddleware gin.HandlerFunc, logger *logrus.Logger) {
+// SetUpRouterParams 구조체 정의
+type SetUpRouterParams struct {
+	R              *gin.Engine
+	UserController *controller.UserController
+	AuthMiddleware gin.HandlerFunc
+	Logger         *logrus.Logger
+}
+
+// NewSetupRouterParams는 SetUpRouterParams를 생성하는 생성자 함수
+func NewSetupRouterParams(
+	r *gin.Engine,
+	userController *controller.UserController,
+	authMiddleware gin.HandlerFunc,
+	logger *logrus.Logger,
+) SetUpRouterParams {
+	return SetUpRouterParams{
+		R:              r,
+		UserController: userController,
+		AuthMiddleware: authMiddleware,
+		Logger:         logger,
+	}
+}
+
+func SetupRouter(params SetUpRouterParams) {
+	r := params.R
+	userController := params.UserController
+	authMiddleware := params.AuthMiddleware
+	logger := params.Logger
 	v1 := r.Group("/api/v1")
 	{
 		users := v1.Group("/users")
