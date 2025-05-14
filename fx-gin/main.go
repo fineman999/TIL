@@ -26,13 +26,17 @@ func main() {
 			fx.Annotate(
 				repository.NewUserRepository, // 인메모리 UserRepository 제공
 				fx.As(new(repository.UserRepository)),
+				//fx.ResultTags(`name:"userRepo"`), # 하나의 인터페이스이고, 여러개의 구현체가 있을때 사용
 			),
 			service.NewUserService,       // UserService 제공
 			controller.NewUserController, // UserController 제공
 			middleware.NewAuthMiddleware, // AuthMiddleware 제공
 		),
 		fx.Invoke(
+			//fx.Annotate(
 			router.SetupRouter, // 라우터 설정
+			//fx.ParamTags(`name:"userRepo"`), # 이거 사용하려면 나머지 파라미터 값들도 전부 지정필요
+			//),
 			func(srv *http.Server) { // HTTP 서버 등록
 				log.Printf("HTTP Server is ready at %s", srv.Addr)
 			},
