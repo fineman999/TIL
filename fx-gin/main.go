@@ -7,7 +7,6 @@ import (
 	"fx-server/app/repository"
 	"fx-server/app/router"
 	"fx-server/app/service"
-	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
 	"log"
 	"net/http"
@@ -22,12 +21,7 @@ func main() {
 				return log.New(os.Stdout, "[fx-server] ", log.LstdFlags)
 			},
 			// Gin 엔진
-			func(logger *log.Logger) *gin.Engine {
-				engine := gin.New()
-				engine.Use(gin.LoggerWithWriter(logger.Writer(), "/actuator/health"))
-				engine.Use(gin.RecoveryWithWriter(logger.Writer()))
-				return engine
-			},
+			router.NewGinEngine,
 			router.NewNetwork,
 			repository.NewUserRepository, // 인메모리 UserRepository 제공
 			service.NewUserService,       // UserService 제공
@@ -36,9 +30,9 @@ func main() {
 		),
 		fx.Invoke(
 			router.SetupRouter, // 라우터 설정
-		),
-		fx.Invoke(
-			func(*http.Server) {}, // HTTP 서버 등록
+			func(srv *http.Server) { // HTTP 서버 등록
+				log.Printf("HTTP Server is ready at %s", srv.Addr)
+			},
 		),
 	)
 	if err := app.Start(context.Background()); err != nil {

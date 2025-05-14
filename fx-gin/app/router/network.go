@@ -6,9 +6,17 @@ import (
 	"fx-server/app/controller"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
+	"log"
 	"net/http"
 	"time"
 )
+
+func NewGinEngine(logger *log.Logger) *gin.Engine {
+	engine := gin.New()
+	engine.Use(gin.LoggerWithWriter(logger.Writer(), "/actuator/health"))
+	engine.Use(gin.RecoveryWithWriter(logger.Writer()))
+	return engine
+}
 
 func NewNetwork(lc fx.Lifecycle, router *gin.Engine) *http.Server {
 	srv := &http.Server{
