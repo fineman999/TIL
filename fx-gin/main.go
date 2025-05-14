@@ -15,38 +15,79 @@ import (
 	"net/http"
 )
 
+// 로깅 모듈
+var loggingModule = fx.Module(
+	"logging",
+	fx.Provide(
+		router.NewLogHandler, // Logger 생성 함수
+	),
+	fx.WithLogger(
+		func(logger *logrus.Logger) fxevent.Logger {
+			return config.NewFxLogger(logger)
+		},
+	),
+)
+
+// 리포지토리 모듈
+var repositoryModule = fx.Module(
+	"repository",
+	fx.Provide(
+		fx.Annotate(
+			repository.NewUserRepository,
+			fx.As(new(repository.UserRepository)),
+		),
+	),
+)
+
+// 서비스 모듈
+var serviceModule = fx.Module(
+	"service",
+	fx.Provide(
+		service.NewUserService,
+	),
+)
+
+// 컨트롤러 모듈
+var controllerModule = fx.Module(
+	"controller",
+	fx.Provide(
+		controller.NewUserController,
+	),
+)
+
+// 라우터 모듈
+var routerModule = fx.Module(
+	"router",
+	fx.Provide(
+		router.NewGinEngine,
+		router.NewNetwork,
+		middleware.NewAuthMiddleware,
+	),
+	fx.Invoke(
+		router.SetupRouter,
+	),
+)
+
+// 서버 모듈
+var serverModule = fx.Module(
+	"server",
+	fx.Invoke(
+		func(srv *http.Server) {
+			log.Printf("HTTP Server is ready at %s", srv.Addr)
+		},
+	),
+)
+
 func main() {
 	app := fx.New(
-		fx.Provide(
-			// Logger 생성 함수 추가
-			router.NewLogHandler,
-			// Gin 엔진
-			router.NewGinEngine,
-			router.NewNetwork,
-			fx.Annotate(
-				repository.NewUserRepository, // 인메모리 UserRepository 제공
-				fx.As(new(repository.UserRepository)),
-				//fx.ResultTags(`name:"userRepo"`), # 하나의 인터페이스이고, 여러개의 구현체가 있을때 사용
-			),
-			service.NewUserService,       // UserService 제공
-			controller.NewUserController, // UserController 제공
-			middleware.NewAuthMiddleware, // AuthMiddleware 제공
-		),
-		fx.Invoke(
-			//fx.Annotate(
-			router.SetupRouter, // 라우터 설정
-			//fx.ParamTags(`name:"userRepo"`), # 이거 사용하려면 나머지 파라미터 값들도 전부 지정필요
-			//),
-			func(srv *http.Server) { // HTTP 서버 등록
-				log.Printf("HTTP Server is ready at %s", srv.Addr)
-			},
-		),
-		fx.WithLogger(
-			func(logger *logrus.Logger) fxevent.Logger {
-				return config.NewFxLogger(logger)
-			},
-		),
+		loggingModule,
+		repositoryModule,
+		serviceModule,
+		controllerModule,
+		routerModule,
+		serverModule,
 	)
+
 	if err := app.Start(context.Background()); err != nil {
 		log.Fatalf("Failed to start application: %v\n", err)
 	}
@@ -58,5 +99,4 @@ func main() {
 	} else {
 		log.Println("Application stopped successfully")
 	}
-
 }
