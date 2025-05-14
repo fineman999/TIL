@@ -23,7 +23,10 @@ func main() {
 			// Gin 엔진
 			router.NewGinEngine,
 			router.NewNetwork,
-			repository.NewUserRepository, // 인메모리 UserRepository 제공
+			fx.Annotate(
+				repository.NewUserRepository, // 인메모리 UserRepository 제공
+				fx.As(new(repository.UserRepository)),
+			),
 			service.NewUserService,       // UserService 제공
 			controller.NewUserController, // UserController 제공
 			middleware.NewAuthMiddleware, // AuthMiddleware 제공
