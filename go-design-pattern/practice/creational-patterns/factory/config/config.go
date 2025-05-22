@@ -17,7 +17,7 @@ type Config struct {
 }
 
 func NewConfig() *Config {
-	path := "./creational-patterns/factory-method/config/config.toml"
+	path := "./creational-patterns/factory/config/config.toml"
 	c := new(Config)
 
 	if file, err := os.Open(path); err != nil {

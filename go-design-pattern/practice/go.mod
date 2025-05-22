@@ -4,6 +4,7 @@ go 1.24
 
 require (
 	github.com/bwmarrin/discordgo v0.28.1
+	github.com/joho/godotenv v1.5.1
 	github.com/naoina/toml v0.1.1
 	github.com/slack-go/slack v0.16.0
 )

@@ -4,27 +4,50 @@ import (
 	"context"
 	"fmt"
 	"practice/creational-patterns/factory/internal/domain"
-	"practice/creational-patterns/factory/internal/infrastructure/discord"
-	"practice/creational-patterns/factory/internal/infrastructure/slack"
+	"sync"
 )
 
 // MessageService는 메시지 전송 유스케이스를 처리
 type MessageService struct {
-	senders map[domain.SenderType]domain.MessageSender
+	factory   domain.MessagingFactory
+	senders   map[domain.SenderType]domain.MessageSender
+	formatter domain.MessageFormatter
+	mu        sync.RWMutex // 동시성 제어
+	once      sync.Once    // 포맷터 지연 초기화
 }
 
 // NewMessageService는 새로운 MessageService를 생성
-func NewMessageService(senders ...domain.MessageSender) *MessageService {
-	senderMap := make(map[domain.SenderType]domain.MessageSender)
-	for _, sender := range senders {
-		switch sender.(type) {
-		case *slack.Sender:
-			senderMap[domain.SenderTypeSlack] = sender
-		case *discord.Sender:
-			senderMap[domain.SenderTypeDiscord] = sender
+func NewMessageService(factory domain.MessagingFactory) *MessageService {
+	return &MessageService{
+		factory: factory,
+		senders: make(map[domain.SenderType]domain.MessageSender),
+	}
+}
+func (s *MessageService) getFormatter() domain.MessageFormatter {
+	s.once.Do(func() {
+		s.formatter = s.factory.CreateFormatter()
+	})
+	return s.formatter
+}
+
+func (s *MessageService) getSender(senderType domain.SenderType) domain.MessageSender {
+	s.mu.RLock()
+	sender, exists := s.senders[senderType]
+	s.mu.RUnlock()
+	if exists {
+		return sender
+	}
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	// 재확인 (Double-checked locking)
+	if sender, exists = s.senders[senderType]; !exists {
+		sender = s.factory.CreateSender(senderType)
+		if sender != nil {
+			s.senders[senderType] = sender
 		}
 	}
-	return &MessageService{senders: senderMap}
+	return sender
 }
 
 // SendMessage는 지정된 senderType으로 메시지를 전송
@@ -32,11 +55,13 @@ func (s *MessageService) SendMessage(ctx context.Context, senderType domain.Send
 	if !senderType.IsValid() {
 		return fmt.Sprintf("Unknown sender type: %s", senderType.String())
 	}
-	sender, exists := s.senders[senderType]
-	if !exists {
-		return fmt.Sprintf("Sender not registered for type: %s", senderType.String())
+	sender := s.getSender(senderType)
+	if sender == nil {
+		return fmt.Sprintf("Sender not supported for type: %s", senderType.String())
 	}
-	err := sender.SendMessage(ctx, content)
+	formatter := s.getFormatter()
+	formattedContent := formatter.Format(content)
+	err := sender.SendMessage(ctx, formattedContent)
 	if err != nil {
 		return fmt.Sprintf("Failed to send message: %s", err.Error())
 	}

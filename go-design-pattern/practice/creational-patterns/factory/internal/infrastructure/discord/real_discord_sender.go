@@ -9,13 +9,13 @@ import (
 	"practice/creational-patterns/factory/internal/domain"
 )
 
-type Sender struct {
+type RealSender struct {
 	token          string
 	channel        string
 	discordSession *discordgo.Session
 }
 
-func (s *Sender) SendMessage(ctx context.Context, content string) error {
+func (s *RealSender) SendMessage(ctx context.Context, content string) error {
 	_, err := s.discordSession.ChannelMessageSend(s.channel, content)
 	if err != nil {
 		log.Printf("Discord Send Error: %v", err)
@@ -24,7 +24,7 @@ func (s *Sender) SendMessage(ctx context.Context, content string) error {
 	return nil
 }
 
-func NewDiscordSender(cfg *config.Config) domain.MessageSender {
+func NewRealSender(cfg *config.Config) domain.MessageSender {
 	dg, err := discordgo.New("Bot " + cfg.Discord.Token)
 	if err != nil {
 		fmt.Println("Error creating Discord session:", err)
@@ -37,7 +37,7 @@ func NewDiscordSender(cfg *config.Config) domain.MessageSender {
 		fmt.Println("Error opening connection:", err)
 		return nil
 	}
-	return &Sender{
+	return &RealSender{
 		token:          cfg.Discord.Token,
 		channel:        cfg.Discord.Channel,
 		discordSession: dg,

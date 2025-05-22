@@ -8,13 +8,13 @@ import (
 	"practice/creational-patterns/factory/internal/domain"
 )
 
-type Sender struct {
+type RealSender struct {
 	token       string
 	channel     string
 	slackClient *slack.Client
 }
 
-func (s *Sender) SendMessage(ctx context.Context, content string) error {
+func (s *RealSender) SendMessage(ctx context.Context, content string) error {
 	messageContext, messageId, text, err := s.slackClient.SendMessageContext(
 		ctx,
 		s.channel,
@@ -31,8 +31,8 @@ func (s *Sender) SendMessage(ctx context.Context, content string) error {
 	return nil
 }
 
-func NewSlackSender(cfg *config.Config) domain.MessageSender {
-	return &Sender{
+func NewRealSender(cfg *config.Config) domain.MessageSender {
+	return &RealSender{
 		token:       cfg.Slack.Token,
 		channel:     cfg.Slack.Channel,
 		slackClient: slack.New(cfg.Slack.Token),
