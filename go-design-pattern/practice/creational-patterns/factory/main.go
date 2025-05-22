@@ -8,6 +8,7 @@ import (
 	"practice/creational-patterns/factory/config"
 	"practice/creational-patterns/factory/internal/application/service"
 	"practice/creational-patterns/factory/internal/domain"
+	"practice/creational-patterns/factory/internal/domain/model"
 	"practice/creational-patterns/factory/internal/factory"
 )
 
@@ -41,4 +42,14 @@ func main() {
 	fmt.Println(messageService.SendMessage(ctx, domain.SenderTypeSlack, "Hello, this is a Slack message!"))
 	fmt.Println(messageService.SendMessage(ctx, domain.SenderTypeDiscord, "Hello, this is a Discord message!"))
 	fmt.Println(messageService.SendMessage(ctx, domain.SenderTypeUnknown, "This should fail"))
+
+	// 빌더 패턴 활용
+	message := model.NewMessageBuilder().
+		WithContent("Hello, this is a message!").
+		WithSender("유저").Build()
+
+	fmt.Println(messageService.SendMessageWithSender(ctx, domain.SenderTypeSlack, message))
+	fmt.Println(messageService.SendMessageWithSender(ctx, domain.SenderTypeDiscord, message))
+	fmt.Println(messageService.SendMessageWithSender(ctx, domain.SenderTypeUnknown, message))
+
 }

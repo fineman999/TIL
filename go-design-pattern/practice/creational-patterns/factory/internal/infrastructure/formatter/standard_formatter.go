@@ -7,6 +7,10 @@ import (
 
 type standardFormatter struct{}
 
+func (f *standardFormatter) FormatWithSender(sender string, content string) string {
+	return fmt.Sprintf("[PROD] %s: %s", sender, content)
+}
+
 func (f *standardFormatter) Format(content string) string {
 	return fmt.Sprintf("[PROD] %s", content)
 }

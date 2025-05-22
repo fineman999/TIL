@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"practice/creational-patterns/factory/internal/domain"
+	"practice/creational-patterns/factory/internal/domain/model"
 	"sync"
 )
 
@@ -61,6 +62,23 @@ func (s *MessageService) SendMessage(ctx context.Context, senderType domain.Send
 	}
 	formatter := s.getFormatter()
 	formattedContent := formatter.Format(content)
+	err := sender.SendMessage(ctx, formattedContent)
+	if err != nil {
+		return fmt.Sprintf("Failed to send message: %s", err.Error())
+	}
+	return ""
+}
+
+func (s *MessageService) SendMessageWithSender(ctx context.Context, senderType domain.SenderType, message *model.Message) string {
+	if !senderType.IsValid() {
+		return fmt.Sprintf("Unknown sender type: %s", senderType.String())
+	}
+	sender := s.getSender(senderType)
+	if sender == nil {
+		return fmt.Sprintf("Sender not supported for type: %s", senderType.String())
+	}
+	formatter := s.getFormatter()
+	formattedContent := formatter.FormatWithSender(message.Sender, message.Content)
 	err := sender.SendMessage(ctx, formattedContent)
 	if err != nil {
 		return fmt.Sprintf("Failed to send message: %s", err.Error())
