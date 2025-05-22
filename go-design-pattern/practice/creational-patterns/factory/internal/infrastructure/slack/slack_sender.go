@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/slack-go/slack"
 	"log"
-	"practice/creational-patterns/factory-method/config"
-	"practice/creational-patterns/factory-method/internal/domain"
+	"practice/creational-patterns/factory/config"
+	"practice/creational-patterns/factory/internal/domain"
 )
 
 type Sender struct {

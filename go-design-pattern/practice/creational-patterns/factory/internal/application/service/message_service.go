@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 	"fmt"
-	"practice/creational-patterns/factory-method/internal/domain"
-	"practice/creational-patterns/factory-method/internal/infrastructure/discord"
-	"practice/creational-patterns/factory-method/internal/infrastructure/slack"
+	"practice/creational-patterns/factory/internal/domain"
+	"practice/creational-patterns/factory/internal/infrastructure/discord"
+	"practice/creational-patterns/factory/internal/infrastructure/slack"
 )
 
 // MessageService는 메시지 전송 유스케이스를 처리
