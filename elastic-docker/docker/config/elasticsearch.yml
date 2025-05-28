@@ -1,0 +1,19 @@
+# config/elasticsearch.yml
+cluster:
+  name: docker-cluster
+node:
+  name: es01
+path:
+  data: /usr/share/elasticsearch/data
+  logs: /usr/share/elasticsearch/logs
+bootstrap:
+  memory_lock: true
+#network:
+#  host: _site_
+#http:
+#  port: 9200
+#transport:
+#  port: 9300
+#discovery.seed_hosts: ["es01"]
+#cluster.initial_master_nodes: ["es01"]
+discovery.type: single-node
